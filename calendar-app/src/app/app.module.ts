@@ -1,19 +1,36 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+
+// used to create fake backend
+import { fakeBackendProvider } from './_helpers';
+
+import { AppRoutingModule } from './app-routing.module';
+import { JwtInterceptor, ErrorInterceptor } from './_helpers';
 import { AppComponent } from './app.component';
-import { routes } from './app.routes'; // Adjust the path as necessary
+import { AlertComponent } from './_components';
+import { HomeComponent } from './home';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        // other components
-    ],
     imports: [
         BrowserModule,
-        RouterModule.forRoot(routes) // Configure the router with the routes
+        ReactiveFormsModule,
+        HttpClientModule,
+        AppRoutingModule
     ],
-    providers: [],
+    declarations: [
+        AppComponent,
+        AlertComponent,
+        HomeComponent
+    ],
+    providers: [
+        { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+
+        // provider used to create fake backend
+        fakeBackendProvider
+    ],
     bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { };
