@@ -1,0 +1,16 @@
+<div class="calendar-container">
+    <h2>Calendars</h2>
+    <form (ngSubmit)="createCalendar(calendarName)" #calendarForm="ngForm">
+        <input type="text" placeholder="Enter calendar name" [(ngModel)]="calendarName" name="calendarName" required>
+        <button type="submit" [disabled]="calendarForm.invalid">Create Calendar</button>
+    </form>
+
+    <div class="calendar-list">
+        <h3>Existing Calendars</h3>
+        <ul>
+            <li *ngFor="let calendar of calendars">
+                {{ calendar.name }}
+            </li>
+        </ul>
+    </div>
+</div>
