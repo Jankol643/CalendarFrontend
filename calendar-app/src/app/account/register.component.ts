@@ -3,7 +3,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 
-import { AccountService, AlertService } from '../_services';
+import { AlertService } from '../_services';
+import { AuthService } from '../services/auth.service';
 
 @Component({ templateUrl: 'register.component.html' })
 export class RegisterComponent implements OnInit {
@@ -15,12 +16,10 @@ export class RegisterComponent implements OnInit {
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
-        private accountService: AccountService,
+        private authService: AuthService,
         private alertService: AlertService
-    ) { }
-
-    ngOnInit() {
-        this.form = this.formBuilder.group({
+    ) {
+        this.form = this.formBuilder.group({ // Initialize form here
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
             username: ['', Validators.required],
@@ -28,22 +27,22 @@ export class RegisterComponent implements OnInit {
         });
     }
 
-    // convenience getter for easy access to form fields
+    ngOnInit() {
+        // Any additional initialization can go here
+    }
+
     get f() { return this.form.controls; }
 
     onSubmit() {
         this.submitted = true;
-
-        // reset alerts on submit
         this.alertService.clear();
 
-        // stop here if form is invalid
         if (this.form.invalid) {
             return;
         }
 
         this.loading = true;
-        this.accountService.register(this.form.value)
+        this.authService.register(this.form.value)
             .pipe(first())
             .subscribe({
                 next: () => {

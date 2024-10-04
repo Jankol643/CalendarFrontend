@@ -1,25 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import { first } from 'rxjs/operators';
+import { AuthService } from '../services/auth.service';
 
-import { AccountService } from '../_services';
-
-@Component({ templateUrl: 'list.component.html' })
+@Component({
+    templateUrl: 'list.component.html'
+})
 export class ListComponent implements OnInit {
-    users = null;
+    users: any[] = []; // Initialize users as an empty array
 
-    constructor(private accountService: AccountService) {}
+    constructor(private authService: AuthService) { }
 
     ngOnInit() {
-        this.accountService.getAll()
+        this.authService.getAll()
             .pipe(first())
             .subscribe(users => this.users = users);
     }
 
     deleteUser(id: string) {
         const user = this.users.find(x => x.id === id);
-        user.isDeleting = true;
-        this.accountService.delete(id)
-            .pipe(first())
-            .subscribe(() => this.users = this.users.filter(x => x.id !== id));
+        if (user) {
+            user.isDeleting = true; // Set isDeleting to true if user is found
+            this.authService.delete(id)
+                .pipe(first())
+                .subscribe(() => {
+                    this.users = this.users.filter(x => x.id !== id);
+                });
+        }
     }
 }
