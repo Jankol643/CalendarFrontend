@@ -19,13 +19,8 @@ import { AlertModule } from './_components/alert.module';
     ],
 })
 export class AppComponent {
-    user: User | null = null;
-
-    constructor(private authService: AuthService) {
-        this.authService.user.subscribe((x: User | null) => this.user = x);
-    }
-
-    logout() {
-        this.authService.logout();
+    title = 'calendar-app';
+    get currentYear(): string {
+        return new Date().getFullYear().toString();
     }
 }
