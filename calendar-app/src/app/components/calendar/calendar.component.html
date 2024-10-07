@@ -10,12 +10,11 @@
         <button type="submit" [disabled]="calendarForm.invalid">Create Calendar</button>
     </form>
 
-
     <div class="calendar-list">
         <h3>Existing Calendars</h3>
         <ul>
             <li *ngFor="let calendar of calendars">
-                {{ calendar.name }}
+                {{ calendar.title }} <!-- Changed from calendar.name to calendar.title for consistency -->
             </li>
         </ul>
     </div>

@@ -1,6 +1,13 @@
-<!-- src/app/components/login/login.component.html -->
-<form (ngSubmit)="login()">
-    <input type="email" placeholder="Email" [(ngModel)]="credentials.email" name="email" required>
-    <input type="password" placeholder="Password" [(ngModel)]="credentials.password" name="password" required>
-    <button type="submit">Login</button>
-</form>
+<div class="login-card">
+
+    <div class="card-title">
+        <h1>Login</h1>
+        <span>You don't have an account? <a routerLink="/register">Sign up</a></span>
+    </div>
+    <form class="form-group" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <input name="email" type="email" formControlName="email" placeholder="Email">
+        <input type="password" formControlName="password" placeholder="Password">
+        <button>Submit</button>
+    </form>
+
+</div>

@@ -1,6 +1,8 @@
 // src/app/services/auth.service.ts
+import { inject } from '@angular/core';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
@@ -16,16 +18,19 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/register`, user);
   }
 
-  login(credentials: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials);
+  login(data: any) {
+    return this.http.post(`${this.apiUrl}/login`, data)
+      .pipe(tap((result) => {
+        localStorage.setItem('authUser', JSON.stringify(result));
+      }));
   }
 
   logout(): void {
-    localStorage.removeItem('access_token');
+    localStorage.removeItem('authUser');
     this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('access_token');
+    return localStorage.getItem('authUser') !== null;
   }
 }
