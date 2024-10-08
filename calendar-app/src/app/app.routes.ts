@@ -1,13 +1,11 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
-import { CalendarComponent } from './components/calendar/calendar.component';
-import { authGuard } from './auth/auth.guard';
+import { LoginComponent } from './components/login/login.component';
 import { AdminComponent } from './components/admin/admin.component';
 
 export const routes: Routes = [
-    { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
-    { path: '', redirectTo: '/login', pathMatch: 'full' },
-    { path: 'admin', component: AdminComponent, canActivate: [authGuard] }
+    { path: 'login', component: LoginComponent },
+    { path: 'admin', component: AdminComponent },
+    { path: '', redirectTo: '/login', pathMatch: 'full' } // Redirect to login by default
 ];

@@ -12,8 +12,7 @@ import { Observable } from 'rxjs';
 export class AuthService {
   private apiUrl = 'http://localhost:8000/api/auth'; // Adjust the URL as needed
 
-  constructor(private http: HttpClient, private router: Router) { }
-
+  http = inject(HttpClient);
   register(user: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, user);
   }
@@ -27,7 +26,6 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('authUser');
-    this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
