@@ -1,5 +1,5 @@
 export interface RegistrationRequest {
     email: string;
     password: string;
-    confirmPassword: string;
+    password_confirmation: string;
 }
