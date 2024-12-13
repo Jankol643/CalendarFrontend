@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../auth/auth.service';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -51,7 +51,6 @@ export class RegisterComponent implements OnInit {
     this.authService.register(this.form.value)
       .subscribe({
         next: (data: any) => {
-          console.log(data);
           this.router.navigate(['/login']);
         },
         error: (err) => console.log(err)
