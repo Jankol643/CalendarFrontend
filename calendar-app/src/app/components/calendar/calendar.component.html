@@ -1,21 +1,12 @@
-<div class="calendar-container">
-    <h2>Calendars</h2>
-    <form (ngSubmit)="createCalendar(calendarForm.value)" #calendarForm="ngForm">
-        <input type="text" placeholder="Enter calendar title" [(ngModel)]="calendar.title" name="title" required>
-        <input type="text" placeholder="Enter calendar description" [(ngModel)]="calendar.description"
-            name="description">
-        <input type="color" [(ngModel)]="calendar.color" name="color" required>
-        <input type="hidden" [(ngModel)]="calendar.user_id" name="user_id" [value]="currentUserId">
-        <!-- Assuming you have currentUserId available -->
-        <button type="submit" [disabled]="calendarForm.invalid">Create Calendar</button>
-    </form>
-
-    <div class="calendar-list">
-        <h3>Existing Calendars</h3>
-        <ul>
-            <li *ngFor="let calendar of calendars">
-                {{ calendar.title }} <!-- Changed from calendar.name to calendar.title for consistency -->
-            </li>
-        </ul>
+<div class="calendar">
+    <header>
+        <button (click)="prevMonth()">Previous</button>
+        <h2>{{ month }}</h2>
+        <button (click)="nextMonth()">Next</button>
+    </header>
+    <div class="days">
+        <div class="day" *ngFor="let day of days">
+            {{ day.getDate() }}
+        </div>
     </div>
 </div>

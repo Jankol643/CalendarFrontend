@@ -1,4 +1,11 @@
-<app-menu-bar></app-menu-bar>
-<div class="container">
-    <router-outlet></router-outlet>
+<div class="main-content">
+    <app-toolbar class="height-controlled"></app-toolbar>
+    <mat-drawer-container class="calendar-container" [hasBackdrop]="false">
+        <mat-drawer mode="push" closed>
+            <app-sidebar></app-sidebar>
+        </mat-drawer>
+        <mat-drawer-content style="overflow: hidden">
+            <app-main></app-main>
+        </mat-drawer-content>
+    </mat-drawer-container>
 </div>

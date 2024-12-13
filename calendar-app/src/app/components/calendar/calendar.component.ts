@@ -1,36 +1,39 @@
-import { Component, OnInit } from '@angular/core';
-import { CalendarService } from '../../services/calendar.service';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { addMonths, subMonths, startOfMonth, endOfMonth, format, eachDayOfInterval } from 'date-fns';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
   standalone: true,
-  imports: [FormsModule, CommonModule]
+  imports: [CommonModule]
 })
-export class CalendarComponent implements OnInit {
-  calendars: any[] = [];
-  calendar: { title: string; description?: string; color: string; user_id: string } = { title: '', color: '', user_id: '' }; // Initialize calendar object
-  currentUserId: string = ''; // Ensure currentUserId is defined
+export class CalendarComponent {
+  currentMonth: Date = new Date();
+  days: Date[] = [];
 
-  constructor(private calendarService: CalendarService) { }
-
-  ngOnInit(): void {
-    this.loadCalendars();
+  constructor() {
+    this.loadDays();
   }
 
-  loadCalendars() {
-    this.calendarService.getCalendars().subscribe(data => {
-      this.calendars = data;
-    });
+  loadDays() {
+    const start = startOfMonth(this.currentMonth);
+    const end = endOfMonth(this.currentMonth);
+    this.days = eachDayOfInterval({ start, end });
   }
 
-  createCalendar(formValue: { title: string; description?: string; color: string; user_id: string }) {
-    this.calendarService.createCalendar(formValue).subscribe(() => {
-      this.loadCalendars(); // Refresh the list after creating
-      this.calendar = { title: '', color: '', user_id: '' }; // Reset the form after submission
-    });
+  nextMonth() {
+    this.currentMonth = addMonths(this.currentMonth, 1);
+    this.loadDays();
+  }
+
+  prevMonth() {
+    this.currentMonth = subMonths(this.currentMonth, 1);
+    this.loadDays();
+  }
+
+  get month() {
+    return format(this.currentMonth, 'MMMM yyyy');
   }
 }

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-menu-bar',
   standalone: true,
-  imports: [FormsModule],
+  imports: [RouterModule],
   templateUrl: './menu-bar.component.html',
   styleUrl: './menu-bar.component.scss'
 })
