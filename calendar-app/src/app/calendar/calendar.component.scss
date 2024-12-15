@@ -1,16 +1,32 @@
-.calendar {
-    width: 300px;
-    margin: auto;
+.month-view {
+    display: flex;
+    flex-direction: column;
+}
+
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    /* 7 columns for the days of the week */
+    grid-gap: 5px;
+}
+
+.day-cell {
+    border: 1px solid #ccc;
+    padding: 10px;
     text-align: center;
 }
 
-.days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+.current-day {
+    background-color: #f0f0f0;
+    /* Highlight today's date */
 }
 
-.day {
-    padding: 10px;
-    border: 1px solid #ccc;
+.example-container {
+    width: auto;
+    height: 200px;
+    margin: 10px;
+    border: 1px solid #555;
+    /* The background property is added to clearly distinguish the borders between drawer and main
+     content */
+    background: #eee;
 }
