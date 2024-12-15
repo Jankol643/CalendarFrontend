@@ -1,65 +1,35 @@
-import { Component, OnInit } from '@angular/core';
-import { SidebarComponent } from '../sidebar/sidebar.component';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { Component } from "@angular/core";
+import { DayViewComponent } from "../day-view/day-view.component";
+import { WeekViewComponent } from "../week-view/week-view.component";
+import { MonthViewComponent } from "../month-view/month-view.component";
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { CommonModule } from "@angular/common";
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
   standalone: true,
-  imports: []
+  imports: [DayViewComponent, WeekViewComponent, MonthViewComponent, CommonModule, MatFormFieldModule, MatSelectModule, MatInputModule]
 })
-export class CalendarComponent implements OnInit {
-
-  view: string = 'week'; // Default view
+export class CalendarComponent {
+  currentView: 'day' | 'week' | 'month' = 'day';
   currentDate: Date = new Date();
-  days: Date[] = []; // This will hold the days of the week
-  monthDays: Date[] = []; // This will hold the days of the current month
-  hours: number[] = Array.from({ length: 24 }, (_, i) => i); // 0 - 23 hours
+  events = [
+    { title: 'Meeting', start: new Date(), end: new Date(new Date().getTime() + 60 * 60 * 1000) },
+    // Add more events as needed
+  ];
+  weekEvents: Record<string, any[]> = {
+    [this.currentDate.toDateString()]: [
+      { title: 'Weekly Standup', start: new Date(), end: new Date(new Date().getTime() + 30 * 60 * 1000) },
+      // Add more events for the week
+    ],
+    // Add events for other days as needed
+  };
 
-  ngOnInit() {
-    this.updateDays();
-    this.updateMonthDays();
+  setView(view: 'day' | 'week' | 'month'): void {
+    this.currentView = view;
   }
-
-  changeView(view: string) {
-    this.view = view;
-    if (view === 'month') {
-      this.updateMonthDays();
-    } else {
-      this.updateDays();
-    }
-  }
-
-  updateDays() {
-    const startOfWeek = this.getStartOfWeek(this.currentDate);
-    this.days = Array.from({ length: 7 }, (_, i) => new Date(startOfWeek.getTime() + i * 86400000));
-  }
-
-  updateMonthDays() {
-    const startOfMonth = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
-    const endOfMonth = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 0);
-    const totalDays = endOfMonth.getDate();
-
-    this.monthDays = Array.from({ length: totalDays }, (_, i) => new Date(startOfMonth.getFullYear(), startOfMonth.getMonth(), i + 1));
-  }
-
-  getStartOfWeek(date: Date): Date {
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Adjust if Sunday
-    return new Date(date.setDate(diff));
-  }
-
-  isToday(day: Date): boolean {
-    const today = new Date();
-    return day.getDate() === today.getDate() &&
-      day.getMonth() === today.getMonth() &&
-      day.getFullYear() === today.getFullYear();
-  }
-
-  isCurrentHour(hour: number): boolean {
-    const currentHour = new Date().getHours();
-    return hour === currentHour;
-  }
-
 }

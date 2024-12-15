@@ -1,0 +1,59 @@
+<div class="calendar-container">
+    <header class="calendar-header mb-4 flex items-center justify-between">
+        <h2 class="text-xl font-bold">{{ this.currentMonth() }}</h2>
+        <div class="flex items-center gap-2 text-sm">
+            <button (click)="this.toCurrentMonth()">Today</button>
+            <div class="flex items-center gap-1">
+                <button class="bg-blue-500 hover:bg-green-700 active:bg-green-800 px-4 py-2 rounded-md text-white"
+                    (click)="prevMonth()">Previous Month</button>
+                <button class="bg-blue-500 hover:bg-green-700 active:bg-green-800 px-4 py-2 rounded-md text-white"
+                    (click)="nextMonth()">Next Month</button>
+            </div>
+        </div>
+    </header>
+    <div class="mt-10 grid grid-cols-7 text-center text-xs leading-6 text-gray-500">
+        @for (item of this.dayNamesFormatted; track item.dayName) {
+        <div [ngClass]="[
+              item.isToday ? 'text' : 'text-tertiary',
+              item.isToday ? 'font-medium' : 'font-normal',
+            ]">
+            {{ item.dayName }}
+        </div>
+        }
+    </div>
+    <div class="calendar-grid mt-2 grid grid-cols-7 gap-1 text-sm">
+        @for (day of this.daysEnriched(); track day) {
+        <div [ngClass]="[
+              'mx-auto',
+              'relative',
+              'flex',
+              'h-24',
+              'md:h-24',
+              'md:h-28',
+              'w-full',
+              'flex-col',
+              'items-center',
+              'justify-center',
+              'rounded-xl',
+              'bg-slate-50',
+              day.colStartClass,
+              day.isToday ? 'text-white' : 'text-tertiary',
+              day.isToday ? 'font-medium' : 'font-normal',
+            ]">
+            <div class="w-full flex-auto p-2">
+                @if (this.markerTpl(); as markerTpl) {
+                <ng-container *ngTemplateOutlet="
+                    markerTpl;
+                    context: { $implicit: day.markers }
+                  "></ng-container>
+                }
+            </div>
+            <footer
+                class="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full text-sm md:absolute md:bottom-1 md:right-1 md:self-end"
+                [class.bg-primary-500]="day.isToday">
+                {{ day.day | date: 'd' }}
+            </footer>
+        </div>
+        }
+    </div>
+</div>

@@ -14,6 +14,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { TopBarComponent } from './topbar/topbar.component';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { addDays } from 'date-fns';
+import { JsonPipe } from '@angular/common';
 
 @Component({
     selector: 'app-root',
@@ -35,7 +38,8 @@ import { TopBarComponent } from './topbar/topbar.component';
         MatToolbarModule,
         MatListModule,
         MatIconModule,
-        MatButtonModule
+        MatButtonModule,
+        JsonPipe
     ],
 })
 export class AppComponent {
