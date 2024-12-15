@@ -1,36 +1,65 @@
 import { Component, OnInit } from '@angular/core';
-import { CalendarService } from '../../services/calendar.service';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { SidebarComponent } from '../sidebar/sidebar.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
   standalone: true,
-  imports: [FormsModule, CommonModule]
+  imports: []
 })
 export class CalendarComponent implements OnInit {
-  calendars: any[] = [];
-  calendar: { title: string; description?: string; color: string; user_id: string } = { title: '', color: '', user_id: '' }; // Initialize calendar object
-  currentUserId: string = ''; // Ensure currentUserId is defined
 
-  constructor(private calendarService: CalendarService) { }
+  view: string = 'week'; // Default view
+  currentDate: Date = new Date();
+  days: Date[] = []; // This will hold the days of the week
+  monthDays: Date[] = []; // This will hold the days of the current month
+  hours: number[] = Array.from({ length: 24 }, (_, i) => i); // 0 - 23 hours
 
-  ngOnInit(): void {
-    this.loadCalendars();
+  ngOnInit() {
+    this.updateDays();
+    this.updateMonthDays();
   }
 
-  loadCalendars() {
-    this.calendarService.getCalendars().subscribe(data => {
-      this.calendars = data;
-    });
+  changeView(view: string) {
+    this.view = view;
+    if (view === 'month') {
+      this.updateMonthDays();
+    } else {
+      this.updateDays();
+    }
   }
 
-  createCalendar(formValue: { title: string; description?: string; color: string; user_id: string }) {
-    this.calendarService.createCalendar(formValue).subscribe(() => {
-      this.loadCalendars(); // Refresh the list after creating
-      this.calendar = { title: '', color: '', user_id: '' }; // Reset the form after submission
-    });
+  updateDays() {
+    const startOfWeek = this.getStartOfWeek(this.currentDate);
+    this.days = Array.from({ length: 7 }, (_, i) => new Date(startOfWeek.getTime() + i * 86400000));
   }
+
+  updateMonthDays() {
+    const startOfMonth = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
+    const endOfMonth = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 0);
+    const totalDays = endOfMonth.getDate();
+
+    this.monthDays = Array.from({ length: totalDays }, (_, i) => new Date(startOfMonth.getFullYear(), startOfMonth.getMonth(), i + 1));
+  }
+
+  getStartOfWeek(date: Date): Date {
+    const day = date.getDay();
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Adjust if Sunday
+    return new Date(date.setDate(diff));
+  }
+
+  isToday(day: Date): boolean {
+    const today = new Date();
+    return day.getDate() === today.getDate() &&
+      day.getMonth() === today.getMonth() &&
+      day.getFullYear() === today.getFullYear();
+  }
+
+  isCurrentHour(hour: number): boolean {
+    const currentHour = new Date().getHours();
+    return hour === currentHour;
+  }
+
 }

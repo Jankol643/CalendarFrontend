@@ -1,4 +1,15 @@
-<app-menu-bar></app-menu-bar>
-<div class="container">
-    <router-outlet></router-outlet>
+<div class="content">
+    <mat-toolbar class="example-toolbar">
+        <button mat-icon-button (click)="toggleSidebar()"><mat-icon>menu</mat-icon></button>
+        <app-topbar></app-topbar>
+    </mat-toolbar>
+    <mat-sidenav-container class="example-container">
+        <mat-sidenav id="sidenav" mode="side" [(opened)]="opened">
+            <app-sidebar></app-sidebar>
+        </mat-sidenav>
+
+        <mat-sidenav-content id="main-content">
+            <app-calendar></app-calendar>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
 </div>

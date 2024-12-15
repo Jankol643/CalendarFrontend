@@ -1,0 +1,37 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    /* Set the height of the content to 100% of the viewport height */
+}
+
+.example-toolbar {
+    flex: 0 0 auto;
+    /* Ensures the toolbar does not stretch */
+}
+
+.example-container {
+    flex: 1 1 auto;
+    /* Allows the container to take up remaining space */
+    display: flex;
+    /* Use flexbox for the container */
+}
+
+mat-sidenav {
+    width: 250px;
+    /* Set the width of the sidenav */
+    background-color: #c5c5c5;
+}
+
+mat-sidenav-content {
+    padding: 20px;
+    /* Add some padding for the main content */
+    overflow: auto;
+    /* Allow scrolling if content overflows */
+}
