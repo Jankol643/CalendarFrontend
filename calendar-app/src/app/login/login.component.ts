@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
   styleUrl: './login.component.scss',
   standalone: true,
   imports: [ReactiveFormsModule, RouterModule, CommonModule]
-  imports: [ReactiveFormsModule, RouterModule, CommonModule]
 })
 export class LoginComponent {
   form!: FormGroup;
