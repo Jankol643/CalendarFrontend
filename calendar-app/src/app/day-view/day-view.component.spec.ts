@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SidebarComponent } from './sidebar.component';
+import { DayViewComponent } from './day-view.component';
 
-describe('SidebarComponent', () => {
-  let component: SidebarComponent;
-  let fixture: ComponentFixture<SidebarComponent>;
+describe('DayViewComponent', () => {
+  let component: DayViewComponent;
+  let fixture: ComponentFixture<DayViewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SidebarComponent]
+      imports: [DayViewComponent]
     })
-      .compileComponents();
+    .compileComponents();
 
-    fixture = TestBed.createComponent(SidebarComponent);
+    fixture = TestBed.createComponent(DayViewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

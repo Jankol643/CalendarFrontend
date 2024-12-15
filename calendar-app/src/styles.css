@@ -1,2 +1,5 @@
 /* Add application styles & imports to this file! */
 a { cursor: pointer }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
