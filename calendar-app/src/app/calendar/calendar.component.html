@@ -10,7 +10,7 @@
         </mat-select>
     </mat-form-field>
 
-    <app-day-view *ngIf="currentView === 'day'" [date]="currentDate" [events]="events"></app-day-view>
-    <app-week-view *ngIf="currentView === 'week'" [currentDate]="currentDate" [events]="weekEvents"></app-week-view>
+    <app-day-view *ngIf="currentView === 'day'"></app-day-view>
+    <app-week-view *ngIf="currentView === 'week'"></app-week-view>
     <app-month-view *ngIf="currentView === 'month'"></app-month-view>
 </div>

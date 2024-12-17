@@ -1,13 +1,25 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { CalendarNavigationService } from '../calendar-navigation.service';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [FormsModule],
   templateUrl: './topbar.component.html',
-  styleUrl: './topbar.component.scss'
+  styleUrls: ['./topbar.component.scss']
 })
 export class TopBarComponent {
+  constructor(private calendarService: CalendarNavigationService) { }
+
+  previousMonth() {
+    this.calendarService.previousMonth();
+  }
+
+  nextMonth() {
+    this.calendarService.nextMonth();
+  }
+
+  today() {
+    this.calendarService.today();
+  }
 
 }

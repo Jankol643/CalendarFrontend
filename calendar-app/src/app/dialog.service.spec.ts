@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ViewSwitcherService } from './view-switcher.service';
+import { DialogService } from './dialog.service';
 
-describe('ViewSwitcherService', () => {
-  let service: ViewSwitcherService;
+describe('DialogService', () => {
+  let service: DialogService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ViewSwitcherService);
+    service = TestBed.inject(DialogService);
   });
 
   it('should be created', () => {

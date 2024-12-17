@@ -31,7 +31,6 @@ mat-sidenav {
 
 mat-sidenav-content {
     padding: 20px;
-    /* Add some padding for the main content */
     overflow: auto;
-    /* Allow scrolling if content overflows */
+    width: -webkit-fill-available;
 }
