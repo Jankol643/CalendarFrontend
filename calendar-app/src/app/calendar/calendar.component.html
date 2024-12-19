@@ -1,16 +1,3 @@
-<!-- calendar.component.html -->
-<div>
-    <h2>Calendar</h2>
-    <mat-form-field>
-        <mat-label>Select View</mat-label>
-        <mat-select [(value)]="currentView" (selectionChange)="setView($event.value)">
-            <mat-option value="day">Day View</mat-option>
-            <mat-option value="week">Week View</mat-option>
-            <mat-option value="month">Month View</mat-option>
-        </mat-select>
-    </mat-form-field>
-
-    <app-day-view *ngIf="currentView === 'day'"></app-day-view>
-    <app-week-view *ngIf="currentView === 'week'"></app-week-view>
-    <app-month-view *ngIf="currentView === 'month'"></app-month-view>
-</div>
+<mwl-calendar-month-view [viewDate]="viewDate" [events]="events" [activeDayIsOpen]="true" [refresh]="refresh"
+    (eventTimesChanged)="eventTimesChanged($event)">
+</mwl-calendar-month-view>

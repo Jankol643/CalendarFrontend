@@ -1,4 +1,4 @@
-import { Component, effect } from "@angular/core";
+import { Component } from "@angular/core";
 import { DayViewComponent } from "../day-view/day-view.component";
 import { WeekViewComponent } from "../week-view/week-view.component";
 import { MonthViewComponent } from "../month-view/month-view.component";
@@ -9,25 +9,93 @@ import { CommonModule } from "@angular/common";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatMenuModule } from '@angular/material/menu';
-import { createEvent, findEvent, formatDate, getSelectedDate, updateEvent, templateCalendarData } from '../helper/calendar';
-import { DialogService } from '../dialog.service';
-import { NCalendar } from "../model/calendar.model";
 import { MatIconModule } from "@angular/material/icon";
+import 'zone.js';
+import {
+  CalendarEvent,
+  CalendarWeekViewBeforeRenderEvent,
+  CalendarDayViewBeforeRenderEvent,
+  CalendarModule,
+} from 'angular-calendar';
+import { Subject } from 'rxjs';
+
+export const colors: any = {
+  red: {
+    primary: '#ad2121',
+    secondary: '#FAE3E3',
+  },
+  blue: {
+    primary: '#1e90ff',
+    secondary: '#D1E8FF',
+  },
+  yellow: {
+    primary: '#e3bc08',
+    secondary: '#FDF1BA',
+  },
+};
+
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
   standalone: true,
-  imports: [DayViewComponent, WeekViewComponent, MonthViewComponent, CommonModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatTooltipModule, MatMenuModule, MatIconModule]
+  imports: [DayViewComponent, WeekViewComponent, MonthViewComponent, CommonModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatTooltipModule, MatMenuModule, MatIconModule,
+    CalendarModule
+  ],
 })
 export class CalendarComponent {
-  currentView: 'day' | 'week' | 'month' = 'day';
+  view: string = 'week';
+  snapDraggedEvents = true;
 
-  constructor(
-    private readonly dialogService: DialogService
-  ) { }
+  dayStartHour = 6;
+  viewDate: Date = new Date();
 
-  setView(view: 'day' | 'week' | 'month'): void {
-    this.currentView = view;
+  events: CalendarEvent[] = [
+    {
+      title: 'Draggable event',
+      color: colors.yellow,
+      start: new Date(),
+      draggable: true,
+    },
+    {
+      title: 'A non draggable event',
+      color: colors.blue,
+      start: new Date(),
+    },
+  ];
+
+  refresh: Subject<any> = new Subject();
+
+  eventTimesChanged({ event, newStart, newEnd }: any): void {
+    event.start = newStart;
+    event.end = newEnd;
+    this.refresh.next(null);
+    alert(event.title);
+  }
+  public segmentIsValid(date: Date) {
+    // valid if time is greater than 0800 andd less than 1700
+    return date.getHours() >= 8 && date.getHours() <= 17;
+  }
+  beforeDayViewRender(day: CalendarDayViewBeforeRenderEvent): void {
+    // day.body.hourGrid.forEach((hour) => {
+    //   hour.segments.forEach((segment) => {
+    //     if (!this.segmentIsValid(segment.date)) {
+    //       delete segment.cssClass;
+    //       segment.cssClass = 'cal-disabled';
+    //     }
+    //   });
+    // });
+  }
+  beforeWeekViewRender(body: CalendarWeekViewBeforeRenderEvent): void {
+    body.hourColumns.forEach((hourCol) => {
+      hourCol.hours.forEach((hour) => {
+        hour.segments.forEach((segment) => {
+          if (!this.segmentIsValid(segment.date)) {
+            delete segment.cssClass;
+            segment.cssClass = 'cal-disabled';
+          }
+        });
+      });
+    });
   }
 }
