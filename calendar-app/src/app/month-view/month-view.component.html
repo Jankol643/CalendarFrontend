@@ -1,9 +1,13 @@
-<!-- month-view.component.html -->
 <div class="month-view">
     <h2>{{ currentDate | date: 'MMMM yyyy' }}</h2>
+    <div class="weekdays-grid">
+        <div *ngFor="let weekday of weekdays" class="weekday">
+            {{ weekday }}
+        </div>
+    </div>
     <div class="days-grid">
-        <div *ngFor="let day of daysInMonth" class="day">
-            {{ day | date: 'd' }}
+        <div *ngFor="let day of displayDays" class="day h-12">
+            <div class="day-number">{{ day ? (day | date: 'd') : '' }}</div>
         </div>
     </div>
 </div>

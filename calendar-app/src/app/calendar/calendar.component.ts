@@ -10,6 +10,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from "@angular/material/icon";
+import { ViewManagementService } from "../view-management.service";
 import 'zone.js';
 import {
   CalendarEvent,
