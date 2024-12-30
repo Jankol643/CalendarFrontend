@@ -5,10 +5,10 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class ViewManagementService {
-  private currentViewSubject = new BehaviorSubject<string>('month'); // Default view
-  currentView$ = this.currentViewSubject.asObservable();
+  private viewSubject = new BehaviorSubject<string>('month'); // Default view
+  currentViewObservable = this.viewSubject.asObservable();
 
   setView(view: string): void {
-    this.currentViewSubject.next(view);
+    this.viewSubject.next(view);
   }
 }

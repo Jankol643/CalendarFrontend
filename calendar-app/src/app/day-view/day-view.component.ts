@@ -6,11 +6,11 @@ import { Component, Input } from '@angular/core';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './day-view.component.html',
-  styleUrl: './day-view.component.scss'
+  styleUrls: ['./day-view.component.scss']
 })
 export class DayViewComponent {
   @Input() date: Date = new Date();
-  @Input() events: any[] = [];
+  @Input() events: { time: string; title: string }[] = [];
 
   hours: string[] = Array.from({ length: 24 }, (_, i) => `${i}:00`);
 }

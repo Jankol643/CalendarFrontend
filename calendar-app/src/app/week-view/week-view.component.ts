@@ -1,22 +1,37 @@
-import { Component, Input } from '@angular/core';
-import { CalendarService } from '../calendar.service';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { DateService } from '../date.service';
 
 @Component({
   selector: 'app-week-view',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './week-view.component.html',
-  styleUrl: './week-view.component.scss'
+  styleUrls: ['./week-view.component.scss'],
+  imports: [CommonModule],
+  standalone: true
 })
-export class WeekViewComponent {
-  @Input() events: Record<string, any[]> = {};
-  @Input() currentDate: Date = new Date();
-  days: Date[] = [];
+export class WeekViewComponent implements OnInit {
+  hours: string[] = [];
+  days: { name: string, date: string }[] = [];
+  currentDayIndex: number = -1; // Initialize with -1 to indicate no current day
 
-  constructor(public calendarService: CalendarService) {
-    this.days = this.calendarService.getDaysInWeek(this.currentDate);
+  constructor(private dateService: DateService) { }
+
+  ngOnInit() {
+    this.dateService.currentDate$.subscribe(date => {
+      this.days = this.dateService.generateDays(date);
+      this.currentDayIndex = this.days.findIndex(day => day.date === this.dateService.formatDate(new Date())); // Update current day index
+    });
+    this.generateHours();
   }
 
-  hours: string[] = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+  generateHours() {
+    for (let i = 0; i < 24; i++) {
+      this.hours.push(`${i}:00`);
+    }
+  }
+
+  openModal(hour: string, day: string) {
+    // Logic to open modal and pass the clicked hour and day
+    console.log(`Clicked on ${hour} on ${day}`);
+  }
 }

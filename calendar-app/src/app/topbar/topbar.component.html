@@ -1,11 +1,11 @@
 <div class="topbar">
-    <button (click)="previousMonth()"><i class="bi bi-chevron-left"></i></button>
-    <button (click)="nextMonth()"><i class="bi bi-chevron-right"></i></button>
+    <button (click)="previous()"><i class="bi bi-chevron-left"></i></button>
+    <button (click)="next()"><i class="bi bi-chevron-right"></i></button>
     <button (click)="today()">Today</button>
 
     <mat-form-field>
         <mat-label>Select View</mat-label>
-        <mat-select (selectionChange)="setView($event.value)">
+        <mat-select [(value)]="currentView" (selectionChange)="setView($event.value)">
             <mat-option value="day">Day</mat-option>
             <mat-option value="week">Week</mat-option>
             <mat-option value="month">Month</mat-option>

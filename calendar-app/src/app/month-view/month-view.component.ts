@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CalendarNavigationService } from '../calendar-navigation.service';
 import { CommonModule } from '@angular/common';
 import { DateService } from '../date.service';
 
@@ -16,10 +15,10 @@ export class MonthViewComponent implements OnInit {
   weekdays: string[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   displayDays: (Date | null)[] = [];
 
-  constructor(private calendarService: CalendarNavigationService, private dateService: DateService) { }
+  constructor(private dateService: DateService) { }
 
   ngOnInit() {
-    this.calendarService.currentMonth$.subscribe(date => {
+    this.dateService.currentDate$.subscribe(date => {
       this.currentDate = date;
       this.updateDaysInMonth();
     });

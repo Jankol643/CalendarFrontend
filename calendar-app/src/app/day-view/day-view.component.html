@@ -1,13 +1,15 @@
-<section class="day-view">
-    <header class="day-header">
-        <div class="fab-action"></div>
-        <div class="current-day">
-            <h1></h1>
+<div class="day-view">
+    <h2>{{ date | date: 'fullDate' }}</h2>
+    <div class="hour-grid">
+        <div class="hour" *ngFor="let hour of hours">
+            <div class="hour-label">{{ hour }}</div>
+            <div class="events">
+                <ng-container *ngFor="let event of events">
+                    <div *ngIf="event.time === hour" class="event">
+                        {{ event.title }}
+                    </div>
+                </ng-container>
+            </div>
         </div>
-    </header>
-    <main class="day-calendar">
-        <!-- Render the Events -->
-        <div class="events-container">
-        </div>
-    </main>
-</section>
+    </div>
+</div>
