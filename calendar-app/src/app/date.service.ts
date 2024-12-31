@@ -34,8 +34,12 @@ export class DateService {
 
   generateDays(currentDate: Date): { name: string, date: string }[] {
     const days: { name: string, date: string }[] = [];
-    const startOfWeek = new Date(currentDate); // Create a new date instance to avoid mutating currentDate
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1); // Set to Monday
+    const startOfWeek = new Date(currentDate);
+    const dayOfWeek = getDay(startOfWeek); // Get the current day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+
+    // Calculate the difference to the start of the week (Monday)
+    const diffToMonday = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek; // Adjust if Sunday to get to the previous Monday
+    startOfWeek.setDate(startOfWeek.getDate() + diffToMonday); // Set to the start of the week
 
     for (let i = 0; i < 7; i++) {
       const date = new Date(startOfWeek); // Create a new date instance for each day
