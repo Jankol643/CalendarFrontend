@@ -13,13 +13,10 @@ import { CommonModule } from '@angular/common';
   imports: [ReactiveFormsModule, RouterModule, CommonModule]
 })
 export class LoginComponent {
-  form!: FormGroup;
   loading = false;
   submitted = false;
 
   constructor(
-    private formbuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService
   ) { }
@@ -30,16 +27,19 @@ export class LoginComponent {
   })
 
   // convenience getter for easy access to form fields
-  get f() { return this.form.controls; }
+  get f() { return this.loginForm.controls; }
 
   onSubmit() {
-    if (this.loginForm.valid) {
-      this.authService.login(this.loginForm.value)
-        .subscribe((data: any) => {
-          if (this.authService.isLoggedIn()) {
-            this.router.navigate(['/calendar']);
-          }
-        });
+    this.submitted = true;
+    if (this.loginForm.invalid) {
+      return;
     }
+    this.authService.login(this.loginForm.value)
+      .subscribe((data: any) => {
+        if (this.authService.isLoggedIn()) {
+          this.router.navigate(['/calendar']);
+        }
+        this.loading = false;
+      });
   }
 }

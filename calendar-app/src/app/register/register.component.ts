@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControlOptions, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
@@ -12,24 +12,28 @@ import { AuthService } from '../auth/auth.service';
   imports: [ReactiveFormsModule, RouterModule, CommonModule]
 })
 export class RegisterComponent implements OnInit {
-  form!: FormGroup;
-  loading = false;
-  submitted = false;
+  registrationForm!: FormGroup;
+  fieldTextType: boolean = false;
+  repeatFieldTextType: boolean = false;
 
   constructor(
     private formbuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService
   ) { }
 
   ngOnInit(): void {
-    this.form = this.formbuilder.group({
-      name: ['', [Validators.required]],
+    this.initRegForm();
+  }
+
+  private initRegForm() {
+    this.registrationForm = this.formbuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      password_confirmation: ['', [Validators.required]] // Password confirmation field
-    }, { validator: this.passwordMatchValidator }); // Include a validator to check if passwords match
+      password_confirmation: ['', [Validators.required]]
+    }, {
+      validators: this.passwordMatchValidator
+    } as AbstractControlOptions);
   }
 
   private passwordMatchValidator(form: FormGroup) {
@@ -37,23 +41,42 @@ export class RegisterComponent implements OnInit {
       ? null : { mismatch: true };
   }
 
-  // convenience getter for easy access to form fields
-  get f() { return this.form.controls; }
+  toggleFieldTextType() {
+    this.fieldTextType = !this.fieldTextType;
+  }
+
+  toggleRepeatFieldTextType() {
+    this.repeatFieldTextType = !this.repeatFieldTextType;
+  }
+
+  get passwordFieldType(): string {
+    return this.fieldTextType ? 'text' : 'password';
+  }
+
+  get repeatPasswordFieldType(): string {
+    return this.repeatFieldTextType ? 'text' : 'password';
+  }
+
+  get passwordIconClass(): string {
+    return this.fieldTextType ? 'bi-eye' : 'bi-eye-slash';
+  }
+
+  get repeatPasswordIconClass(): string {
+    return this.repeatFieldTextType ? 'bi-eye' : 'bi-eye-slash';
+  }
 
   public onSubmit() {
-    this.submitted = true;
-    if (this.form.invalid) {
+    if (this.registrationForm.invalid) {
+      console.error('Form invalid');
       return;
     }
 
-    this.loading = true;
-
-    this.authService.register(this.form.value)
+    this.authService.register(this.registrationForm.value)
       .subscribe({
         next: (data: any) => {
           this.router.navigate(['/login']);
         },
-        error: (err) => console.log(err)
+        error: (err) => console.error(err)
       });
   }
 }

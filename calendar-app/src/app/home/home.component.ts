@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 
-import { User } from '../_models';
-import { AuthService } from '../services/auth.service';
-@Component({ templateUrl: 'home.component.html' })
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [],
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.scss'
+})
 export class HomeComponent {
-    user: User | null;
 
-    constructor(private authService: AuthService) {
-        this.user = this.authService.userValue;
-    }
 }

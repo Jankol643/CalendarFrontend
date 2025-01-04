@@ -1,7 +1,6 @@
-// src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,40 +16,57 @@ export class AuthService {
 
   // Login user and get JWT token
   login(credentials: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials);
+    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
+      tap((response: any) => {
+        if (response && response.status === true && response.authorisation.token) {
+          this.saveToken(response.authorisation.token); // Save token to session storage
+        }
+      })
+    );
   }
 
   // Get the authenticated user
   getUser(): Observable<any> {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    });
+    const headers = this.createAuthorizationHeader();
     return this.http.get(`${this.apiUrl}/me`, { headers });
   }
 
   // Logout user
   logout(): Observable<any> {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    });
-    return this.http.post(`${this.apiUrl}/logout`, {}, { headers });
+    const headers = this.createAuthorizationHeader();
+    return this.http.post(`${this.apiUrl}/logout`, {}, { headers }).pipe(
+      tap(() => {
+        this.clearToken(); // Clear token from session storage on logout
+      })
+    );
   }
 
-  // Store token in local storage
+  // Store token in session storage
   saveToken(token: string): void {
-    localStorage.setItem('token', token);
+    sessionStorage.setItem('token', token);
   }
 
-  // Get token from local storage
+  // Clear token from session storage
+  clearToken(): void {
+    sessionStorage.removeItem('token');
+  }
+
+  // Get token from session storage
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return sessionStorage.getItem('token');
+  }
+
+  // Create authorization header
+  private createAuthorizationHeader(): HttpHeaders {
+    const token = this.getToken();
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
   }
 
   // Refresh token
   refreshToken(): Observable<any> {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.getToken()}`
-    });
+    const headers = this.createAuthorizationHeader();
     return this.http.post(`${this.apiUrl}/refresh`, {}, { headers });
   }
 
@@ -70,7 +86,7 @@ export class AuthService {
 
   private decodeToken(token: string): any {
     const payload = token.split('.')[1]; // Get the payload part of the JWT
-    const decodedPayload = atob(payload); // Decode the base64 payload
+    const decodedPayload = Buffer.from(payload, 'base64').toString('utf-8'); // Decode the base64 payload using Buffer
     return JSON.parse(decodedPayload); // Parse the JSON string into an object
   }
 
