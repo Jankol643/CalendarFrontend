@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DateService } from '../date.service';
 
@@ -14,6 +14,7 @@ export class MonthViewComponent implements OnInit {
   daysInMonth: Date[] = [];
   weekdays: string[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   displayDays: (Date | null)[] = [];
+  @Input() events: any[] = [];
 
   constructor(private dateService: DateService) { }
 
@@ -38,5 +39,17 @@ export class MonthViewComponent implements OnInit {
 
     // Fill displayDays with null for days before the first of the month
     this.displayDays = Array(adjustedStartWeekday).fill(null).concat(this.daysInMonth);
+  }
+
+  getEventsForDay(day: Date | null): any[] {
+    if (!day) {
+      return [];
+    }
+    return this.events.filter(event => {
+      const eventDate = new Date(event.startTime);
+      return eventDate.getDate() === day.getDate() &&
+        eventDate.getMonth() === day.getMonth() &&
+        eventDate.getFullYear() === day.getFullYear();
+    });
   }
 }

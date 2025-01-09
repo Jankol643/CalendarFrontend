@@ -1,13 +1,17 @@
 <div class="month-view">
-    <h2>{{ currentDate | date: 'MMMM yyyy' }}</h2>
-    <div class="weekdays-grid">
-        <div *ngFor="let weekday of weekdays" class="weekday">
+    <div class="header">
+        <div class="weekdays" *ngFor="let weekday of weekdays">
             {{ weekday }}
         </div>
     </div>
-    <div class="days-grid">
-        <div *ngFor="let day of displayDays" class="day h-12">
-            <div class="day-number">{{ day ? (day | date: 'd') : '' }}</div>
+    <div class="day-list-wrapper">
+        <div class="day-list" *ngFor="let day of displayDays">
+            <div class="month-calendar__day">
+                <span *ngIf="day">{{ day.getDate() }}</span>
+                <div *ngFor="let event of getEventsForDay(day)" class="event">
+                    <span>{{ event.startTime | date: 'shortTime' }} - {{ event.title }}</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { Buffer } from 'buffer';
 
 @Injectable({
   providedIn: 'root'
@@ -33,12 +34,8 @@ export class AuthService {
 
   // Logout user
   logout(): Observable<any> {
-    const headers = this.createAuthorizationHeader();
-    return this.http.post(`${this.apiUrl}/logout`, {}, { headers }).pipe(
-      tap(() => {
-        this.clearToken(); // Clear token from session storage on logout
-      })
-    );
+    this.clearToken();
+    return this.http.post(`${this.apiUrl}/logout`, null);
   }
 
   // Store token in session storage

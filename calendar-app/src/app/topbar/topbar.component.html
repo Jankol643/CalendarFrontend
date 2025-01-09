@@ -1,14 +1,18 @@
 <div class="topbar">
-    <button (click)="previous()"><i class="bi bi-chevron-left"></i></button>
-    <button (click)="next()"><i class="bi bi-chevron-right"></i></button>
-    <button (click)="today()">Today</button>
+    <a href="#" data-bs-target="#sidebar" data-bs-toggle="collapse" class="border rounded-3 p-1 text-decoration-none">
+        <i class="bi bi-list bi-lg py-2 p-1"></i> Menu
+    </a>
 
-    <mat-form-field>
-        <mat-label>Select View</mat-label>
-        <mat-select [(value)]="currentView" (selectionChange)="setView($event.value)">
-            <mat-option value="day">Day</mat-option>
-            <mat-option value="week">Week</mat-option>
-            <mat-option value="month">Month</mat-option>
-        </mat-select>
-    </mat-form-field>
+    <button class="btn" (click)="previous()"><i class="bi bi-chevron-left"></i></button>
+    <button class="btn" (click)="next()"><i class="bi bi-chevron-right"></i></button>
+    <button class="btn" (click)="today()">Today</button>
+
+    <select class="form-select" aria-label="Default select example" [(ngModel)]="currentView"
+        (ngModelChange)="setView(currentView)">
+        <option value="day">Day</option>
+        <option value="week">Week</option>
+        <option value="month" selected>Month</option>
+    </select>
+
+    <button class="btn" (click)="logout()">Logout</button>
 </div>

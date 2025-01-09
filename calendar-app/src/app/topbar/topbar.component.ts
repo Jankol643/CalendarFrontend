@@ -1,28 +1,24 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ViewManagementService } from '../view-management.service';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from "@angular/common";
-import { MatButtonModule } from "@angular/material/button";
-import { MatTooltipModule } from "@angular/material/tooltip";
-import { MatMenuModule } from '@angular/material/menu';
-import { MatIconModule } from "@angular/material/icon";
 import { Subscription } from 'rxjs';
 import { DateService } from '../date.service';
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
   templateUrl: './topbar.component.html',
   styleUrls: ['./topbar.component.scss'],
-  imports: [MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatTooltipModule, MatMenuModule, MatIconModule]
+  imports: [CommonModule, FormsModule]
 })
 export class TopBarComponent implements OnInit, OnDestroy {
   currentView: string = 'month';
   private viewSubscription: Subscription = new Subscription();
 
-  constructor(private dateService: DateService, private viewManagementService: ViewManagementService) { }
+  constructor(private dateService: DateService, private viewManagementService: ViewManagementService, private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
     // Subscribe to the current view observable
@@ -56,5 +52,10 @@ export class TopBarComponent implements OnInit, OnDestroy {
 
   setView(view: string) {
     this.viewManagementService.setView(view);
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
