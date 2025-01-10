@@ -7,8 +7,6 @@ import { Observable } from 'rxjs';
 })
 export class CalendarService {
   private calendarEndpoint = 'http://localhost:8000/api/calendars';
-  private eventEndpoint = 'http://localhost:8000/api/events';
-  private taskEndpoint = 'http://localhost:8000/api/tasks';
 
   constructor(private http: HttpClient) { }
 
@@ -20,7 +18,15 @@ export class CalendarService {
     return this.http.post(this.calendarEndpoint, calendar);
   }
 
-  getEvents(): Observable<any> {
-    return this.http.get(this.eventEndpoint);
+  getCalendarById(id: number): Observable<any> {
+    return this.http.get(`${this.calendarEndpoint}/${id}`);
+  }
+
+  updateCalendar(id: number, calendar: any): Observable<any> {
+    return this.http.put(`${this.calendarEndpoint}/${id}`, calendar);
+  }
+
+  deleteCalendar(id: number): Observable<any> {
+    return this.http.delete(`${this.calendarEndpoint}/${id}`);
   }
 }

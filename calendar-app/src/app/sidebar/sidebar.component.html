@@ -1,3 +1,5 @@
-<aside class="sidenav collapse" id="sidebar">
-    <p> Sidebar works</p>
+<aside class="sidenav collapse w-92" id="sidebar">
+    <button (click)="openModal()" class="btn btn-primary">Add Event</button>
+
+    <app-event-form *ngIf="showEventForm" (close)="closeModal()"></app-event-form>
 </aside>

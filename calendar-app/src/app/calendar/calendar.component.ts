@@ -7,6 +7,8 @@ import { ViewManagementService } from "../view-management.service";
 import { TopBarComponent } from "../topbar/topbar.component";
 import { SidebarComponent } from "../sidebar/sidebar.component";
 import { CalendarService } from "../services/calendar.service";
+import { EventFormComponent } from "../event-form/event-form.component";
+import { EventService } from "../event.service";
 
 @Component({
   selector: 'app-calendar',
@@ -19,6 +21,7 @@ import { CalendarService } from "../services/calendar.service";
     MonthViewComponent,
     TopBarComponent,
     SidebarComponent,
+    EventFormComponent,
     CommonModule
   ],
 })
@@ -26,8 +29,9 @@ export class CalendarComponent implements OnInit {
   opened: boolean = true;
   currentView: string = 'month';
   events: any[] = [];
+  showEventForm: boolean = false;
 
-  constructor(private viewManagementService: ViewManagementService, private calendarService: CalendarService) { }
+  constructor(private viewManagementService: ViewManagementService, private eventService: EventService) { }
 
   ngOnInit() {
     this.viewManagementService.currentViewObservable.subscribe(view => {
@@ -36,7 +40,7 @@ export class CalendarComponent implements OnInit {
     this.fetchEvents();
   }
   fetchEvents() {
-    this.calendarService.getEvents().subscribe(events => {
+    this.eventService.getEvents().subscribe(events => {
       this.events = events;
     });
   }

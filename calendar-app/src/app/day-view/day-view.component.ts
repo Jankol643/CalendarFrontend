@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { CalendarService } from '../services/calendar.service';
 import { DateService } from '../date.service';
+import { EventService } from '../event.service';
 
 interface Event {
   title: string;
@@ -21,7 +22,7 @@ export class DayViewComponent implements OnInit {
   events: Event[] = [];
   currentDay!: string;
 
-  constructor(private calendarService: CalendarService, private dateService: DateService) { }
+  constructor(private eventService: EventService, private dateService: DateService) { }
 
   ngOnInit(): void {
     this.fetchEvents(); // Fetch events when the component initializes
@@ -31,7 +32,7 @@ export class DayViewComponent implements OnInit {
   }
 
   fetchEvents(): void {
-    this.calendarService.getEvents().subscribe({
+    this.eventService.getEvents().subscribe({
       next: (data: Event[]) => {
         this.events = data;
         console.log(this.events);
