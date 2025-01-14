@@ -29,4 +29,8 @@ export class CalendarService {
   deleteCalendar(id: number): Observable<any> {
     return this.http.delete(`${this.calendarEndpoint}/${id}`);
   }
+
+  getCalendarsForUser(userId: number): Observable<any> {
+    return this.http.get(`${this.calendarEndpoint}/${userId}/calendars`);
+  }
 }

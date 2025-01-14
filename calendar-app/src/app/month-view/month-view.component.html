@@ -9,7 +9,7 @@
             <div class="month-calendar__day">
                 <span *ngIf="day">{{ day.getDate() }}</span>
                 <div *ngFor="let event of getEventsForDay(day)" class="event">
-                    <span>{{ event.startTime | date: 'shortTime' }} - {{ event.title }}</span>
+                    <span>{{ event.start_date | date: 'shortTime' }} - {{ truncateTitle(event.title) }}</span>
                 </div>
             </div>
         </div>

@@ -7,33 +7,40 @@
                 <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form (ngSubmit)="submitForm()">
+                <form [formGroup]="myGroup" (ngSubmit)="addEvent()">
+                    <div class="mb-3">
+                        <label for="calendar" class="form-label">Select Calendar *</label>
+                        <select class="form-select" id="calendar" [(ngModel)]="selectedCalendarId" name="calendar"
+                            required>
+                            <option *ngFor="let calendar of calendars" [value]="calendar.id">{{ calendar.title }}
+                            </option>
+                        </select>
+                    </div>
                     <div class="mb-3">
                         <label for="title" class="form-label">Title *</label>
-                        <input type="text" class="form-control" id="title" [(ngModel)]="title" name="title" required>
+                        <input type="text" class="form-control" id="title" required formControlName="title">
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" [(ngModel)]="description"
-                            name="description"></textarea>
+                        <textarea class="form-control" id="description" formControlName="description"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="startDate" class="form-label">Start Date</label>
-                        <input type="datetime-local" class="form-control" id="startDate" [(ngModel)]="startDate"
-                            name="startDate" required>
+                        <input type="datetime-local" class="form-control" id="startDate" required
+                            formControlName="startDate">
                     </div>
                     <div class="mb-3">
                         <label for="endDate" class="form-label">End Date</label>
-                        <input type="datetime-local" class="form-control" id="endDate" [(ngModel)]="endDate"
-                            name="endDate" required>
+                        <input type="datetime-local" class="form-control" id="endDate" required
+                            formControlName="endDate">
                     </div>
                     <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="allDay" [(ngModel)]="allDay" name="allDay">
+                        <input type="checkbox" class="form-check-input" id="allDay" formControlName="allDay">
                         <label class="form-check-label" for="allDay">All Day Event</label>
                     </div>
                     <div class="mb-3">
                         <label for="location" class="form-label">Location</label>
-                        <input type="text" class="form-control" id="location" [(ngModel)]="location" name="location">
+                        <input type="text" class="form-control" id="location" formControlName="location">
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>

@@ -4,8 +4,7 @@
             <th>Time</th>
             <th *ngFor="let day of days">
                 <div [class.current-day]="days.indexOf(day) === currentDayIndex">
-                    {{ day.name }} <br />
-                    <strong>{{ day.date }}</strong>
+                    <strong>{{ day }}</strong>
                 </div>
             </th>
         </tr>
@@ -13,7 +12,21 @@
     <tbody>
         <tr *ngFor="let hour of hours">
             <td>{{ hour }}</td>
-            <td *ngFor="let day of days" class="hour-slot" (click)="openModal(hour, day.date)">
+            <td *ngFor="let day of days" class="hour-slot" (click)="openModal(hour, day)">
+                <ng-container *ngFor="let event of eventSlots[hour + '-' + day]">
+                    <ng-container *ngIf="event">
+                        <div class="event">
+                            <strong>{{ event.title }}</strong>
+                            <p>{{ event.description }}</p>
+                        </div>
+                        <ng-template #singleEvent>
+                            <div class="event">
+                                <strong>{{ event.title }}</strong>
+                                <p>{{ event.description }}</p>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                </ng-container>
             </td>
         </tr>
     </tbody>

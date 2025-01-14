@@ -6,23 +6,27 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TaskService {
-  private taskEndpoint = 'http://localhost:8000/api/tasks';
+  private baseEndpoint = 'http://localhost:8000/api/calendars';
 
   constructor(private http: HttpClient) { }
 
-  createTask(task: any): Observable<any> {
-    return this.http.post(this.taskEndpoint, task);
+  getTasks(calendarId: number): Observable<any> {
+    return this.http.get(`${this.baseEndpoint}/${calendarId}/tasks`);
   }
 
-  getTaskById(id: number): Observable<any> {
-    return this.http.get(`${this.taskEndpoint}/${id}`);
+  createTask(calendarId: number, task: any): Observable<any> {
+    return this.http.post(`${this.baseEndpoint}/${calendarId}/tasks`, task);
   }
 
-  updateTask(id: number, task: any): Observable<any> {
-    return this.http.put(`${this.taskEndpoint}/${id}`, task);
+  getTaskById(calendarId: number, id: number): Observable<any> {
+    return this.http.get(`${this.baseEndpoint}/${calendarId}/tasks/${id}`);
   }
 
-  deleteTask(id: number): Observable<any> {
-    return this.http.delete(`${this.taskEndpoint}/${id}`);
+  updateTask(calendarId: number, id: number, task: any): Observable<any> {
+    return this.http.put(`${this.baseEndpoint}/${calendarId}/tasks/${id}`, task);
+  }
+
+  deleteTask(calendarId: number, id: number): Observable<any> {
+    return this.http.delete(`${this.baseEndpoint}/${calendarId}/tasks/${id}`);
   }
 }

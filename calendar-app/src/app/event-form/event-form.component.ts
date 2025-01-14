@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { EventService } from '../event.service';
+import { CalendarService } from '../services/calendar.service';
+import { Event } from '../event.model';
 
 @Component({
   selector: 'app-event-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss']
 })
@@ -14,15 +16,29 @@ export class EventFormComponent {
   @Output() close = new EventEmitter<void>();
   showEventForm: boolean = true;
 
-  // Form fields
-  title: string = '';
-  description: string = '';
-  startDate: string = '';
-  endDate: string = '';
-  allDay: boolean = false;
-  location: string = '';
+  calendars: any[] = []; // Array to hold calendars
+  selectedCalendarId: number = -1; // Selected calendar ID
 
-  constructor(private eventService: EventService) { }
+  myGroup: FormGroup; // Define a FormGroup
+
+  constructor(private eventService: EventService, private calendarService: CalendarService, private fb: FormBuilder) {
+    this.myGroup = new FormGroup({
+      title: new FormControl(),
+      description: new FormControl(),
+      startDate: new FormControl(),
+      endDate: new FormControl(),
+      allDay: new FormControl(),
+      location: new FormControl()
+    });
+
+    this.loadCalendars(); // Load calendars on initialization
+  }
+
+  loadCalendars() {
+    this.calendarService.getCalendars().subscribe(calendars => {
+      this.calendars = calendars; // Populate the calendars array
+    });
+  }
 
   closeModal() {
     this.showEventForm = false;
@@ -30,27 +46,18 @@ export class EventFormComponent {
   }
 
   addEvent() {
-    const eventData = {
-      title: this.title,
-      description: this.description,
-      start_date: this.startDate,
-      end_date: this.endDate,
-      all_day: this.allDay,
-      location: this.location
+    const event: Event = {
+      title: this.myGroup.value.title,
+      description: this.myGroup.value.description,
+      startDate: this.myGroup.value.startDate,
+      endDate: this.myGroup.value.endDate,
+      allDay: this.myGroup.value.allDay,
+      location: this.myGroup.value.location,
+      calendarId: this.selectedCalendarId // Include selected calendar ID
     };
 
-    this.eventService.createEvent(eventData).subscribe({
-      next: (response) => {
-        console.log('Event created successfully:', response);
-        this.closeModal(); // Close the modal after successful submission
-      },
-      error: (error) => {
-        console.error('Error creating event:', error);
-      }
+    this.eventService.createEvent(this.selectedCalendarId, event).subscribe(() => {
+      this.closeModal(); // Close the modal after submission
     });
-  }
-
-  submitForm() {
-    this.addEvent(); // Call the addEvent function
   }
 }

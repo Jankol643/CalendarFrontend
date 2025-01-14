@@ -2,4 +2,20 @@
     <button (click)="openModal()" class="btn btn-primary">Add Event</button>
 
     <app-event-form *ngIf="showEventForm" (close)="closeModal()"></app-event-form>
+
+    <div class="my-calendars">
+        <h2 (click)="toggleCalendars()" class="toggle-header">
+            My Calendars
+            <span>{{ showCalendars ? '▲' : '▼' }}</span>
+        </h2>
+        <div *ngIf="showCalendars">
+            <div *ngFor="let calendar of calendars">
+                <label>
+                    <input type="checkbox" [(ngModel)]="calendar.visible"
+                        (change)="toggleCalendarVisibility(calendar)" />
+                    {{ calendar.title }}
+                </label>
+            </div>
+        </div>
+    </div>
 </aside>

@@ -46,10 +46,15 @@ export class MonthViewComponent implements OnInit {
       return [];
     }
     return this.events.filter(event => {
-      const eventDate = new Date(event.startTime);
+      const eventDate = new Date(event.start_date); // Use start_date instead of startTime
       return eventDate.getDate() === day.getDate() &&
         eventDate.getMonth() === day.getMonth() &&
         eventDate.getFullYear() === day.getFullYear();
     });
+  }
+
+  truncateTitle(title: string): string {
+    const maxLength = 20; // Set the maximum length for the title
+    return title.length > maxLength ? title.substring(0, maxLength) + '...' : title;
   }
 }

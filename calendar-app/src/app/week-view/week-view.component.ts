@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { DateService } from '../date.service';
 
 @Component({
@@ -11,17 +11,25 @@ import { DateService } from '../date.service';
 })
 export class WeekViewComponent implements OnInit {
   hours: string[] = [];
-  days: { name: string, date: string }[] = [];
-  currentDayIndex: number = -1; // Initialize with -1 to indicate no current day
+  days: Date[] = [];
+  currentDayIndex: number = -1;
+  @Input() events: any[] = [];
+  eventSlots: { [key: string]: any[] } = {};
 
   constructor(private dateService: DateService) { }
 
   ngOnInit() {
     this.dateService.currentDate$.subscribe(date => {
       this.days = this.dateService.generateDays(date);
-      this.currentDayIndex = this.days.findIndex(day => day.date === this.dateService.formatDate(new Date())); // Update current day index
+      this.currentDayIndex = this.days.findIndex(day => day === new Date());
+      this.populateEventSlots();
     });
     this.generateHours();
+    this.populateEventSlots();
+  }
+
+  displayFormattedDate(date: Date): string {
+    return this.dateService.formatDate(date, 'iiii, DD.MM.YYYY');
   }
 
   generateHours() {
@@ -30,8 +38,24 @@ export class WeekViewComponent implements OnInit {
     }
   }
 
-  openModal(hour: string, day: string) {
-    // Logic to open modal and pass the clicked hour and day
+  populateEventSlots() {
+    this.eventSlots = {}; // Reset event slots
+    this.events.forEach(event => {
+      const startHour = new Date(event.start_date).getHours();
+      const endHour = new Date(event.end_date).getHours();
+      const dayString = this.dateService.formatDate(new Date(event.start_date), 'yyyy-MM-dd'); // Format the date to match your day representation
+
+      for (let hour = startHour; hour <= endHour; hour++) {
+        const key = `${hour}:00-${dayString}`;
+        if (!this.eventSlots[key]) {
+          this.eventSlots[key] = [];
+        }
+        this.eventSlots[key].push(event);
+      }
+    });
+  }
+
+  openModal(hour: string, day: Date) {
     console.log(`Clicked on ${hour} on ${day}`);
   }
 }

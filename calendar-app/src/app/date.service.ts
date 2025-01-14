@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from 'date-fns';
+import { addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay, format } from 'date-fns';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -32,8 +32,8 @@ export class DateService {
     return subMonths(date, 1);
   }
 
-  generateDays(currentDate: Date): { name: string, date: string }[] {
-    const days: { name: string, date: string }[] = [];
+  generateDays(currentDate: Date): Date[] {
+    const days: Date[] = [];
     const startOfWeek = new Date(currentDate);
     const dayOfWeek = getDay(startOfWeek); // Get the current day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
 
@@ -44,19 +44,13 @@ export class DateService {
     for (let i = 0; i < 7; i++) {
       const date = new Date(startOfWeek); // Create a new date instance for each day
       date.setDate(startOfWeek.getDate() + i); // Increment the date
-      days.push({
-        name: date.toLocaleString('default', { weekday: 'long' }),
-        date: this.formatDate(date)
-      });
+      days.push(date);
     }
     return days;
   }
 
-  public formatDate(date: Date): string {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const year = date.getFullYear();
-    return `${day}.${month}.${year}`; // Format as dd.mm.yyyy
+  formatDate(date: Date, dateFormat: string) {
+    return format(date, dateFormat);
   }
 
   nextDay() {

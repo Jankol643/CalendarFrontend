@@ -6,27 +6,27 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class EventService {
-  private eventEndpoint = 'http://localhost:8000/api/events';
+  private baseEndpoint = 'http://localhost:8000/api/calendars';
 
   constructor(private http: HttpClient) { }
 
-  getEvents(): Observable<any> {
-    return this.http.get(this.eventEndpoint);
+  getEvents(calendarId: number): Observable<any> {
+    return this.http.get(`${this.baseEndpoint}/${calendarId}/events`);
   }
 
-  createEvent(event: any): Observable<any> {
-    return this.http.post(this.eventEndpoint, event);
+  createEvent(calendarId: number, event: any): Observable<any> {
+    return this.http.post(`${this.baseEndpoint}/${calendarId}/events`, event);
   }
 
-  getEventById(id: number): Observable<any> {
-    return this.http.get(`${this.eventEndpoint}/${id}`);
+  getEventById(calendarId: number, id: number): Observable<any> {
+    return this.http.get(`${this.baseEndpoint}/${calendarId}/events/${id}`);
   }
 
-  updateEvent(id: number, event: any): Observable<any> {
-    return this.http.put(`${this.eventEndpoint}/${id}`, event);
+  updateEvent(calendarId: number, id: number, event: any): Observable<any> {
+    return this.http.put(`${this.baseEndpoint}/${calendarId}/events/${id}`, event);
   }
 
-  deleteEvent(id: number): Observable<any> {
-    return this.http.delete(`${this.eventEndpoint}/${id}`);
+  deleteEvent(calendarId: number, id: number): Observable<any> {
+    return this.http.delete(`${this.baseEndpoint}/${calendarId}/events/${id}`);
   }
 }
