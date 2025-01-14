@@ -34,3 +34,11 @@
         }
     }
 }
+
+.event {
+    position: absolute; // Positioning to overlap the hour slots
+    width: 100%; // Full width of the hour slot
+    background-color: rgba(0, 123, 255, 0.5); // Semi-transparent background
+    border: 1px solid #007bff; // Border for visibility
+    border-radius: 4px; // Rounded corners
+}

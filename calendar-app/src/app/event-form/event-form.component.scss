@@ -1,0 +1,11 @@
+.modal {
+    display: none;
+    /* Hide by default */
+}
+
+.modal.show {
+    display: block;
+    /* Show when active */
+    backdrop-filter: blur(5px);
+    /* Optional: Add a backdrop effect */
+}

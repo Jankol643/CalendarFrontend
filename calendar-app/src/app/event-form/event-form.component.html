@@ -1,0 +1,50 @@
+<div class="modal fade show" style="display: block;" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="false"
+    (click)="closeModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">Add Event</h5>
+                <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="myGroup" (ngSubmit)="addEvent()">
+                    <div class="mb-3">
+                        <label for="calendar" class="form-label">Select Calendar *</label>
+                        <select class="form-select" id="calendar" [(ngModel)]="selectedCalendarId" name="calendar"
+                            required>
+                            <option *ngFor="let calendar of calendars" [value]="calendar.id">{{ calendar.title }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="title" required formControlName="title">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" formControlName="description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="datetime-local" class="form-control" id="startDate" required
+                            formControlName="startDate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="datetime-local" class="form-control" id="endDate" required
+                            formControlName="endDate">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="allDay" formControlName="allDay">
+                        <label class="form-check-label" for="allDay">All Day Event</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" formControlName="location">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

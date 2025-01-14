@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CalendarService } from '../services/calendar.service';
 import { DateService } from '../date.service';
+import { EventService } from '../event.service';
 
 interface Event {
   title: string;
@@ -18,27 +19,16 @@ interface Event {
 })
 export class DayViewComponent implements OnInit {
   hours: number[] = Array.from({ length: 24 }, (_, i) => i);
-  events: Event[] = [];
+  @Input() events: any[] = [];
   currentDay!: string;
+  dateFormat: string = 'iiii, DD.MM.YYYY'
 
-  constructor(private calendarService: CalendarService, private dateService: DateService) { }
+  constructor(private eventService: EventService, private dateService: DateService) { }
 
   ngOnInit(): void {
-    this.fetchEvents(); // Fetch events when the component initializes
     this.dateService.currentDate$.subscribe(date => {
-      this.currentDay = this.dateService.formatDate(date); // Format and set currentDay
+      this.currentDay = this.dateService.formatDate(date, this.dateFormat); // Format and set currentDay
     });
   }
 
-  fetchEvents(): void {
-    this.calendarService.getEvents().subscribe({
-      next: (data: Event[]) => {
-        this.events = data;
-        console.log(this.events);
-      },
-      error: (error) => {
-        console.error('Error fetching events:', error); // Handle any errors
-      }
-    });
-  }
 }
