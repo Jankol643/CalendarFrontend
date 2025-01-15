@@ -14,6 +14,8 @@ export class WeekViewComponent implements OnInit {
   days: Date[] = [];
   currentDayIndex: number = -1;
   @Input() events: any[] = [];
+
+  // Explicitly define the type for eventSlots
   eventSlots: { [key: string]: any[] } = {};
 
   constructor(private dateService: DateService) { }
@@ -25,11 +27,6 @@ export class WeekViewComponent implements OnInit {
       this.populateEventSlots();
     });
     this.generateHours();
-    this.populateEventSlots();
-  }
-
-  displayFormattedDate(date: Date): string {
-    return this.dateService.formatDate(date, 'iiii, DD.MM.YYYY');
   }
 
   generateHours() {
@@ -39,20 +36,38 @@ export class WeekViewComponent implements OnInit {
   }
 
   populateEventSlots() {
-    this.eventSlots = {}; // Reset event slots
+    this.eventSlots = {};
     this.events.forEach(event => {
-      const startHour = new Date(event.start_date).getHours();
-      const endHour = new Date(event.end_date).getHours();
-      const dayString = this.dateService.formatDate(new Date(event.start_date), 'yyyy-MM-dd'); // Format the date to match your day representation
+      const eventStart = new Date(event.start_date);
+      const eventEnd = new Date(event.end_date);
+      const eventDay = eventStart.toDateString();
 
-      for (let hour = startHour; hour <= endHour; hour++) {
-        const key = `${hour}:00-${dayString}`;
-        if (!this.eventSlots[key]) {
-          this.eventSlots[key] = [];
-        }
-        this.eventSlots[key].push(event);
+      if (!this.eventSlots[eventDay]) {
+        this.eventSlots[eventDay] = [];
       }
+      this.eventSlots[eventDay].push(event);
     });
+  }
+
+  calculateEventHeight(startDate: string, endDate: string): number {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const durationInHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+    console.log('duration in hours' + durationInHours);
+    return durationInHours * 30; // Assuming each hour slot is 60px tall
+  }
+
+  calculateEventTop(startDate: string): number {
+    const start = new Date(startDate);
+    const startHour = start.getHours();
+    return startHour * 30; // Assuming each hour slot is 30px tall
+  }
+
+  calculateEventLeft(startDate: string): number {
+    const start = new Date(startDate);
+    const dayIndex = this.days.findIndex(day => day.toDateString() === start.toDateString());
+    console.log('Dayindex: ' + dayIndex);
+    return dayIndex * (100 / this.days.length); // Assuming each day takes equal width
   }
 
   openModal(hour: string, day: Date) {

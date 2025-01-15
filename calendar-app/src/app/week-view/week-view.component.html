@@ -1,33 +1,25 @@
-<table class="week-view">
-    <thead>
-        <tr>
-            <th>Time</th>
-            <th *ngFor="let day of days">
-                <div [class.current-day]="days.indexOf(day) === currentDayIndex">
-                    <strong>{{ day }}</strong>
+<div class="week-view">
+    <div class="header">
+        <div class="time-header">Time</div>
+        <div *ngFor="let day of days" class="day-header">
+            <strong>{{ day | date: 'shortDate' }}</strong>
+        </div>
+    </div>
+    <div class="body">
+        <div *ngFor="let hour of hours" class="hour-slot">
+            <div class="time-label">{{ hour }}</div>
+        </div>
+        <div class="event-overlay">
+            <ng-container *ngFor="let event of events">
+                <div class="event" [ngStyle]="{
+                        'height': calculateEventHeight(event.start_date, event.end_date) + 'px',
+                        'top': calculateEventTop(event.start_date) + 'px',
+                        'left': calculateEventLeft(event.start_date) + 'px'
+                    }">
+                    <strong>{{ event.title }}</strong>
+                    <p>{{ event.description }}</p>
                 </div>
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let hour of hours">
-            <td>{{ hour }}</td>
-            <td *ngFor="let day of days" class="hour-slot" (click)="openModal(hour, day)">
-                <ng-container *ngFor="let event of eventSlots[hour + '-' + day]">
-                    <ng-container *ngIf="event">
-                        <div class="event">
-                            <strong>{{ event.title }}</strong>
-                            <p>{{ event.description }}</p>
-                        </div>
-                        <ng-template #singleEvent>
-                            <div class="event">
-                                <strong>{{ event.title }}</strong>
-                                <p>{{ event.description }}</p>
-                            </div>
-                        </ng-template>
-                    </ng-container>
-                </ng-container>
-            </td>
-        </tr>
-    </tbody>
-</table>
+            </ng-container>
+        </div>
+    </div>
+</div>

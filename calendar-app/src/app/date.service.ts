@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay, format } from 'date-fns';
+import { addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay, format, addDays, subDays, addWeeks, subWeeks } from 'date-fns';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -54,39 +54,39 @@ export class DateService {
   }
 
   nextDay() {
-    const nextDate = new Date(this.currentDate.value);
-    nextDate.setDate(nextDate.getDate() + 1);
-    this.currentDate.next(nextDate);
+    let currentDate = new Date(this.currentDate.value);
+    currentDate = addDays(currentDate, 1);
+    this.currentDate.next(currentDate);
   }
 
   previousDay() {
-    const prevDate = new Date(this.currentDate.value);
-    prevDate.setDate(prevDate.getDate() - 1);
-    this.currentDate.next(prevDate);
+    let currentDate = new Date(this.currentDate.value);
+    currentDate = subDays(currentDate, 1);
+    this.currentDate.next(currentDate);
   }
 
   nextWeek() {
-    const nextDate = new Date(this.currentDate.value);
-    nextDate.setDate(nextDate.getDate() + 7);
-    this.currentDate.next(nextDate);
+    let currentDate = new Date(this.currentDate.value);
+    currentDate = addWeeks(currentDate, 1);
+    this.currentDate.next(currentDate);
   }
 
   previousWeek() {
-    const prevDate = new Date(this.currentDate.value);
-    prevDate.setDate(prevDate.getDate() - 7);
-    this.currentDate.next(prevDate);
+    let currentDate = new Date(this.currentDate.value);
+    currentDate = subWeeks(currentDate, 1);
+    this.currentDate.next(currentDate);
   }
 
   nextMonth() {
-    const nextDate = new Date(this.currentDate.value);
-    nextDate.setMonth(nextDate.getMonth() + 1);
-    this.currentDate.next(nextDate);
+    let currentDate = new Date(this.currentDate.value);
+    currentDate = addMonths(currentDate, 1);
+    this.currentDate.next(currentDate);
   }
 
   previousMonth() {
-    const prevDate = new Date(this.currentDate.value);
-    prevDate.setMonth(prevDate.getMonth() - 1);
-    this.currentDate.next(prevDate);
+    let currentDate = new Date(this.currentDate.value);
+    currentDate = subMonths(currentDate, 1);
+    this.currentDate.next(currentDate);
   }
 
   today() {
