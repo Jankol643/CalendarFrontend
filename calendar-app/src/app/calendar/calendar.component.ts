@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   ViewChild,
   TemplateRef,
+  OnInit,
 } from '@angular/core';
 import {
   startOfDay,
@@ -21,10 +22,12 @@ import {
   CalendarEventTimesChangedEvent,
   CalendarModule,
   CalendarView,
+  DAYS_OF_WEEK
 } from 'angular-calendar';
 import { EventColor } from 'calendar-utils';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EventService } from '../event.service';
 
 const colors: Record<string, EventColor> = {
   red: {
@@ -61,9 +64,10 @@ const colors: Record<string, EventColor> = {
   standalone: true,
   imports: [FormsModule, CommonModule, CalendarModule]
 })
-export class CalendarComponent {
+export class CalendarComponent implements OnInit {
 
   view: CalendarView = CalendarView.Month;
+  events: any[] = [];
 
   CalendarView = CalendarView;
 
@@ -89,50 +93,22 @@ export class CalendarComponent {
 
   refresh = new Subject<void>();
 
-  events: CalendarEvent[] = [
-    {
-      start: subDays(startOfDay(new Date()), 1),
-      end: addDays(new Date(), 1),
-      title: 'A 3 day event',
-      color: { ...colors['red'] },
-      actions: this.actions,
-      allDay: true,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true,
-      },
-      draggable: true,
-    },
-    {
-      start: startOfDay(new Date()),
-      title: 'An event with no end date',
-      color: { ...colors['yellow'] },
-      actions: this.actions,
-    },
-    {
-      start: subDays(endOfMonth(new Date()), 3),
-      end: addDays(endOfMonth(new Date()), 3),
-      title: 'A long event that spans 2 months',
-      color: { ...colors['blue'] },
-      allDay: true,
-    },
-    {
-      start: addHours(startOfDay(new Date()), 2),
-      end: addHours(new Date(), 2),
-      title: 'A draggable and resizable event',
-      color: { ...colors['yellow'] },
-      actions: this.actions,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true,
-      },
-      draggable: true,
-    },
-  ];
-
   activeDayIsOpen: boolean = true;
 
-  constructor() { }
+  weekStartsOn = DAYS_OF_WEEK.MONDAY;
+
+  constructor(private eventService: EventService) { }
+
+  ngOnInit() {
+    this.eventService.getEvents(1).subscribe({
+      next: (events) => {
+        this.events = events;
+      },
+      error: (error) => {
+        console.error('Error fetching events: ', error);
+      }
+    })
+  }
 
   dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
     if (isSameMonth(date, this.viewDate)) {
