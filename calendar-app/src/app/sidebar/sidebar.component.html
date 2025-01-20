@@ -11,8 +11,7 @@
         <div *ngIf="showCalendars">
             <div *ngFor="let calendar of calendars">
                 <label>
-                    <input type="checkbox" [(ngModel)]="calendar.visible"
-                        (change)="toggleCalendarVisibility(calendar)" />
+                    <input type="checkbox" [checked]="calendar.visible" (change)="toggleCalendarVisibility(calendar)" />
                     {{ calendar.title }}
                 </label>
             </div>

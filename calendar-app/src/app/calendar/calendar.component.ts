@@ -1,19 +1,15 @@
 import {
   Component,
   ChangeDetectionStrategy,
-  ViewChild,
-  TemplateRef,
   OnInit,
+  EventEmitter,
+  Output,
 } from '@angular/core';
 import {
   startOfDay,
   endOfDay,
-  subDays,
-  addDays,
-  endOfMonth,
   isSameDay,
   isSameMonth,
-  addHours,
 } from 'date-fns';
 import { Subject } from 'rxjs';
 import {
@@ -68,8 +64,9 @@ export class CalendarComponent implements OnInit {
 
   view: CalendarView = CalendarView.Month;
   events: any[] = [];
-
+  @Output() eventsChanged = new EventEmitter<number[]>();
   CalendarView = CalendarView;
+  calendars: any[] = [];
 
   viewDate: Date = new Date();
 
@@ -100,14 +97,41 @@ export class CalendarComponent implements OnInit {
   constructor(private eventService: EventService) { }
 
   ngOnInit() {
-    this.eventService.getEvents(1).subscribe({
-      next: (events) => {
-        this.events = events;
-      },
-      error: (error) => {
+    this.eventsChanged.subscribe((calendarIds: number[]) => {
+      this.loadEvents(calendarIds);
+    });
+  }
+
+  loadEvents(calendarIds: number[]) {
+    if (calendarIds.length === 0) {
+      this.events = []; // Clear events if no calendars are visible
+      this.refresh.next(); // Trigger refresh
+      return;
+    }
+
+    const eventRequests = calendarIds.map(id => this.eventService.getEvents(id).toPromise());
+
+    Promise.all(eventRequests)
+      .then(results => {
+        this.events = results.flat(); // Combine events from all calendars
+        this.refresh.next(); // Trigger refresh
+      })
+      .catch(error => {
         console.error('Error fetching events: ', error);
-      }
-    })
+      });
+  }
+
+  toggleCalendarVisibility(calendarId: number, isVisible: boolean) {
+    if (!isVisible) {
+      // Filter out events from the unselected calendar
+      this.events = this.events.filter(event => event.calendarId !== calendarId);
+    } else {
+      // Reload events for the selected calendar
+      this.eventService.getEvents(calendarId).subscribe(newEvents => {
+        this.events = [...this.events, ...newEvents];
+        this.refresh.next();
+      });
+    }
   }
 
   dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {

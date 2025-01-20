@@ -5,6 +5,7 @@ import { map, Observable } from 'rxjs';
 interface RawEventType {
   start_date: string;
   end_date: string;
+  all_day: boolean;
 }
 
 interface YourEventType {
@@ -44,10 +45,15 @@ export class EventService {
   }
 
   private convertEvents(rawEvents: RawEventType[]): YourEventType[] {
-    return rawEvents.map(event => ({
-      start: new Date(event.start_date),
-      end: new Date(event.end_date),
-      draggable: true
-    }));
+    return rawEvents.map(event => {
+      const { start_date, end_date, all_day, ...rest } = event;
+      return {
+        ...rest,
+        start: new Date(start_date),
+        end: new Date(end_date),
+        allDay: all_day,
+        draggable: true
+      };
+    });
   }
 }

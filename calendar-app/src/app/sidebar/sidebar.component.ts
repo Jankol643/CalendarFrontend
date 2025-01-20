@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { EventFormComponent } from '../event-form/event-form.component';
 import { FormsModule } from '@angular/forms';
 import { CalendarService } from '../services/calendar.service';
-import { EventService } from '../event.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,23 +12,29 @@ import { EventService } from '../event.service';
   imports: [CommonModule, FormsModule, EventFormComponent],
   standalone: true
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   @Output() eventsChanged = new EventEmitter<any[]>(); // Emit events to parent
   calendars: { id: number, title: string; visible: boolean }[] = [];
-  showCalendars = false;
+  showCalendars: boolean = true;
   showEventForm: boolean = false;
   isSidebarVisible: boolean = true;
+  private subscriptions: Subscription = new Subscription(); // Subscription management
 
-  constructor(private calendarService: CalendarService, private eventService: EventService) { }
+  constructor(private calendarService: CalendarService) { }
 
   ngOnInit() {
     this.loadCalendars(); // Load calendars on initialization
   }
 
   loadCalendars() {
-    this.calendarService.getCalendars().subscribe(calendars => {
-      this.calendars = calendars.map((calendar: any) => ({ ...calendar, visible: false })); // Initialize visibility
+    const calendarSubscription = this.calendarService.getCalendars().subscribe(calendars => {
+      this.calendars = calendars.map((calendar: any) => ({
+        ...calendar,
+        visible: true // Set all calendars to be visible by default
+      }));
+      this.emitVisibleCalendars(); // Emit the IDs of visible calendars
     });
+    this.subscriptions.add(calendarSubscription); // Add subscription to management
   }
 
   toggleCalendars() {
@@ -37,17 +43,14 @@ export class SidebarComponent implements OnInit {
 
   toggleCalendarVisibility(calendar: { id: number, title: string; visible: boolean }) {
     calendar.visible = !calendar.visible; // Toggle visibility
-    console.log(`${calendar.title} visibility is now ${calendar.visible ? 'visible' : 'hidden'}`);
-
-    if (calendar.visible) {
-      this.eventService.getEvents(calendar.id).subscribe(events => {
-        this.eventsChanged.emit(events); // Emit the fetched events
-      });
-    }
+    this.emitVisibleCalendars(); // Emit the updated list of visible calendars
   }
 
-  toggleSidebar() {
-    this.isSidebarVisible = !this.isSidebarVisible;
+  emitVisibleCalendars() {
+    const visibleCalendarIds = this.calendars
+      .filter(cal => cal.visible)
+      .map(cal => cal.id);
+    this.eventsChanged.emit(visibleCalendarIds); // Emit the IDs of visible calendars
   }
 
   openModal() {
@@ -56,5 +59,9 @@ export class SidebarComponent implements OnInit {
 
   closeModal() {
     this.showEventForm = false;
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe(); // Clean up subscriptions
   }
 }
