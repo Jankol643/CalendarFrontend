@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { EventService } from '../event.service';
 import { CalendarService } from '../services/calendar.service';
 import { Event } from '../event.model';
@@ -14,29 +14,28 @@ import { Event } from '../event.model';
 })
 export class EventFormComponent {
   @Output() close = new EventEmitter<void>();
+  @Output() eventsChanged = new EventEmitter<number[]>();
   showEventForm: boolean = true;
-
-  calendars: any[] = []; // Array to hold calendars
-  selectedCalendarId: number = -1; // Selected calendar ID
-
-  myGroup: FormGroup; // Define a FormGroup
+  calendars: any[] = [];
+  myGroup: FormGroup;
 
   constructor(private eventService: EventService, private calendarService: CalendarService, private fb: FormBuilder) {
-    this.myGroup = new FormGroup({
-      title: new FormControl(),
+    this.myGroup = this.fb.group({
+      calendar: new FormControl('', { validators: [Validators.required] }),
+      title: new FormControl('', { validators: [Validators.required] }),
       description: new FormControl(),
-      startDate: new FormControl(),
-      endDate: new FormControl(),
-      allDay: new FormControl(),
+      startDate: new FormControl('', { validators: [Validators.required] }),
+      endDate: new FormControl('', { validators: [Validators.required] }),
+      allDay: new FormControl(false),
       location: new FormControl()
     });
 
-    this.loadCalendars(); // Load calendars on initialization
+    this.loadCalendars();
   }
 
   loadCalendars() {
     this.calendarService.getCalendars().subscribe(calendars => {
-      this.calendars = calendars; // Populate the calendars array
+      this.calendars = calendars;
     });
   }
 
@@ -53,11 +52,13 @@ export class EventFormComponent {
       endDate: this.myGroup.value.endDate,
       allDay: this.myGroup.value.allDay,
       location: this.myGroup.value.location,
-      calendarId: this.selectedCalendarId // Include selected calendar ID
+      calendar: this.myGroup.value.calendar
     };
+    console.log('Calendar: ', event.calendar);
 
-    this.eventService.createEvent(this.selectedCalendarId, event).subscribe(() => {
-      this.closeModal(); // Close the modal after submission
+    this.eventService.createEvent(this.myGroup.value.calendar, event).subscribe(() => {
+      this.closeModal();
+      this.eventsChanged.emit([this.myGroup.value.calendar]);
     });
   }
 }

@@ -1,18 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-
-interface RawEventType {
-  start_date: string;
-  end_date: string;
-  all_day: boolean;
-}
-
-interface YourEventType {
-  start: Date;
-  end: Date;
-  draggable: boolean;
-}
+import { CalendarEvent } from 'angular-calendar';
+import { Event } from './event.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,9 +12,9 @@ export class EventService {
 
   constructor(private http: HttpClient) { }
 
-  getEvents(calendarId: number): Observable<YourEventType[]> {
-    return this.http.get<RawEventType[]>(`${this.baseEndpoint}/${calendarId}/events`).pipe(
-      map(events => this.convertEvents(events))
+  getEvents(calendarId: number): Observable<CalendarEvent[]> {
+    return this.http.get<Event[]>(`${this.baseEndpoint}/${calendarId}/events`).pipe(
+      map(events => this.convertEvents(events)),
     );
   }
 
@@ -44,16 +34,18 @@ export class EventService {
     return this.http.delete(`${this.baseEndpoint}/${calendarId}/events/${id}`);
   }
 
-  private convertEvents(rawEvents: RawEventType[]): YourEventType[] {
+  private convertEvents(rawEvents: any[]): CalendarEvent[] {
     return rawEvents.map(event => {
-      const { start_date, end_date, all_day, ...rest } = event;
-      return {
-        ...rest,
-        start: new Date(start_date),
-        end: new Date(end_date),
-        allDay: all_day,
-        draggable: true
-      };
-    });
+      if (event.title && event.start_date && event.end_date) {
+        return {
+          title: event.title,
+          start: new Date(event.start_date),
+          end: new Date(event.end_date),
+          allDay: Boolean(event.all_day),
+          draggable: true
+        } as CalendarEvent;
+      }
+      return undefined;
+    }).filter((event): event is CalendarEvent => event !== undefined);
   }
 }

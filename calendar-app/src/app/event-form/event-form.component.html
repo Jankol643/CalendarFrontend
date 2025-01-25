@@ -10,8 +10,8 @@
                 <form [formGroup]="myGroup" (ngSubmit)="addEvent()">
                     <div class="mb-3">
                         <label for="calendar" class="form-label">Select Calendar *</label>
-                        <select class="form-select" id="calendar" [(ngModel)]="selectedCalendarId" name="calendar"
-                            required>
+                        <select class="form-select" id="calendar" formControlName="calendar" required>
+                            <option value="" disabled>Select a calendar</option>
                             <option *ngFor="let calendar of calendars" [value]="calendar.id">{{ calendar.title }}
                             </option>
                         </select>

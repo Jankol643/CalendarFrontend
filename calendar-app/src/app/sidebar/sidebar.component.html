@@ -1,8 +1,8 @@
 <aside class="sidenav collapse w-92" id="sidebar">
     <button (click)="openModal()" class="btn btn-primary">Add Event</button>
 
-    <app-event-form *ngIf="showEventForm" (close)="closeModal()"></app-event-form>
-
+    <app-event-form *ngIf="showEventForm" (close)="closeModal()"
+        (eventsChanged)="onEventsChanged($event)"></app-event-form>
     <div class="my-calendars">
         <h2 (click)="toggleCalendars()" class="toggle-header">
             My Calendars

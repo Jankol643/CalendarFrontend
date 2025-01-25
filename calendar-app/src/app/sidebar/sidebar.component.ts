@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
   standalone: true
 })
 export class SidebarComponent implements OnInit, OnDestroy {
-  @Output() eventsChanged = new EventEmitter<any[]>(); // Emit events to parent
+  @Output() eventsChanged = new EventEmitter<number[]>();
   calendars: { id: number, title: string; visible: boolean }[] = [];
   showCalendars: boolean = true;
   showEventForm: boolean = false;
@@ -59,6 +59,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   closeModal() {
     this.showEventForm = false;
+  }
+
+  onEventsChanged(calendarIds: number[]) {
+    this.eventsChanged.emit(calendarIds);
   }
 
   ngOnDestroy() {
