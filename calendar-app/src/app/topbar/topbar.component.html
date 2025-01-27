@@ -4,4 +4,10 @@
     </a>
 
     <button class="btn" (click)="logout()">Logout</button>
+
+    <select class="form-select ms-3" [(ngModel)]="view" (change)="onViewChange(view)">
+        <option [value]="CalendarView.Month">Month</option>
+        <option [value]="CalendarView.Week">Week</option>
+        <option [value]="CalendarView.Day">Day</option>
+    </select>
 </div>

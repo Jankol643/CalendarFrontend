@@ -4,18 +4,20 @@ import { CalendarEvent, CalendarEventAction, CalendarModule, CalendarView, DAYS_
 import { EventService } from '../event.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ModalService } from '../modal.service';
+import { EventDetailComponent } from '../event-detail/event-detail.component';
 
 @Component({
   selector: 'app-calendar',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
   standalone: true,
-  imports: [CommonModule, CalendarModule]
+  imports: [CommonModule, FormsModule, CalendarModule, EventDetailComponent]
 })
 export class CalendarComponent implements OnInit {
   view: CalendarView = CalendarView.Month;
   events: CalendarEvent[] = [];
+  selectedEvent: CalendarEvent | null = null;
   @Output() eventsChanged = new EventEmitter<number[]>();
   CalendarView = CalendarView;
   viewDate: Date = new Date();
@@ -23,33 +25,13 @@ export class CalendarComponent implements OnInit {
   activeDayIsOpen: boolean = true;
   weekStartsOn = DAYS_OF_WEEK.MONDAY;
 
-  constructor(private eventService: EventService) { }
+  constructor(private eventService: EventService, private modalService: ModalService) { }
 
   ngOnInit() {
     this.eventsChanged.subscribe((calendarIds: number[]) => {
       this.loadEvents(calendarIds);
     });
   }
-
-
-  actions: CalendarEventAction[] = [
-    {
-      label: '<i class="bi bi-pencil-square"></i>',
-      a11yLabel: 'Edit',
-      onClick: ({ event }: { event: CalendarEvent }): void => {
-        this.handleEvent('Edited', event);
-      },
-    },
-    {
-      label: '<i class="bi bi-trash"></i>',
-      a11yLabel: 'Delete',
-      onClick: ({ event }: { event: CalendarEvent }): void => {
-        this.events = this.events.filter((iEvent) => iEvent !== event);
-        this.handleEvent('Deleted', event);
-      },
-    },
-  ];
-
 
   loadEvents(calendarIds: number[]) {
     if (calendarIds.length === 0) {
@@ -72,7 +54,10 @@ export class CalendarComponent implements OnInit {
   }
 
   handleEvent(action: string, event: CalendarEvent): void {
-    // Handle event actions (edit/delete)
+    if (action === 'Clicked') {
+      this.selectedEvent = event;
+      this.modalService.open(event);
+    }
   }
 
   setView(view: CalendarView) {
