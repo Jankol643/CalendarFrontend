@@ -3,6 +3,7 @@ import { CalendarEvent } from 'angular-calendar';
 import { ModalService } from '../modal.service';
 import { CommonModule } from '@angular/common';
 import * as bootstrap from 'bootstrap';
+import { Event } from '../event.model';
 
 @Component({
   selector: 'app-event-detail',

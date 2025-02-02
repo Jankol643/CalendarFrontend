@@ -36,16 +36,18 @@ export class EventService {
 
   private convertEvents(rawEvents: any[]): CalendarEvent[] {
     return rawEvents.map(event => {
-      if (event.title && event.start_date && event.end_date) {
-        return {
-          title: event.title,
-          start: new Date(event.start_date),
-          end: new Date(event.end_date),
-          allDay: Boolean(event.all_day),
-          draggable: true
-        } as CalendarEvent;
-      }
-      return undefined;
-    }).filter((event): event is CalendarEvent => event !== undefined);
+      return {
+        title: event.title,
+        start: new Date(event.start_date),
+        end: new Date(event.end_date),
+        allDay: Boolean(event.all_day),
+        draggable: true,
+        meta: {
+          location: event.location,
+          description: event.description,
+          calendar: event.calendar
+        }
+      };
+    });
   }
 }

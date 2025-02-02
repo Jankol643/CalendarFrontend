@@ -24,8 +24,8 @@ export class EventFormComponent {
       calendar: new FormControl('', { validators: [Validators.required] }),
       title: new FormControl('', { validators: [Validators.required] }),
       description: new FormControl(),
-      startDate: new FormControl('', { validators: [Validators.required] }),
-      endDate: new FormControl('', { validators: [Validators.required] }),
+      start: new FormControl('', { validators: [Validators.required] }),
+      end: new FormControl('', { validators: [Validators.required] }),
       allDay: new FormControl(false),
       location: new FormControl()
     });
@@ -48,8 +48,8 @@ export class EventFormComponent {
     const event: Event = {
       title: this.myGroup.value.title,
       description: this.myGroup.value.description,
-      startDate: this.myGroup.value.startDate,
-      endDate: this.myGroup.value.endDate,
+      start: this.myGroup.value.start,
+      end: this.myGroup.value.end,
       allDay: this.myGroup.value.allDay,
       location: this.myGroup.value.location,
       calendar: this.myGroup.value.calendar

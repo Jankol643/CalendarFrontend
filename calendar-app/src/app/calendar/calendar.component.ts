@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, OnInit, EventEmitter, Output } from '@angular/core';
 import { Subject, forkJoin } from 'rxjs';
-import { CalendarEvent, CalendarEventAction, CalendarModule, CalendarView, DAYS_OF_WEEK } from 'angular-calendar';
+import { CalendarEvent, CalendarModule, CalendarView, collapseAnimation, DAYS_OF_WEEK } from 'angular-calendar';
 import { EventService } from '../event.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +12,9 @@ import { EventDetailComponent } from '../event-detail/event-detail.component';
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, CalendarModule, EventDetailComponent]
+  imports: [CommonModule, FormsModule, CalendarModule, EventDetailComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [collapseAnimation]
 })
 export class CalendarComponent implements OnInit {
   view: CalendarView = CalendarView.Month;
@@ -62,6 +64,7 @@ export class CalendarComponent implements OnInit {
 
   setView(view: CalendarView) {
     this.view = view;
+    this.refresh.next();
   }
 
   closeOpenMonthViewDay() {
