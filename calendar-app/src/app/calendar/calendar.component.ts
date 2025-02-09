@@ -5,14 +5,14 @@ import { EventService } from '../event.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalService } from '../modal.service';
-import { EventDetailComponent } from '../event-detail/event-detail.component';
+import { CalendarItemDetailComponent } from '../calendar-item-detail/calendar-item-detail.component';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, CalendarModule, EventDetailComponent],
+  imports: [CommonModule, FormsModule, CalendarModule, CalendarItemDetailComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [collapseAnimation]
 })
@@ -30,6 +30,10 @@ export class CalendarComponent implements OnInit {
   constructor(private eventService: EventService, private modalService: ModalService) { }
 
   ngOnInit() {
+    this.eventService.getEventDeletedObservable().subscribe((calendarId: number) => {
+      this.loadEvents([calendarId]);
+    });
+
     this.eventsChanged.subscribe((calendarIds: number[]) => {
       this.loadEvents(calendarIds);
     });

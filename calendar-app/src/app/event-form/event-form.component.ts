@@ -34,8 +34,10 @@ export class EventFormComponent {
   }
 
   loadCalendars() {
-    this.calendarService.getCalendars().subscribe(calendars => {
-      this.calendars = calendars;
+    this.calendarService.getCalendars().subscribe(response => {
+      this.calendars = response.data; // Assuming the API response has a `data` property
+    }, error => {
+      console.error('Error loading calendars:', error); // Handle errors gracefully
     });
   }
 
@@ -45,7 +47,7 @@ export class EventFormComponent {
   }
 
   addEvent() {
-    const event: Event = {
+    let event: Event = {
       title: this.myGroup.value.title,
       description: this.myGroup.value.description,
       start: this.myGroup.value.start,
@@ -56,7 +58,7 @@ export class EventFormComponent {
     };
     console.log('Calendar: ', event.calendar);
 
-    this.eventService.createEvent(this.myGroup.value.calendar, event).subscribe(() => {
+    this.eventService.createEvent(event).subscribe(() => {
       this.closeModal();
       this.eventsChanged.emit([this.myGroup.value.calendar]);
     });

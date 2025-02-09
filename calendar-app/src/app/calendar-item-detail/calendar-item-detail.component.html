@@ -1,0 +1,39 @@
+<div class="modal fade" id="calendarItemDetailModal" tabindex="-1" aria-labelledby="calendarItemDetailModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="calendarItemDetailModalLabel">
+                    <i class="bi bi-calendar-event"></i> {{ event?.title }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><i class="bi bi-clock"></i> <strong>Start:</strong> {{ event?.start | date: 'short' }}</p>
+                <p><i class="bi bi-clock-history"></i> <strong>End:</strong> {{ event?.end | date: 'short' }}</p>
+                <p *ngIf="event?.meta?.description"><i class="bi bi-info-circle"></i> <strong>Description:</strong> {{
+                    event?.meta.description }}</p>
+                <p *ngIf="event?.meta?.location"><i class="bi bi-geo-alt"></i> <strong>Location:</strong> {{
+                    event?.meta.location }}</p>
+                <p *ngIf="event?.meta?.duration"><i class="bi bi-hourglass-split"></i> <strong>Duration:</strong> {{
+                    event?.meta.duration }} hours</p>
+                <p *ngIf="event?.meta?.dueDate"><i class="bi bi-calendar-check"></i> <strong>Due Date:</strong> {{
+                    event?.meta.dueDate | date: 'short' }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="editEvent()">
+                    <i class="bi bi-pencil-square"></i> Edit
+                </button>
+                <button type="button" class="btn btn-danger" (click)="deleteEvent()">
+                    <i class="bi bi-trash"></i> Delete
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeModal()">
+                    <i class="bi bi-x-circle"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-flash-message *ngIf="showFlashMessage" [message]="flashMessage" (undoEvent)="undoDelete()"
+    (closeEvent)="showFlashMessage = false"></app-flash-message>

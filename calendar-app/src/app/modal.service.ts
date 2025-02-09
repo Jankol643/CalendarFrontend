@@ -12,4 +12,8 @@ export class ModalService {
   open(event: CalendarEvent) {
     this.eventSubject.next(event);
   }
+
+  closeModal(): void {
+    this.eventSubject.next(null); // Clear the event data
+  }
 }

@@ -27,14 +27,19 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   loadCalendars() {
-    const calendarSubscription = this.calendarService.getCalendars().subscribe(calendars => {
-      this.calendars = calendars.map((calendar: any) => ({
-        ...calendar,
-        visible: true // Set all calendars to be visible by default
-      }));
-      this.emitVisibleCalendars(); // Emit the IDs of visible calendars
+    const calendarSubscription = this.calendarService.getCalendars().subscribe(response => {
+      if (response && Array.isArray(response.data)) {
+        this.calendars = response.data.map((calendar: any) => ({
+          ...calendar,
+          visible: true
+        }));
+        this.emitVisibleCalendars();
+      } else {
+        console.error('Unexpected response format:', response);
+        this.calendars = [];
+      }
     });
-    this.subscriptions.add(calendarSubscription); // Add subscription to management
+    this.subscriptions.add(calendarSubscription);
   }
 
   toggleCalendars() {
