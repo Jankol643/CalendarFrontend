@@ -1,8 +1,12 @@
-<div class="modal-header">
-    <h5 class="modal-title">Edit Event</h5>
-    <button type="button" class="btn-close" aria-label="Close" (click)="cancelEdit()"></button>
+<div class="page-header d-flex align-items-center justify-content-between">
+    <!-- Close Button -->
+    <button type="button" class="btn btn-secondary" (click)="cancelEdit()">
+        Close
+    </button>
+    <!-- Page Title -->
+    <h5 class="page-title">Edit Event</h5>
 </div>
-<div class="modal-body">
+<div class="page-body">
     <form>
         <div class="mb-3">
             <label for="eventTitle" class="form-label">Title</label>
@@ -10,11 +14,12 @@
         </div>
         <div class="mb-3">
             <label for="eventStart" class="form-label">Start Date</label>
-            <input type="datetime-local" id="eventStart" class="form-control" [(ngModel)]="event.start" name="start" />
+            <input type="datetime-local" id="eventStart" class="form-control" [(ngModel)]="formattedStart"
+                name="start" />
         </div>
         <div class="mb-3">
             <label for="eventEnd" class="form-label">End Date</label>
-            <input type="datetime-local" id="eventEnd" class="form-control" [(ngModel)]="event.end" name="end" />
+            <input type="datetime-local" id="eventEnd" class="form-control" [(ngModel)]="formattedEnd" name="end" />
         </div>
         <div class="mb-3">
             <label for="eventDescription" class="form-label">Description</label>
@@ -28,7 +33,7 @@
         </div>
     </form>
 </div>
-<div class="modal-footer">
+<div class="page-footer d-flex justify-content-end">
     <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
     <button type="button" class="btn btn-primary" (click)="saveEvent()">Save</button>
 </div>

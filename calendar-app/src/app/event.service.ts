@@ -16,7 +16,13 @@ export class EventService {
 
   public getEvents(calendarId: number): Observable<CalendarEvent[]> {
     return this.http.get<Event[]>(`${this.baseEndpoint}/${calendarId}/events`).pipe(
-      map(events => this.convertToCalendarEvents(events)),
+      map(events => events.map(event => this.convertToCalendarEvent(event)))
+    );
+  }
+
+  public getEventById(id: number, calendarId: number): Observable<CalendarEvent> {
+    return this.http.get<Event>(`${this.baseEndpoint}/${calendarId}/events/${id}`).pipe(
+      map(event => this.convertToCalendarEvent(event))
     );
   }
 
@@ -65,30 +71,28 @@ export class EventService {
     return {
       title: event.title,
       description: event.description,
-      start_date: event.start.toISOString(),
-      end_date: event.end.toISOString(),
+      start_date: event.start,
+      end_date: event.end,
       all_day: event.allDay,
       location: event.location,
       calendar_id: event.calendar
     };
   }
 
-  private convertToCalendarEvents(rawEvents: any[]): CalendarEvent[] {
-    return rawEvents.map(event => {
-      return {
-        title: event.title,
-        start: new Date(event.start_date),
-        end: new Date(event.end_date),
-        allDay: Boolean(event.all_day),
-        draggable: true,
-        meta: {
-          id: event.id,
-          location: event.location,
-          description: event.description,
-          calendar: event.calendar_id
-        }
-      };
-    });
+  private convertToCalendarEvent(event: any): CalendarEvent {
+    return {
+      title: event.title,
+      start: new Date(event.start_date),
+      end: new Date(event.end_date),
+      allDay: Boolean(event.all_day),
+      draggable: true,
+      meta: {
+        id: event.id,
+        location: event.location,
+        description: event.description,
+        calendar: event.calendar_id
+      }
+    };
   }
 
   private convertCalendarEventToRawEvent(calendarEvent: CalendarEvent): any {

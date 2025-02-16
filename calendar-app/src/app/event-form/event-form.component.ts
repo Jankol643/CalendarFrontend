@@ -33,11 +33,14 @@ export class EventFormComponent {
     this.loadCalendars();
   }
 
-  loadCalendars() {
-    this.calendarService.getCalendars().subscribe(response => {
-      this.calendars = response.data; // Assuming the API response has a `data` property
-    }, error => {
-      console.error('Error loading calendars:', error); // Handle errors gracefully
+  loadCalendars(): void {
+    this.calendarService.getCalendars().subscribe({
+      next: (response) => {
+        this.calendars = response.data; // Assuming the API response has a `data` property
+      },
+      error: (error) => {
+        console.error('Error loading calendars:', error); // Handle errors gracefully
+      }
     });
   }
 

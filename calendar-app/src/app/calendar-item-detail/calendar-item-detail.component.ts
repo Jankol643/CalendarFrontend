@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CalendarEvent } from 'angular-calendar';
-import * as bootstrap from 'bootstrap';
 import { EventService } from '../event.service';
 import { ModalService } from '../modal.service';
 import { CommonModule } from '@angular/common';
 import { FlashMessageComponent } from '../flash-message/flash-message.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-calendar-item-detail',
@@ -15,15 +15,16 @@ import { FlashMessageComponent } from '../flash-message/flash-message.component'
 })
 export class CalendarItemDetailComponent implements OnInit {
   @Input() event: CalendarEvent | null = null;
-  @Output() close = new EventEmitter<void>(); // Add this line
+  @Output() close = new EventEmitter<void>();
+  @Output() edit = new EventEmitter<CalendarEvent>();
 
   showFlashMessage = false;
   flashMessage = '';
+  bootstrapModal: any = null;
 
-  constructor(private modalService: ModalService, private eventService: EventService) { }
+  constructor(private modalService: ModalService, private eventService: EventService, private router: Router) { }
 
   ngOnInit(): void {
-    // Subscribe to the modalService to get the event data
     this.modalService.event$.subscribe((event) => {
       this.event = event;
       if (event) {
@@ -35,15 +36,16 @@ export class CalendarItemDetailComponent implements OnInit {
   openModal(): void {
     const modalElement = document.getElementById('calendarItemDetailModal');
     if (modalElement) {
-      const bootstrapModal = new bootstrap.Modal(modalElement);
-      bootstrapModal.show();
+      this.bootstrapModal = new (window as any).bootstrap.Modal(modalElement);
+      this.bootstrapModal.show();
     }
   }
 
   editEvent(): void {
     if (this.event) {
-      // Logic to navigate to the edit page or open an edit modal
-      console.log('Editing event:', this.event);
+      this.edit.emit(this.event); // Emit the event data
+      this.closeModal();
+      this.router.navigate([`/event/${this.event.meta.id}/edit`], { state: { event: this.event } }); // Pass event data via state
     }
   }
 
@@ -71,6 +73,9 @@ export class CalendarItemDetailComponent implements OnInit {
   }
 
   closeModal(): void {
-    this.close.emit();
+    const modalElement = document.getElementById('calendarItemDetailModal');
+    if (modalElement && this.bootstrapModal !== null) {
+      this.bootstrapModal.hide();
+    }
   }
 }

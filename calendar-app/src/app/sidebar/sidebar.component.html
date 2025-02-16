@@ -3,6 +3,7 @@
 
     <app-event-form *ngIf="showEventForm" (close)="closeModal()"
         (eventsChanged)="onEventsChanged($event)"></app-event-form>
+
     <div class="my-calendars">
         <h2 (click)="toggleCalendars()" class="toggle-header">
             My Calendars
@@ -10,8 +11,9 @@
         </h2>
         <div *ngIf="showCalendars">
             <div *ngFor="let calendar of calendars">
-                <label>
-                    <input type="checkbox" [checked]="calendar.visible" (change)="toggleCalendarVisibility(calendar)" />
+                <label [for]="'calendar-' + calendar.id">
+                    <input type="checkbox" [id]="'calendar-' + calendar.id" [name]="'calendar-' + calendar.id"
+                        [checked]="calendar.visible" (change)="toggleCalendarVisibility(calendar)" />
                     {{ calendar.title }}
                 </label>
             </div>

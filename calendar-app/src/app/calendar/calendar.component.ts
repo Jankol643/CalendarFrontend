@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalService } from '../modal.service';
 import { CalendarItemDetailComponent } from '../calendar-item-detail/calendar-item-detail.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-calendar',
@@ -25,9 +26,9 @@ export class CalendarComponent implements OnInit {
   viewDate: Date = new Date();
   refresh = new Subject<void>();
   activeDayIsOpen: boolean = true;
-  weekStartsOn = DAYS_OF_WEEK.MONDAY;
+  weekStartsOn: number = DAYS_OF_WEEK.MONDAY;
 
-  constructor(private eventService: EventService, private modalService: ModalService) { }
+  constructor(private eventService: EventService, private modalService: ModalService, private router: Router) { }
 
   ngOnInit() {
     this.eventService.getEventDeletedObservable().subscribe((calendarId: number) => {
@@ -66,6 +67,11 @@ export class CalendarComponent implements OnInit {
     }
   }
 
+  onEditEvent(event: CalendarEvent): void {
+    // Navigate to the edit component with the event data
+    this.router.navigate(['/event/edit'], { state: { event } });
+  }
+
   setView(view: CalendarView) {
     this.view = view;
     this.refresh.next();
@@ -73,5 +79,39 @@ export class CalendarComponent implements OnInit {
 
   closeOpenMonthViewDay() {
     this.activeDayIsOpen = false;
+  }
+
+  // Lookup table for navigation logic
+  private viewAdjustments = {
+    [CalendarView.Month]: {
+      previous: () => this.viewDate.setMonth(this.viewDate.getMonth() - 1),
+      next: () => this.viewDate.setMonth(this.viewDate.getMonth() + 1),
+    },
+    [CalendarView.Week]: {
+      previous: () => this.viewDate.setDate(this.viewDate.getDate() - 7),
+      next: () => this.viewDate.setDate(this.viewDate.getDate() + 7),
+    },
+    [CalendarView.Day]: {
+      previous: () => this.viewDate.setDate(this.viewDate.getDate() - 1),
+      next: () => this.viewDate.setDate(this.viewDate.getDate() + 1),
+    },
+  };
+
+  // Navigate to the previous period
+  previous() {
+    this.viewDate = new Date(this.viewAdjustments[this.view]?.previous());
+    this.refresh.next();
+  }
+
+  // Navigate to today
+  today() {
+    this.viewDate = new Date();
+    this.refresh.next();
+  }
+
+  // Navigate to the next period
+  next() {
+    this.viewDate = new Date(this.viewAdjustments[this.view]?.next());
+    this.refresh.next();
   }
 }
