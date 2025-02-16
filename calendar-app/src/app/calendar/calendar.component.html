@@ -1,28 +1,32 @@
 <div class="row text-center">
+
     <div class="col-md-4">
-        <div class="btn-group">
-            <div class="btn btn-primary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
-                (viewDateChange)="closeOpenMonthViewDay()">
-                Previous
-            </div>
-            <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
-                Today
-            </div>
-            <div class="btn btn-primary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
-                (viewDateChange)="closeOpenMonthViewDay()">
-                Next
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h3>
+        <h3>
+            {{ viewDate | calendarDate:(view +
+            'ViewTitle'):'en':weekStartsOn }}
+        </h3>
     </div>
 </div>
 <br />
+
+<ng-template #customCellTemplate let-day="day" let-locale="locale" style="height: 100vh;">
+    <div class="cal-cell-top">
+        <span class="cal-day-number">
+            {{ day.date | calendarDate:'monthViewDayNumber':locale }}
+        </span>
+
+        <div *ngIf="day.events.length > 0">
+            <div *ngFor="let event of day.events" class="cal-event-item">
+                <strong>{{ event.start | date:'shortTime':locale }}</strong> - {{ event.title }}
+            </div>
+        </div>
+    </div>
+</ng-template>
+
 <div [ngSwitch]="view">
     <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
-        [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" [weekStartsOn]="weekStartsOn"
-        (eventClicked)="handleEvent('Clicked', $event.event)">
+        [refresh]="refresh" [weekStartsOn]="weekStartsOn" (eventClicked)="handleEvent('Clicked', $event.event)"
+        [cellTemplate]="customCellTemplate">
     </mwl-calendar-month-view>
     <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [weekStartsOn]="weekStartsOn" [viewDate]="viewDate"
         [events]="events" [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)">
@@ -32,4 +36,5 @@
     </mwl-calendar-day-view>
 </div>
 
-<app-calendar-item-detail *ngIf="selectedEvent"></app-calendar-item-detail>
+<app-calendar-item-detail *ngIf="selectedEvent" [event]="selectedEvent"
+    (edit)="onEditEvent($event)"></app-calendar-item-detail>

@@ -2,3 +2,37 @@
     height: 100%;
     background-color: aquamarine;
 }
+
+.cal-cell-top {
+    text-align: center; // Centers the day number horizontally
+    margin: 0 auto;
+
+    .cal-day-number {
+        margin: 0; // Removes any default margins
+        font-size: 1.2em; // Optional: Adjust font size for better visibility
+        font-weight: bold; // Optional: Make the day number bold
+    }
+}
+
+.cal-events-list {
+
+    .cal-event-item {
+        margin: 0; // Removes unnecessary margins between event items
+        padding: 2px 0; // Adds a small padding for better spacing
+        font-size: 0.9em; // Optional: Adjust font size for event text
+    }
+}
+
+//https: //github.com/mattlewis92/angular-calendar/issues/828
+.cal-week-view {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.cal-day-headers {
+    margin-right: 14.5px;
+}
+
+.cal-day-columns {
+    height: 100%;
+}
