@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, Output, Input } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +15,11 @@ import { CalendarView } from 'angular-calendar';
 })
 export class TopBarComponent {
   @Output() viewChange = new EventEmitter<CalendarView>();
-  view: CalendarView = CalendarView.Month;
+  @Output() previous = new EventEmitter<void>();
+  @Output() today = new EventEmitter<void>();
+  @Output() next = new EventEmitter<void>();
+
+  @Input() view: CalendarView = CalendarView.Month;
   CalendarView = CalendarView;
 
   constructor(private authService: AuthService, private router: Router) { }

@@ -1,13 +1,24 @@
-<div class="topbar d-flex align-items-center">
-    <a href="#" data-bs-target="#sidebar" data-bs-toggle="collapse" class="border rounded-3 p-1 text-decoration-none">
-        <i class="bi bi-list bi-lg py-2 p-1"></i> Menu
-    </a>
+<div class="topbar d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center">
+        <button type="button" class="border rounded-3 p-1 text-decoration-none" data-bs-target="#sidebar"
+            data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebar">
+            <i class="bi bi-list bi-lg py-2 p-1"></i> Menu
+        </button>
+    </div>
 
-    <button class="btn" (click)="logout()">Logout</button>
+    <div class="btn-group">
+        <button class="btn btn-primary" (click)="previous.emit()">Previous</button>
+        <button class="btn btn-outline-secondary" (click)="today.emit()">Today</button>
+        <button class="btn btn-primary" (click)="next.emit()">Next</button>
+    </div>
 
-    <select class="form-select ms-3" [(ngModel)]="view" (change)="onViewChange(view)">
-        <option [value]="CalendarView.Month">Month</option>
-        <option [value]="CalendarView.Week">Week</option>
-        <option [value]="CalendarView.Day">Day</option>
-    </select>
+    <div class="d-flex align-items-center">
+        <select class="form-select ms-3" [(ngModel)]="view" (change)="onViewChange(view)" id="viewSelect"
+            name="viewSelect">
+            <option [value]="CalendarView.Month">Month</option>
+            <option [value]="CalendarView.Week">Week</option>
+            <option [value]="CalendarView.Day">Day</option>
+        </select>
+        <button class="btn ms-3" (click)="logout()">Logout</button>
+    </div>
 </div>

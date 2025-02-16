@@ -1,4 +1,6 @@
-<app-topbar (viewChange)="calendar.setView($event)"></app-topbar>
+<app-topbar [view]="view" (viewChange)="setView($event)" (previous)="goToPrevious()" (today)="goToToday()"
+    (next)="goToNext()">
+</app-topbar>
 
 <div class="container-fluid">
     <div class="row flex-nowrap">
