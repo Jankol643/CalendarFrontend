@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CalendarEvent } from 'angular-calendar';
-import { EventService } from '../event.service';
-import { ModalService } from '../modal.service';
 import { CommonModule } from '@angular/common';
-import { FlashMessageComponent } from '../flash-message/flash-message.component';
 import { Router } from '@angular/router';
+import { FlashMessageComponent } from '../../../shared/components/flash-message/flash-message.component';
+import { ModalService } from '../../../core/services/modal.service';
+import { EventService } from '../../../event.service';
 
 @Component({
   selector: 'app-calendar-item-detail',

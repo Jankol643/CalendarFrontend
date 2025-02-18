@@ -1,12 +1,12 @@
 import { Component, ChangeDetectionStrategy, OnInit, EventEmitter, Output } from '@angular/core';
 import { Subject, forkJoin } from 'rxjs';
 import { CalendarEvent, CalendarModule, CalendarView, collapseAnimation, DAYS_OF_WEEK } from 'angular-calendar';
-import { EventService } from '../event.service';
+import { EventService } from '../../event.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ModalService } from '../modal.service';
-import { CalendarItemDetailComponent } from '../calendar-item-detail/calendar-item-detail.component';
+import { CalendarItemDetailComponent } from './item-detail/calendar-item-detail.component';
 import { Router } from '@angular/router';
+import { ModalService } from '../../core/services/modal.service';
 
 @Component({
   selector: 'app-calendar',

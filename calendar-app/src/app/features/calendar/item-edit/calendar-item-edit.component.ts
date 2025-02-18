@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CalendarEvent } from 'angular-calendar';
-import { EventService } from '../event.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { EventService } from '../../../event.service';
 
 @Component({
   selector: 'app-calendar-item-edit',

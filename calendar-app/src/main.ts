@@ -1,13 +1,13 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
-import { AuthInterceptor } from './app/auth/auth.interceptor';
 import { provideRouter } from '@angular/router';
-import { routes } from './app/app.routes';
 import { importProvidersFrom } from '@angular/core';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { routes } from './app/core/app.routes';
+import { AuthInterceptor } from './app/features/auth/auth.interceptor';
 
 bootstrapApplication(AppComponent, {
   providers: [

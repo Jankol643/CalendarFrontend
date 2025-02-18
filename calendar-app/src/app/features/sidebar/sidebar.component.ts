@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { EventFormComponent } from '../event-form/event-form.component';
 import { FormsModule } from '@angular/forms';
-import { CalendarService } from '../services/calendar.service';
 import { Subscription } from 'rxjs';
+import { CalendarService } from '../../services/calendar.service';
 
 @Component({
   selector: 'app-sidebar',

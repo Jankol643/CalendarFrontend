@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { EventService } from '../event.service';
-import { CalendarService } from '../services/calendar.service';
-import { Event } from '../event.model';
+import { EventService } from '../../event.service';
+import { CalendarService } from '../../services/calendar.service';
+import { Event } from '../../shared/models/event.model';
 
 @Component({
   selector: 'app-event-form',
