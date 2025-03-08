@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable, Subject } from 'rxjs';
 import { CalendarEvent } from 'angular-calendar';
-import { Event } from './shared/models/event.model';
+import { Event } from './shared/event.model';
+import { EventFactory } from './shared/event-factory';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EventService {
-  private baseEndpoint = 'http://localhost:8000/api/calendars';
+  private baseEndpoint = `${environment.apiUrl}/calendars`;
   private deletedEvent: { event: CalendarEvent; calendarId: number } | null = null;
   private eventDeletedSubject = new Subject<number>();
 
@@ -16,32 +18,33 @@ export class EventService {
 
   public getEvents(calendarId: number): Observable<CalendarEvent[]> {
     return this.http.get<Event[]>(`${this.baseEndpoint}/${calendarId}/events`).pipe(
-      map(events => events.map(event => this.convertToCalendarEvent(event)))
+      map(events => events.map(event => EventFactory.fromRawEvent(event)))
     );
   }
 
   public getEventById(id: number, calendarId: number): Observable<CalendarEvent> {
     return this.http.get<Event>(`${this.baseEndpoint}/${calendarId}/events/${id}`).pipe(
-      map(event => this.convertToCalendarEvent(event))
+      map(event => EventFactory.fromRawEvent(event))
     );
   }
 
-  public createEvent(event: any): Observable<any> {
-    let converted = this.convertEventToRawEvent(event);
-    let calendarId = event.calendar_id;
-    return this.http.post(`${this.baseEndpoint}/${calendarId}/events`, converted);
+  public createEvent(event: Event): Observable<any> {
+    const rawEvent = EventFactory.eventToRawEvent(event);
+    const calendarId = rawEvent.calendar_id;
+    console.log(rawEvent);
+    console.log('CalendarId from service: ' + calendarId);
+    return this.http.post(`${this.baseEndpoint}/${calendarId}/events`, rawEvent);
   }
 
   public updateEvent(event: CalendarEvent): Observable<any> {
-    let calendarId = event.meta.calendarId;
-    let id = event.meta.id;
-    return this.http.put(`${this.baseEndpoint}/${calendarId}/events/${id}`, event);
+    const calendarId = event.meta?.calendar;
+    const id = event.meta?.id;
+    return this.http.put(`${this.baseEndpoint}/${calendarId}/events/${id}`, EventFactory.calendarEventToRawEvent(event));
   }
 
   public deleteEvent(calendarId: number, id: number): Observable<any> {
     return this.http.delete(`${this.baseEndpoint}/${calendarId}/events/${id}`).pipe(
       map(() => {
-        // Notify subscribers that an event was deleted
         this.eventDeletedSubject.next(calendarId);
       })
     );
@@ -53,58 +56,15 @@ export class EventService {
 
   public undoDelete(): Observable<any> | null {
     if (this.deletedEvent) {
-      console.log("Deleted event: ");
-      console.log(this.deletedEvent);
-      let { event, calendarId } = this.deletedEvent;
-      this.deletedEvent = null; // Clear the stored event
-      event = this.convertCalendarEventToRawEvent(event);
-      return this.http.post(`${this.baseEndpoint}/${calendarId}/events`, event);
+      const { event, calendarId } = this.deletedEvent;
+      this.deletedEvent = null;
+      const rawEvent = EventFactory.calendarEventToRawEvent(event);
+      return this.http.post(`${this.baseEndpoint}/${calendarId}/events`, rawEvent);
     }
     return null;
   }
 
   public getEventDeletedObservable(): Observable<number> {
     return this.eventDeletedSubject.asObservable();
-  }
-
-  private convertEventToRawEvent(event: Event): any {
-    return {
-      title: event.title,
-      description: event.description,
-      start_date: event.start,
-      end_date: event.end,
-      all_day: event.allDay,
-      location: event.location,
-      calendar_id: event.calendar
-    };
-  }
-
-  private convertToCalendarEvent(event: any): CalendarEvent {
-    return {
-      title: event.title,
-      start: new Date(event.start_date),
-      end: new Date(event.end_date),
-      allDay: Boolean(event.all_day),
-      draggable: true,
-      meta: {
-        id: event.id,
-        location: event.location,
-        description: event.description,
-        calendar: event.calendar_id
-      }
-    };
-  }
-
-  private convertCalendarEventToRawEvent(calendarEvent: CalendarEvent): any {
-    return {
-      id: calendarEvent.meta?.id,
-      title: calendarEvent.title,
-      start_date: calendarEvent.start.toISOString(),
-      end_date: calendarEvent.end?.toISOString(),
-      all_day: calendarEvent.allDay,
-      location: calendarEvent.meta?.location,
-      description: calendarEvent.meta?.description,
-      calendar_id: calendarEvent.meta?.calendar
-    };
   }
 }

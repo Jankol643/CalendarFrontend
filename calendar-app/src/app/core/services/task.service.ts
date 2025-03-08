@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private baseEndpoint = 'http://localhost:8000/api/calendars';
+  private baseEndpoint = `${environment.apiUrl}/calendars`;
 
   constructor(private http: HttpClient) { }
 

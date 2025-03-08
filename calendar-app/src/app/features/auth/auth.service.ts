@@ -1,95 +1,107 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import { Buffer } from 'buffer';
+import { environment } from '../../../environments/environment';
+import { User, Credentials, AuthResponse } from '../../model/models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/api/auth'; // Adjust the URL as needed
+  private baseEndpoint = `${environment.apiUrl}/auth`;
 
   constructor(private http: HttpClient) { }
 
-  register(user: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, user);
+  register(user: User): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseEndpoint}/register`, user)
+      .pipe(catchError(this.handleError));
   }
 
-  // Login user and get JWT token
-  login(credentials: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
-      tap((response: any) => {
-        if (response && response.status === true && response.authorisation.token) {
-          this.saveToken(response.authorisation.token); // Save token to session storage
-        }
-      })
+  login(credentials: Credentials): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseEndpoint}/login`, credentials).pipe(
+      tap((response: AuthResponse) => this.handleLoginResponse(response)),
+      catchError(this.handleError)
     );
   }
 
-  // Get the authenticated user
-  getUser(): Observable<any> {
+  getUser(): Observable<User> {
     const headers = this.createAuthorizationHeader();
-    return this.http.get(`${this.apiUrl}/me`, { headers });
+    return this.http.get<User>(`${this.baseEndpoint}/me`, { headers })
+      .pipe(catchError(this.handleError));
   }
 
-  // Logout user
-  logout(): Observable<any> {
+  public logout(): Observable<void> {
     this.clearToken();
-    return this.http.post(`${this.apiUrl}/logout`, null);
+    return this.http.post<void>(`${this.baseEndpoint}/logout`, null)
+      .pipe(catchError(this.handleError));
   }
 
-  // Store token in session storage
-  saveToken(token: string): void {
+  private handleLoginResponse(response: AuthResponse): void {
+    if (response && response.status && response.authorisation.token) {
+      this.saveToken(response.authorisation.token);
+    }
+  }
+
+  private handleError(error: any): Observable<never> {
+    console.error('An error occurred:', error);
+    return throwError(() => new Error(error));
+  }
+
+  public saveToken(token: string): void {
     sessionStorage.setItem('token', token);
   }
 
-  // Clear token from session storage
-  clearToken(): void {
+  private clearToken(): void {
     sessionStorage.removeItem('token');
   }
 
-  // Get token from session storage
-  getToken(): string | null {
+  public getToken(): string | null {
     return sessionStorage.getItem('token');
   }
 
-  // Create authorization header
   private createAuthorizationHeader(): HttpHeaders {
     const token = this.getToken();
+    if (!token) {
+      console.warn('No token found, proceeding without Authorization header.');
+      return new HttpHeaders(); // Return empty headers if no token is found
+    }
+
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
   }
-
-  // Refresh token
-  refreshToken(): Observable<any> {
+  public refreshToken(): Observable<AuthResponse> {
     const headers = this.createAuthorizationHeader();
-    return this.http.post(`${this.apiUrl}/refresh`, {}, { headers });
+    return this.http.post<AuthResponse>(`${this.baseEndpoint}/refresh`, {}, { headers }).pipe(
+      tap((response: AuthResponse) => this.handleLoginResponse(response)),
+      catchError((error) => {
+        console.error('Error refreshing token:', error);
+        this.logout(); // Log the user out if refresh fails
+        return throwError(() => new Error('Token refresh failed. Please log in again.')); // Rethrow a user-friendly error
+      })
+    );
   }
 
-  isTokenExpired(token: string | null): boolean {
-    if (!token) {
-      return true; // Token is not present, consider it expired
+  public isTokenExpired(token: string): boolean {
+    try {
+      const payload = this.decodeToken(token);
+      return !payload || !payload.exp || payload.exp < Math.floor(Date.now() / 1000);
+    } catch {
+      return true; // If decoding fails, consider the token expired
     }
-
-    const payload = this.decodeToken(token);
-    if (!payload || !payload.exp) {
-      return true; // No expiration claim, consider it expired
-    }
-
-    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-    return payload.exp < currentTime; // Check if the token is expired
   }
 
   private decodeToken(token: string): any {
-    const payload = token.split('.')[1]; // Get the payload part of the JWT
-    const decodedPayload = Buffer.from(payload, 'base64').toString('utf-8'); // Decode the base64 payload using Buffer
-    return JSON.parse(decodedPayload); // Parse the JSON string into an object
+    if (!token || token.split('.').length !== 3) {
+      throw new Error('Invalid token format');
+    }
+    const payload = token.split('.')[1];
+    return JSON.parse(Buffer.from(payload, 'base64').toString('utf-8'));
   }
 
   public isLoggedIn(): boolean {
     const token = this.getToken();
-    if (!token) return false;
-    return !this.isTokenExpired(token); // Check if the token is not expired
+    return token ? !this.isTokenExpired(token) : false;
   }
 }
