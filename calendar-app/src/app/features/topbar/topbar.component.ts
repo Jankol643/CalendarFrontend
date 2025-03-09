@@ -7,11 +7,10 @@ import { Router } from '@angular/router';
 import { CalendarView } from 'angular-calendar';
 
 @Component({
-  selector: 'app-topbar',
-  standalone: true,
-  templateUrl: './topbar.component.html',
-  styleUrls: ['./topbar.component.scss'],
-  imports: [CommonModule, FormsModule]
+    selector: 'app-topbar',
+    templateUrl: './topbar.component.html',
+    styleUrls: ['./topbar.component.scss'],
+    imports: [CommonModule, FormsModule]
 })
 export class TopBarComponent {
   @Output() viewChange = new EventEmitter<CalendarView>();

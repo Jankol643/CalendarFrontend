@@ -13,7 +13,6 @@ import { TopBarComponent } from './features/topbar/topbar.component';
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    standalone: true,
     imports: [
         FormsModule,
         ReactiveFormsModule,
@@ -24,7 +23,7 @@ import { TopBarComponent } from './features/topbar/topbar.component';
         CalendarComponent,
         LoginComponent,
         RegisterComponent
-    ],
+    ]
 })
 export class AppComponent {
     title = 'calendar-app';

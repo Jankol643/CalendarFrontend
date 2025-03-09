@@ -9,13 +9,12 @@ import { Router } from '@angular/router';
 import { ModalService } from '../../core/services/modal.service';
 
 @Component({
-  selector: 'app-calendar',
-  templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.scss'],
-  standalone: true,
-  imports: [CommonModule, FormsModule, CalendarModule, CalendarItemDetailComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [collapseAnimation]
+    selector: 'app-calendar',
+    templateUrl: './calendar.component.html',
+    styleUrls: ['./calendar.component.scss'],
+    imports: [CommonModule, FormsModule, CalendarModule, CalendarItemDetailComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [collapseAnimation]
 })
 export class CalendarComponent implements OnInit {
   view: CalendarView = CalendarView.Month;

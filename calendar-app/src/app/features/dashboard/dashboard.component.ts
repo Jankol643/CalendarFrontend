@@ -5,11 +5,10 @@ import { CalendarComponent } from '../calendar/calendar.component';
 import { CalendarView } from 'angular-calendar';
 
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [TopBarComponent, SidebarComponent, CalendarComponent],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+    selector: 'app-dashboard',
+    imports: [TopBarComponent, SidebarComponent, CalendarComponent],
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
   @Input() view: CalendarView = CalendarView.Month;

@@ -6,11 +6,10 @@ import { Subscription } from 'rxjs';
 import { CalendarService } from '../../services/calendar.service';
 
 @Component({
-  selector: 'app-sidebar',
-  templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss'],
-  imports: [CommonModule, FormsModule, EventFormComponent],
-  standalone: true
+    selector: 'app-sidebar',
+    templateUrl: './sidebar.component.html',
+    styleUrls: ['./sidebar.component.scss'],
+    imports: [CommonModule, FormsModule, EventFormComponent]
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   @Output() eventsChanged = new EventEmitter<number[]>();

@@ -3,11 +3,10 @@ import { AbstractControl, FormControl, ReactiveFormsModule } from '@angular/form
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-password-field',
-  templateUrl: './password-field.component.html',
-  styleUrl: './password-field.component.scss',
-  standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+    selector: 'app-password-field',
+    templateUrl: './password-field.component.html',
+    styleUrl: './password-field.component.scss',
+    imports: [ReactiveFormsModule, CommonModule]
 })
 export class PasswordFieldComponent {
   @Input() control!: FormControl;

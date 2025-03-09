@@ -9,11 +9,10 @@ import { PasswordFieldComponent } from '../../shared/components/password-field/p
 import { Credentials } from '../../model/models';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
-  standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, CommonModule, PasswordFieldComponent]
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.scss',
+    imports: [ReactiveFormsModule, RouterModule, CommonModule, PasswordFieldComponent]
 })
 export class LoginComponent {
   loading = false;

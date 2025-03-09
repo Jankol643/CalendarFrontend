@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { DateService } from '../date.service';
 
 @Component({
-  selector: 'app-month-view',
-  templateUrl: './month-view.component.html',
-  styleUrls: ['./month-view.component.scss'],
-  standalone: true,
-  imports: [CommonModule]
+    selector: 'app-month-view',
+    templateUrl: './month-view.component.html',
+    styleUrls: ['./month-view.component.scss'],
+    imports: [CommonModule]
 })
 export class MonthViewComponent implements OnInit {
   currentDate: Date = new Date();

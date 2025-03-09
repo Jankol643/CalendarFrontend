@@ -7,11 +7,10 @@ import { ModalService } from '../../../core/services/modal.service';
 import { EventService } from '../../../event.service';
 
 @Component({
-  selector: 'app-calendar-item-detail',
-  templateUrl: './calendar-item-detail.component.html',
-  styleUrls: ['./calendar-item-detail.component.scss'],
-  standalone: true,
-  imports: [CommonModule, FlashMessageComponent]
+    selector: 'app-calendar-item-detail',
+    templateUrl: './calendar-item-detail.component.html',
+    styleUrls: ['./calendar-item-detail.component.scss'],
+    imports: [CommonModule, FlashMessageComponent]
 })
 export class CalendarItemDetailComponent implements OnInit {
   @Input() event: CalendarEvent | null = null;

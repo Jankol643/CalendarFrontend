@@ -5,11 +5,10 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
-  standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, CommonModule]
+    selector: 'app-register',
+    templateUrl: './register.component.html',
+    styleUrls: ['./register.component.scss'],
+    imports: [ReactiveFormsModule, RouterModule, CommonModule]
 })
 export class RegisterComponent implements OnInit {
   registrationForm!: FormGroup;

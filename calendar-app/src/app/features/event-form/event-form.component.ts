@@ -6,11 +6,10 @@ import { CalendarService } from '../../services/calendar.service';
 import { Event } from '../../shared/models/event.model';
 
 @Component({
-  selector: 'app-event-form',
-  standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './event-form.component.html',
-  styleUrls: ['./event-form.component.scss']
+    selector: 'app-event-form',
+    imports: [CommonModule, FormsModule, ReactiveFormsModule],
+    templateUrl: './event-form.component.html',
+    styleUrls: ['./event-form.component.scss']
 })
 export class EventFormComponent {
   @Output() close = new EventEmitter<void>();
