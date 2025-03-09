@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 import { catchError, switchMap } from 'rxjs/operators';
 
@@ -10,39 +10,37 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.authService.getToken();
-    let clonedRequest = req;
 
-    if (token) {
-      clonedRequest = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+    if (!token) {
+      return next.handle(req);
     }
 
-    return next.handle(clonedRequest).pipe(
-      catchError(err => {
-        if (err.status === 401) {
-          // Token expired, attempt to refresh
-          return this.authService.refreshToken().pipe(
-            switchMap((response: any) => {
-              if (response && response.status === true) {
-                // Retry the original request with the new token
-                const newToken = response.authorisation.token;
-                this.authService.saveToken(newToken);
-                const retryRequest = req.clone({
-                  setHeaders: {
-                    Authorization: `Bearer ${newToken}`
-                  }
-                });
-                return next.handle(retryRequest);
-              }
-              return of(err); // Handle error if refresh fails
-            })
-          );
-        }
-        return of(err); // Handle other errors
-      })
-    );
+    if (this.authService.isTokenExpired(token)) {
+      return this.authService.refreshToken().pipe(
+        switchMap(response => this.handleTokenRefresh(response, req, next)),
+        catchError(() => this.handleError())
+      );
+    }
+
+    return next.handle(this.cloneRequest(req, token));
+  }
+
+  private handleTokenRefresh(response: any, req: HttpRequest<any>, next: HttpHandler) {
+    if (response?.status) {
+      const newToken = response.authorisation.token;
+      this.authService.saveToken(newToken);
+      return next.handle(this.cloneRequest(req, newToken));
+    }
+    this.authService.logout();
+    return this.handleError();
+  }
+
+  private cloneRequest(req: HttpRequest<any>, token: string) {
+    return req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
+  }
+
+  private handleError() {
+    this.authService.logout();
+    return throwError(() => new Error('Session expired. Please log in again.'));
   }
 }
