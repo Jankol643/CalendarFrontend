@@ -43,9 +43,10 @@ export class CalendarItemDetailComponent implements OnInit {
 
   editEvent(): void {
     if (this.event) {
-      this.edit.emit(this.event); // Emit the event data
       this.closeModal();
-      this.router.navigate([`/event/${this.event.meta.id}/edit`], { state: { event: this.event } }); // Pass event data via state
+      this.router.navigate([`/event/${this.event.meta.id}/edit`], {
+        queryParams: { cId: this.event.meta.calendar },
+      });
     }
   }
 

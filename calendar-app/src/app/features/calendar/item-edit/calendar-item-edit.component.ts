@@ -4,6 +4,7 @@ import { CalendarEvent } from 'angular-calendar';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EventService } from '../../../event.service';
+import { EventFactory } from '../../../shared/event-factory';
 
 @Component({
   selector: 'app-calendar-item-edit',
@@ -13,47 +14,35 @@ import { EventService } from '../../../event.service';
   imports: [CommonModule, FormsModule] // Import FormsModule here
 })
 export class CalendarItemEditComponent implements OnInit {
-  event: CalendarEvent = {
-    start: new Date(),
-    end: new Date(),
-    title: '',
-    meta: {
-      description: '',
-      location: '',
-      calendar: 0
-    }
-  };
+  event: CalendarEvent = EventFactory.empty();
   formattedStart: string = ''; // For binding to the input field
   formattedEnd: string = '';   // For binding to the input field
   calendarId!: number;
 
-  constructor(
-    private route: ActivatedRoute,
-    private eventService: EventService,
-    private router: Router
-  ) { }
+  constructor(private route: ActivatedRoute, private eventService: EventService, private router: Router) { }
 
   ngOnInit(): void {
-    const navigation = this.router.getCurrentNavigation();
-    console.log(navigation?.extras.state);
+    const id = this.route.snapshot.params['id']; // Event ID
+    const cId = this.route.snapshot.queryParams['cId']; // Calendar ID
 
-    if (navigation?.extras.state) {
-      this.event = navigation.extras.state['event'];
-      console.log('from edit component');
-      console.log(this.event);
-      this.calendarId = this.event.meta.calendar;
+    if (!id && cId) {
+      console.error('Missing event ID or calendar ID (cId) in route or query parameters.');
+    }
+    this.eventService.getEventById(id, cId).subscribe((event: CalendarEvent) => {
+      this.event = event;
+      console.log(event);
 
       // Convert dates to the correct format for input fields
       this.formattedStart = this.formatDateForInput(this.event.start);
       this.formattedEnd = this.formatDateForInput(this.event.end);
-    }
+    });
+
   }
 
   saveEvent(): void {
     if (this.event) {
-      // Convert formatted date strings back to Date objects
-      this.event.start = new Date(this.formattedStart);
-      this.event.end = new Date(this.formattedEnd);
+      this.event.start = this.convertToUTC(this.formattedStart);
+      this.event.end = this.convertToUTC(this.formattedEnd);
 
       this.eventService.updateEvent(this.event).subscribe({
         next: (updatedEvent) => {
@@ -67,13 +56,19 @@ export class CalendarItemEditComponent implements OnInit {
     }
   }
 
+  private convertToUTC(localDateTime: string): Date {
+    const localDate = new Date(localDateTime); // Parse the local date string
+    const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000); // Adjust for timezone offset
+    return utcDate;
+  }
+
   cancelEdit(): void {
     this.router.navigate(['/dashboard']); // Navigate back to the dashboard
   }
 
   private formatDateForInput(date: Date | undefined): string {
     if (!date) return ''; // Handle undefined dates
-    const isoString = date.toISOString(); // Convert to ISO string
-    return isoString.slice(0, 16); // Keep only "yyyy-MM-ddThh:mm"
+    const utcDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000); // Adjust for timezone offset
+    return utcDate.toISOString().slice(0, 16); // Keep only "yyyy-MM-ddThh:mm"
   }
 }
