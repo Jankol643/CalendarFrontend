@@ -1,48 +1,68 @@
-<div class="modal fade show" style="display: block;" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="false"
-    (click)="closeModal()">
-    <div class="modal-dialog" (click)="$event.stopPropagation()">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="eventModalLabel">Add Event</h5>
-                <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form [formGroup]="myGroup" (ngSubmit)="addEvent()">
-                    <div class="mb-3">
-                        <label for="calendar" class="form-label">Select Calendar *</label>
-                        <select class="form-select" id="calendar" formControlName="calendar" required>
-                            <option value="" disabled>Select a calendar</option>
-                            <option *ngFor="let calendar of calendars" [value]="calendar.id">{{ calendar.title }}
-                            </option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Title *</label>
-                        <input type="text" class="form-control" id="title" required formControlName="title">
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" formControlName="description"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="start" class="form-label">Start Date</label>
-                        <input type="datetime-local" class="form-control" id="start" required formControlName="start">
-                    </div>
-                    <div class="mb-3">
-                        <label for="end" class="form-label">End Date</label>
-                        <input type="datetime-local" class="form-control" id="end" required formControlName="end">
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="allDay" formControlName="allDay">
-                        <label class="form-check-label" for="allDay">All Day Event</label>
-                    </div>
-                    <div class="mb-3">
-                        <label for="location" class="form-label">Location</label>
-                        <input type="text" class="form-control" id="location" formControlName="location">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-            </div>
-        </div>
-    </div>
+<h1 mat-dialog-title>Add Event</h1>
+<div mat-dialog-content>
+    <form [formGroup]="eventForm" (ngSubmit)="addEvent()">
+        <!-- Calendar Selection -->
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Select Calendar *</mat-label>
+            <mat-select formControlName="calendar" required>
+                <mat-option value="" disabled>Select a calendar</mat-option>
+                <mat-option *ngFor="let calendar of calendars" [value]="calendar.id">
+                    {{ calendar.title }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Title -->
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Title *</mat-label>
+            <input matInput type="text" formControlName="title" required />
+        </mat-form-field>
+
+        <!-- Description -->
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description"></textarea>
+        </mat-form-field>
+
+        <!-- Start Date -->
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Start Date</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="start" required />
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+
+        <!-- End Date -->
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>End Date</mat-label>
+            <input matInput [matDatepicker]="endPicker" formControlName="end" required />
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+
+        <!-- Timezone -->
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Timezone</mat-label>
+            <input type="text" matInput formControlName="timezone" [matAutocomplete]="auto"
+                placeholder="Search for a timezone" />
+            <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let timezone of filteredTimezones | async" [value]="timezone.name">
+                    {{ timezone.name }} (UTC{{ timezone.offset }})
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+
+        <!-- All Day Event -->
+        <mat-checkbox formControlName="allDay">All Day Event</mat-checkbox>
+
+        <!-- Location -->
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Location</mat-label>
+            <input matInput type="text" formControlName="location" />
+        </mat-form-field>
+    </form>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="closeModal()">Cancel</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="eventForm.invalid">Submit</button>
 </div>

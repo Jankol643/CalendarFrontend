@@ -1,75 +1,89 @@
-import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
-import { EventFormComponent } from '../event-form/event-form.component';
-import { FormsModule } from '@angular/forms';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog'; // Import MatDialog
+import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { CalendarService } from '../../services/calendar.service';
+import { EventFormComponent } from '../event-form/event-form.component';
 
 @Component({
-    selector: 'app-sidebar',
-    templateUrl: './sidebar.component.html',
-    styleUrls: ['./sidebar.component.scss'],
-    imports: [CommonModule, FormsModule, EventFormComponent]
+  selector: 'app-sidebar',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatSidenavModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatDialogModule
+  ],
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit, OnDestroy {
-  @Output() eventsChanged = new EventEmitter<number[]>();
-  calendars: { id: number, title: string; visible: boolean }[] = [];
+  opened: boolean = true;
+  @Output() onEventsChanged = new EventEmitter<number[]>();
+  calendars: { id: number; title: string; visible: boolean }[] = [];
   showCalendars: boolean = true;
-  showEventForm: boolean = false;
-  isSidebarVisible: boolean = true;
-  private subscriptions: Subscription = new Subscription(); // Subscription management
+  private subscriptions: Subscription = new Subscription();
 
-  constructor(private calendarService: CalendarService) { }
+  constructor(private calendarService: CalendarService, private dialog: MatDialog) { } // Inject MatDialog
 
-  ngOnInit() {
-    this.loadCalendars(); // Load calendars on initialization
+  ngOnInit(): void {
+    this.loadCalendars();
   }
 
-  loadCalendars() {
-    const calendarSubscription = this.calendarService.getCalendars().subscribe(response => {
-      if (response && Array.isArray(response.data)) {
-        this.calendars = response.data.map((calendar: any) => ({
-          ...calendar,
-          visible: true
-        }));
-        this.emitVisibleCalendars();
-      } else {
-        console.error('Unexpected response format:', response);
-        this.calendars = [];
+  loadCalendars(): void {
+    const calendarSubscription = this.calendarService.getCalendars().subscribe({
+      next: (response) => {
+        if (response && Array.isArray(response.data)) {
+          this.calendars = response.data.map((calendar: any) => ({
+            ...calendar,
+            visible: true
+          }));
+          this.emitVisibleCalendars();
+        } else {
+          console.error('Unexpected response format:', response);
+          this.calendars = [];
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching calendars:', error);
       }
     });
     this.subscriptions.add(calendarSubscription);
   }
 
-  toggleCalendars() {
+  toggleCalendars(): void {
     this.showCalendars = !this.showCalendars;
   }
 
-  toggleCalendarVisibility(calendar: { id: number, title: string; visible: boolean }) {
-    calendar.visible = !calendar.visible; // Toggle visibility
-    this.emitVisibleCalendars(); // Emit the updated list of visible calendars
+  toggleCalendarVisibility(calendar: { id: number; title: string; visible: boolean }): void {
+    calendar.visible = !calendar.visible;
+    this.emitVisibleCalendars();
   }
 
-  emitVisibleCalendars() {
+  emitVisibleCalendars(): void {
     const visibleCalendarIds = this.calendars
-      .filter(cal => cal.visible)
-      .map(cal => cal.id);
-    this.eventsChanged.emit(visibleCalendarIds); // Emit the IDs of visible calendars
+      .filter((cal) => cal.visible)
+      .map((cal) => cal.id);
+    this.onEventsChanged.emit(visibleCalendarIds);
   }
 
-  openModal() {
-    this.showEventForm = true;
+  openEventForm(): void {
+    // Open the EventFormComponent as a dialog
+    this.dialog.open(EventFormComponent, {
+      width: '400px', // Optional: Set dialog width
+      data: {} // Optional: Pass data to the dialog if needed
+    });
   }
 
-  closeModal() {
-    this.showEventForm = false;
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
-  onEventsChanged(calendarIds: number[]) {
-    this.eventsChanged.emit(calendarIds);
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe(); // Clean up subscriptions
+  public toggleSidebar() {
+    this.opened = !this.opened;
   }
 }

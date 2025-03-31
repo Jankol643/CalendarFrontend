@@ -1,36 +1,44 @@
-<div class="container">
-    <div class="row">
-        <div class="col-12 col-md-8 offset-md-2">
-            <div class="card">
-                <h4 class="card-header">Login</h4>
-                <div class="card-body">
-                    <div class="alert alert-danger" *ngIf="errorMessage" role="alert">
-                        {{ errorMessage }}
-                    </div>
-                    <form [formGroup]="loginForm" class="needs-validation" (ngSubmit)="onSubmit()" novalidate>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input id="email" type="email" name="email" autocomplete="email" formControlName="email"
-                                class="form-control" [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" />
-                            <div *ngIf="emailError" class="invalid-feedback">
-                                {{ emailError }}
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <app-password-field [control]="loginForm.controls.password"></app-password-field>
-                        </div>
-
-                        <div class="mb-3">
-                            <button type="submit" [disabled]="loading" class="btn btn-primary">
-                                <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
-                                Login
-                            </button>
-                            <a routerLink="../register" class="btn btn-link">Cancel</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<mat-card class="login-card">
+    <mat-card-header>
+        <mat-card-title class="login-title">Login</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div *ngIf="errorMessage" class="error-message">
+            {{ errorMessage }}
         </div>
-    </div>
-</div>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <!-- Email Field -->
+            <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Email</mat-label>
+                <input matInput type="email" formControlName="email" [class.is-invalid]="submitted && f['email'].errors"
+                    autocomplete="email" />
+                <mat-error *ngIf="f['email'].hasError('required')">Email is required</mat-error>
+                <mat-error *ngIf="f['email'].hasError('email')">Invalid email address</mat-error>
+            </mat-form-field>
+
+            <!-- Password Field with Hide/Show Toggle -->
+            <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Password</mat-label>
+                <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password"
+                    [class.is-invalid]="submitted && f['password'].errors" autocomplete="current-password" />
+                <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword"
+                    [attr.aria-label]="'Hide or show password'" [attr.aria-pressed]="!hidePassword">
+                    <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="f['password'].hasError('required')">Password is required</mat-error>
+                <mat-error *ngIf="f['password'].hasError('minlength')">Password must be at least 6
+                    characters</mat-error>
+            </mat-form-field>
+
+            <!-- Buttons -->
+            <div class="button-group">
+                <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+                    <mat-progress-spinner *ngIf="loading" diameter="20" mode="indeterminate"
+                        class="spinner"></mat-progress-spinner>
+                    Login
+                </button>
+                <button mat-button routerLink="../register" type="button">Cancel</button>
+            </div>
+        </form>
+    </mat-card-content>
+</mat-card>

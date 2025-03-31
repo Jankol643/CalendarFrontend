@@ -1,22 +1,17 @@
-<aside class="sidenav collapse w-92" id="sidebar">
-    <button (click)="openModal()" class="btn btn-primary">Add Event</button>
+<div class="sidebar-header">
+    <button mat-raised-button color="primary" (click)="openEventForm()">Add Event</button>
+</div>
 
-    <app-event-form *ngIf="showEventForm" (close)="closeModal()"
-        (eventsChanged)="onEventsChanged($event)"></app-event-form>
-
-    <div class="my-calendars">
-        <h2 (click)="toggleCalendars()" class="toggle-header">
-            My Calendars
-            <span>{{ showCalendars ? '▲' : '▼' }}</span>
-        </h2>
-        <div *ngIf="showCalendars">
-            <div *ngFor="let calendar of calendars">
-                <label [for]="'calendar-' + calendar.id">
-                    <input type="checkbox" [id]="'calendar-' + calendar.id" [name]="'calendar-' + calendar.id"
-                        [checked]="calendar.visible" (change)="toggleCalendarVisibility(calendar)" />
-                    {{ calendar.title }}
-                </label>
-            </div>
+<div class="my-calendars">
+    <h2 (click)="toggleCalendars()" class="toggle-header">
+        My Calendars
+        <span>{{ showCalendars ? '▲' : '▼' }}</span>
+    </h2>
+    <div *ngIf="showCalendars">
+        <div *ngFor="let calendar of calendars" class="calendar-item">
+            <mat-checkbox [checked]="calendar.visible" (change)="toggleCalendarVisibility(calendar)">
+                {{ calendar.title }}
+            </mat-checkbox>
         </div>
     </div>
-</aside>
+</div>
