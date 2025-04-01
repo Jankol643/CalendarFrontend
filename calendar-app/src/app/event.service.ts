@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable, Subject } from 'rxjs';
 import { CalendarEvent } from 'angular-calendar';
-import { Event } from './shared/event.model';
 import { EventFactory } from './shared/event-factory';
 import { environment } from '../environments/environment';
+import { EventModel } from './model/models';
 
 @Injectable({
   providedIn: 'root'
@@ -17,18 +17,18 @@ export class EventService {
   constructor(private http: HttpClient) { }
 
   public getEvents(calendarId: number): Observable<CalendarEvent[]> {
-    return this.http.get<Event[]>(`${this.baseEndpoint}/${calendarId}/events`).pipe(
+    return this.http.get<EventModel[]>(`${this.baseEndpoint}/${calendarId}/events`).pipe(
       map(events => events.map(event => EventFactory.fromRawEvent(event)))
     );
   }
 
   public getEventById(id: number, calendarId: number): Observable<CalendarEvent> {
-    return this.http.get<Event>(`${this.baseEndpoint}/${calendarId}/events/${id}`).pipe(
+    return this.http.get<EventModel>(`${this.baseEndpoint}/${calendarId}/events/${id}`).pipe(
       map(event => EventFactory.fromRawEvent(event))
     );
   }
 
-  public createEvent(event: Event): Observable<any> {
+  public createEvent(event: EventModel): Observable<any> {
     const rawEvent = EventFactory.eventToRawEvent(event);
     const calendarId = rawEvent.calendar_id;
     console.log(rawEvent);

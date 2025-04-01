@@ -1,35 +1,61 @@
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EventService } from '../../event.service';
 import { CalendarService } from '../../services/calendar.service';
-import { Event } from '../../shared/models/event.model';
+import { TimezoneService } from '../../services/timezone.service';
+import { EventModel, TimezoneModel } from '../../model/models';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select'; // Import MatSelectModule
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
-    selector: 'app-event-form',
-    imports: [CommonModule, FormsModule, ReactiveFormsModule],
-    templateUrl: './event-form.component.html',
-    styleUrls: ['./event-form.component.scss']
+  selector: 'app-event-form',
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatDatepickerModule, MatSelectModule, MatCheckboxModule],
+  templateUrl: './event-form.component.html',
+  styleUrls: ['./event-form.component.scss']
 })
-export class EventFormComponent {
+export class EventFormComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
   @Output() eventsChanged = new EventEmitter<number[]>();
   showEventForm: boolean = true;
   calendars: any[] = [];
-  myGroup: FormGroup;
+  eventForm!: FormGroup;
+  timezones: TimezoneModel[] = [];
+  filteredTimezones!: Observable<TimezoneModel[]>;
 
-  constructor(private eventService: EventService, private calendarService: CalendarService, private fb: FormBuilder) {
-    this.myGroup = this.fb.group({
-      calendar: new FormControl('', { validators: [Validators.required] }),
-      title: new FormControl('', { validators: [Validators.required] }),
-      description: new FormControl(),
-      start: new FormControl('', { validators: [Validators.required] }),
-      end: new FormControl('', { validators: [Validators.required] }),
-      allDay: new FormControl(false),
-      location: new FormControl()
+  constructor(
+    private eventService: EventService,
+    private calendarService: CalendarService,
+    private fb: FormBuilder,
+    private timezoneService: TimezoneService
+  ) { }
+
+  ngOnInit(): void {
+    this.eventForm = this.fb.group({
+      calendar: ['', Validators.required],
+      title: ['', Validators.required],
+      description: [''],
+      start: ['', Validators.required],
+      end: ['', Validators.required],
+      timezone: [''],
+      allDay: [false],
+      location: [''],
     });
 
     this.loadCalendars();
+    this.loadTimezones();
+
+    this.filteredTimezones = this.eventForm.get('timezone')!.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filterTimezones(value || ''))
+    );
   }
 
   loadCalendars(): void {
@@ -38,31 +64,48 @@ export class EventFormComponent {
         this.calendars = response.data; // Assuming the API response has a `data` property
       },
       error: (error) => {
-        console.error('Error loading calendars:', error); // Handle errors gracefully
+        console.error('Error loading calendars:', error);
       }
     });
   }
 
-  closeModal() {
+  loadTimezones(): void {
+    this.timezoneService.getTimezones().subscribe((timezones: TimezoneModel[]) => {
+      this.timezones = timezones;
+      this.filteredTimezones = this.eventForm.get('timezone')!.valueChanges.pipe(
+        startWith(''),
+        map(value => this._filterTimezones(value || ''))
+      );
+    });
+  }
+
+  private _filterTimezones(value: string): TimezoneModel[] {
+    const filterValue = value.toLowerCase();
+    return this.timezones.filter(tz =>
+      tz.name.toLowerCase().includes(filterValue) || tz.utcOffset.toLowerCase().includes(filterValue)
+    );
+  }
+
+  private closeModal() {
     this.showEventForm = false;
     this.close.emit();
   }
 
-  addEvent() {
-    let event: Event = {
-      title: this.myGroup.value.title,
-      description: this.myGroup.value.description,
-      start: this.myGroup.value.start,
-      end: this.myGroup.value.end,
-      allDay: this.myGroup.value.allDay,
-      location: this.myGroup.value.location,
-      calendar: this.myGroup.value.calendar
+  public addEvent() {
+    const event: EventModel = {
+      title: this.eventForm.value.title,
+      description: this.eventForm.value.description,
+      startTime: this.eventForm.value.start,
+      endTime: this.eventForm.value.end,
+      timezone: this.eventForm.value.timezone,
+      isAllDay: this.eventForm.value.allDay,
+      location: this.eventForm.value.location,
+      calendarId: this.eventForm.value.calendar,
     };
-    console.log('Calendar: ', event.calendar);
 
     this.eventService.createEvent(event).subscribe(() => {
       this.closeModal();
-      this.eventsChanged.emit([this.myGroup.value.calendar]);
+      this.eventsChanged.emit([this.eventForm.value.calendar]);
     });
   }
 }

@@ -1,5 +1,5 @@
 import { CalendarEvent } from 'angular-calendar';
-import { Event } from './event.model';
+import { Event } from './models/event.model';
 
 export class EventFactory {
     /**

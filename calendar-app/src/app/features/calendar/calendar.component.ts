@@ -1,61 +1,80 @@
-import { Component, ChangeDetectionStrategy, OnInit, EventEmitter, Output } from '@angular/core';
-import { Subject, forkJoin } from 'rxjs';
-import { CalendarEvent, CalendarModule, CalendarView, collapseAnimation, DAYS_OF_WEEK } from 'angular-calendar';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
+import { Subject, forkJoin, Subscription } from 'rxjs';
+import { CalendarEvent, CalendarModule, collapseAnimation, DAYS_OF_WEEK } from 'angular-calendar';
 import { EventService } from '../../event.service';
+import { Router } from '@angular/router';
+import { ModalService } from '../../core/services/modal.service';
+import { CalendarStateService } from '../../services/calendar-state.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CalendarItemDetailComponent } from './item-detail/calendar-item-detail.component';
-import { Router } from '@angular/router';
-import { ModalService } from '../../core/services/modal.service';
 
 @Component({
-    selector: 'app-calendar',
-    templateUrl: './calendar.component.html',
-    styleUrls: ['./calendar.component.scss'],
-    imports: [CommonModule, FormsModule, CalendarModule, CalendarItemDetailComponent],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    animations: [collapseAnimation]
+  selector: 'app-calendar',
+  templateUrl: './calendar.component.html',
+  styleUrls: ['./calendar.component.scss'],
+  imports: [CommonModule, FormsModule, CalendarModule, CalendarItemDetailComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [collapseAnimation],
 })
-export class CalendarComponent implements OnInit {
-  view: CalendarView = CalendarView.Month;
+export class CalendarComponent implements OnInit, OnDestroy {
+  calendarView: 'month' | 'week' | 'day' = 'month'; // Use string literals
   events: CalendarEvent[] = [];
   selectedEvent: CalendarEvent | null = null;
-  @Output() eventsChanged = new EventEmitter<number[]>();
-  CalendarView = CalendarView;
   viewDate: Date = new Date();
   refresh = new Subject<void>();
-  activeDayIsOpen: boolean = true;
+  activeDayIsOpen = true;
   weekStartsOn: number = DAYS_OF_WEEK.MONDAY;
 
-  constructor(private eventService: EventService, private modalService: ModalService, private router: Router) { }
+  private subscriptions = new Subscription();
 
-  ngOnInit() {
-    this.eventService.getEventDeletedObservable().subscribe((calendarId: number) => {
-      this.loadEvents([calendarId]);
-    });
+  constructor(
+    private eventService: EventService,
+    private modalService: ModalService,
+    private router: Router,
+    private calendarStateService: CalendarStateService
+  ) { }
 
-    this.eventsChanged.subscribe((calendarIds: number[]) => {
-      this.loadEvents(calendarIds);
-    });
+  ngOnInit(): void {
+    this.subscriptions.add(
+      this.calendarStateService.view$.subscribe((view) => {
+        this.calendarView = view;
+        this.refresh.next();
+      })
+    );
+
+    this.subscriptions.add(
+      this.calendarStateService.navigationAction$.subscribe((action) => {
+        if (action) {
+          this.handleNavigation(action);
+        }
+      })
+    );
+
+    this.subscriptions.add(
+      this.eventService.getEventDeletedObservable().subscribe((calendarId) => {
+        this.loadEvents([calendarId]);
+      })
+    );
   }
 
-  loadEvents(calendarIds: number[]) {
-    if (calendarIds.length === 0) {
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  loadEvents(calendarIds: number[]): void {
+    if (!calendarIds.length) {
       this.events = [];
       this.refresh.next();
       return;
     }
 
-    const eventRequests = calendarIds.map(id => this.eventService.getEvents(id));
-
-    forkJoin(eventRequests).subscribe({
-      next: results => {
+    forkJoin(calendarIds.map((id) => this.eventService.getEvents(id))).subscribe({
+      next: (results) => {
         this.events = results.flat();
         this.refresh.next();
       },
-      error: error => {
-        console.error('Error fetching events: ', error);
-      }
+      error: (error) => console.error('Error fetching events:', error),
     });
   }
 
@@ -67,50 +86,37 @@ export class CalendarComponent implements OnInit {
   }
 
   onEditEvent(event: CalendarEvent): void {
-    // Navigate to the edit component with the event data
     this.router.navigate(['/event/edit'], { state: { event } });
   }
 
-  setView(view: CalendarView) {
-    this.view = view;
+  private handleNavigation(action: string): void {
+    switch (action) {
+      case 'previous':
+        this.adjustViewDate(-1);
+        break;
+      case 'today':
+        this.viewDate = new Date();
+        break;
+      case 'next':
+        this.adjustViewDate(1);
+        break;
+    }
     this.refresh.next();
   }
 
-  closeOpenMonthViewDay() {
-    this.activeDayIsOpen = false;
-  }
-
-  // Lookup table for navigation logic
-  private viewAdjustments = {
-    [CalendarView.Month]: {
-      previous: () => this.viewDate.setMonth(this.viewDate.getMonth() - 1),
-      next: () => this.viewDate.setMonth(this.viewDate.getMonth() + 1),
-    },
-    [CalendarView.Week]: {
-      previous: () => this.viewDate.setDate(this.viewDate.getDate() - 7),
-      next: () => this.viewDate.setDate(this.viewDate.getDate() + 7),
-    },
-    [CalendarView.Day]: {
-      previous: () => this.viewDate.setDate(this.viewDate.getDate() - 1),
-      next: () => this.viewDate.setDate(this.viewDate.getDate() + 1),
-    },
-  };
-
-  // Navigate to the previous period
-  previous() {
-    this.viewDate = new Date(this.viewAdjustments[this.view]?.previous());
-    this.refresh.next();
-  }
-
-  // Navigate to today
-  today() {
-    this.viewDate = new Date();
-    this.refresh.next();
-  }
-
-  // Navigate to the next period
-  next() {
-    this.viewDate = new Date(this.viewAdjustments[this.view]?.next());
-    this.refresh.next();
+  private adjustViewDate(step: number): void {
+    const adjustments = {
+      month: () => {
+        const currentDate = this.viewDate.getDate();
+        this.viewDate.setDate(1); // Temporarily set to the 1st to avoid overflow
+        this.viewDate.setMonth(this.viewDate.getMonth() + step);
+        const daysInMonth = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() + 1, 0).getDate();
+        this.viewDate.setDate(Math.min(currentDate, daysInMonth)); // Clamp to the last valid day
+      },
+      week: () => this.viewDate.setDate(this.viewDate.getDate() + step * 7),
+      day: () => this.viewDate.setDate(this.viewDate.getDate() + step),
+    };
+    adjustments[this.calendarView]?.();
+    this.viewDate = new Date(this.viewDate); // Ensure the date is updated
   }
 }

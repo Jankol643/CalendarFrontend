@@ -1,15 +1,13 @@
 <div class="row text-center">
-
     <div class="col-md-4">
         <h3>
-            {{ viewDate | calendarDate:(view +
-            'ViewTitle'):'en':weekStartsOn }}
+            {{ viewDate | calendarDate:(calendarView + 'ViewTitle') }}
         </h3>
     </div>
 </div>
 <br />
 
-<ng-template #customCellTemplate let-day="day" let-locale="locale" style="height: 100vh;">
+<ng-template #customCellTemplate let-day="day" let-locale="locale">
     <div class="cal-cell-top">
         <span class="cal-day-number">
             {{ day.date | calendarDate:'monthViewDayNumber':locale }}
@@ -23,17 +21,20 @@
     </div>
 </ng-template>
 
-<div [ngSwitch]="view">
-    <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
-        [refresh]="refresh" [weekStartsOn]="weekStartsOn" (eventClicked)="handleEvent('Clicked', $event.event)"
+<div [ngSwitch]="calendarView">
+    <mwl-calendar-month-view *ngSwitchCase="'month'" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
+        [weekStartsOn]="weekStartsOn" (eventClicked)="handleEvent('Clicked', $event.event)"
         [cellTemplate]="customCellTemplate">
     </mwl-calendar-month-view>
-    <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [weekStartsOn]="weekStartsOn" [viewDate]="viewDate"
-        [events]="events" [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)">
+
+    <mwl-calendar-week-view *ngSwitchCase="'week'" [weekStartsOn]="weekStartsOn" [viewDate]="viewDate" [events]="events"
+        [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)">
     </mwl-calendar-week-view>
-    <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
+
+    <mwl-calendar-day-view *ngSwitchCase="'day'" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
         (eventClicked)="handleEvent('Clicked', $event.event)">
     </mwl-calendar-day-view>
 </div>
 
-<app-calendar-item-detail *ngIf="selectedEvent" [event]="selectedEvent"></app-calendar-item-detail>
+<app-calendar-item-detail *ngIf="selectedEvent" [event]="selectedEvent">
+</app-calendar-item-detail>
