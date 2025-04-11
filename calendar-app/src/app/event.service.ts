@@ -29,11 +29,8 @@ export class EventService {
   }
 
   public createEvent(event: EventModel): Observable<any> {
-    const rawEvent = EventFactory.eventToRawEvent(event);
-    const calendarId = rawEvent.calendar_id;
-    console.log(rawEvent);
-    console.log('CalendarId from service: ' + calendarId);
-    return this.http.post(`${this.baseEndpoint}/${calendarId}/events`, rawEvent);
+    console.log('CalendarId from service: ' + event.calendarId);
+    return this.http.post(`${this.baseEndpoint}/${event.calendarId}/events`, EventFactory.eventToBackendEvent(event));
   }
 
   public updateEvent(event: CalendarEvent): Observable<any> {

@@ -71,7 +71,7 @@ export class LoginComponent {
     }
 
     const credentials = {
-      emailAddress: this.loginForm.value.email,
+      email: this.loginForm.value.email,
       password: this.loginForm.value.password
     };
 

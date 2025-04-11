@@ -1,11 +1,12 @@
 import { CalendarEvent } from 'angular-calendar';
-import { Event } from './models/event.model';
+import { EventModel } from '../model/models';
+import { toZonedTime, formatInTimeZone } from 'date-fns-tz';
 
 export class EventFactory {
     /**
      * Creates an empty CalendarEvent.
      */
-    static empty(): CalendarEvent {
+    public static empty(): CalendarEvent {
         return {
             title: '',
             start: new Date(),
@@ -16,7 +17,8 @@ export class EventFactory {
                 id: 0,
                 location: '',
                 description: '',
-                calendar: 0
+                calendarId: 0,
+                timezone: 'UTC' // Default timezone
             }
         };
     }
@@ -25,18 +27,21 @@ export class EventFactory {
      * Converts a raw event object to a CalendarEvent.
      * @param rawEvent The raw event object from the backend.
      */
-    static fromRawEvent(rawEvent: any): CalendarEvent {
+    public static fromRawEvent(rawEvent: any): CalendarEvent {
+        const timezone = rawEvent.timezone || 'UTC'; // Fallback to UTC if timezone is not provided.
+
         return {
             title: rawEvent.title,
-            start: new Date(rawEvent.start_date),
-            end: new Date(rawEvent.end_date),
+            start: toZonedTime(new Date(rawEvent.start_date), timezone),
+            end: toZonedTime(new Date(rawEvent.end_date), timezone),
             allDay: Boolean(rawEvent.all_day),
             draggable: true,
             meta: {
                 id: rawEvent.id,
                 location: rawEvent.location,
                 description: rawEvent.description,
-                calendar: rawEvent.calendar_id
+                calendarId: rawEvent.calendar_id,
+                timezone
             }
         };
     }
@@ -45,29 +50,42 @@ export class EventFactory {
      * Converts a CalendarEvent to a raw event object for the backend.
      * @param calendarEvent The CalendarEvent to be converted.
      */
-    static calendarEventToRawEvent(calendarEvent: CalendarEvent): any {
+    public static calendarEventToRawEvent(calendarEvent: CalendarEvent): any {
+        const timezone = calendarEvent.meta?.timezone || 'UTC'; // Fallback to UTC if timezone is not provided.
+
         return {
-            id: calendarEvent.meta?.id,
             title: calendarEvent.title,
-            start_date: new Date(calendarEvent.start).toISOString(),
-            end_date: calendarEvent.end ? new Date(calendarEvent.end).toISOString() : null,
-            timezone: calendarEvent.meta?.timezone,
+            start_time: formatInTimeZone(calendarEvent.start, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"), // Format to ISO string
+            end_time: calendarEvent.end ? formatInTimeZone(calendarEvent.end, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX") : null,
             all_day: calendarEvent.allDay,
             location: calendarEvent.meta?.location,
             description: calendarEvent.meta?.description,
-            calendar_id: calendarEvent.meta?.calendar
+            calendar_id: calendarEvent.meta?.calendarId,
+            timezone
         };
     }
 
-    static eventToRawEvent(calendarEvent: Event): any {
+    /** 
+     * Converts EventModel to a backend-compatible event format.
+     * @param event 
+     * @returns 
+     */
+    public static eventToBackendEvent(event: EventModel) {
+        // Adjust the start and end time to the selected timezone
+        const timezone = event.timezone || 'UTC'; // Fallback to UTC if timezone is not provided.
+
+        const startTime = formatInTimeZone(event.startTime, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX");
+        const endTime = formatInTimeZone(event.endTime, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX");
+
         return {
-            title: calendarEvent.title,
-            start_date: new Date(calendarEvent.start).toISOString(),
-            end_date: calendarEvent.end ? new Date(calendarEvent.end).toISOString() : null,
-            all_day: calendarEvent.allDay,
-            location: calendarEvent.location,
-            description: calendarEvent.description,
-            calendar_id: calendarEvent.calendar
+            title: event.title,
+            description: event.description,
+            start_date: startTime,
+            end_date: endTime,
+            timezone,
+            all_day: event.isAllDay,
+            location: event.location,
+            calendar_id: event.calendarId,
         };
     }
 }

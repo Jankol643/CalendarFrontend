@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EventService } from '../../event.service';
@@ -11,24 +11,35 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatSelectModule } from '@angular/material/select'; // Import MatSelectModule
+import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTimepickerModule } from '@angular/material/timepicker';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 
 @Component({
   selector: 'app-event-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatDatepickerModule, MatSelectModule, MatCheckboxModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule,
+    MatFormFieldModule, MatInputModule, MatAutocompleteModule,
+    MatDatepickerModule, MatSelectModule, MatCheckboxModule,
+    MatDialogModule, MatButtonModule, MatTimepickerModule, MatProgressSpinnerModule],
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss']
 })
 export class EventFormComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
   @Output() eventsChanged = new EventEmitter<number[]>();
+
   showEventForm: boolean = true;
   calendars: any[] = [];
   eventForm!: FormGroup;
   timezones: TimezoneModel[] = [];
   filteredTimezones!: Observable<TimezoneModel[]>;
+  readonly dialogRef = inject(MatDialogRef<EventFormComponent>);
+  loading: boolean = false; // Loading state for form submission
 
   constructor(
     private eventService: EventService,
@@ -58,10 +69,10 @@ export class EventFormComponent implements OnInit {
     );
   }
 
-  loadCalendars(): void {
+  private loadCalendars(): void {
     this.calendarService.getCalendars().subscribe({
       next: (response) => {
-        this.calendars = response.data; // Assuming the API response has a `data` property
+        this.calendars = response.data;
       },
       error: (error) => {
         console.error('Error loading calendars:', error);
@@ -69,7 +80,7 @@ export class EventFormComponent implements OnInit {
     });
   }
 
-  loadTimezones(): void {
+  private loadTimezones(): void {
     this.timezoneService.getTimezones().subscribe((timezones: TimezoneModel[]) => {
       this.timezones = timezones;
       this.filteredTimezones = this.eventForm.get('timezone')!.valueChanges.pipe(
@@ -86,12 +97,18 @@ export class EventFormComponent implements OnInit {
     );
   }
 
-  private closeModal() {
-    this.showEventForm = false;
-    this.close.emit();
+  public onNoClick(): void {
+    this.dialogRef.close();
   }
 
-  public addEvent() {
+  public addEvent(): void {
+    console.log('AddEvent clicked.');
+    if (this.eventForm.invalid) {
+      console.log('Form invalid');
+      return; // Prevent submission if form is invalid
+    }
+
+    this.loading = true; // Set loading state
     const event: EventModel = {
       title: this.eventForm.value.title,
       description: this.eventForm.value.description,
@@ -103,9 +120,17 @@ export class EventFormComponent implements OnInit {
       calendarId: this.eventForm.value.calendar,
     };
 
-    this.eventService.createEvent(event).subscribe(() => {
-      this.closeModal();
-      this.eventsChanged.emit([this.eventForm.value.calendar]);
+    this.eventService.createEvent(event).subscribe({
+      next: () => {
+        this.onNoClick();
+        this.eventsChanged.emit([this.eventForm.value.calendar]);
+      },
+      error: (error) => {
+        console.error('Error creating event:', error);
+      },
+      complete: () => {
+        this.loading = false; // Reset loading state
+      }
     });
   }
 }

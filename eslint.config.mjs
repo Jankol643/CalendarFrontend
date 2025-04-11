@@ -20,8 +20,8 @@ const baseConfig = {
     // Limit maximum depth of nested blocks to 4
     "max-depth": ["error", 4],
     // Limit the cyclomatic complexity to 20
-    "complexity": ["error", { "max": 20 }]
-    // Define your other source file rules here
+    "complexity": ["error", { "max": 20 }],
+    "max-lines-per-function": ["error", { "max": 50 }]
   },
 };
 

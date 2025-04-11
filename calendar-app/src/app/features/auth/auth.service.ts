@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, tap, throwError, retry, finalize } from 'rxjs';
+import { catchError, Observable, tap, throwError, retry, finalize, switchMap, of } from 'rxjs';
 import { Buffer } from 'buffer';
 import { environment } from '../../../environments/environment';
 import { UserModel, AuthCredentials, AuthResponseModel } from '../../model/models';
@@ -20,9 +20,9 @@ export class AuthService {
     if (withAuth) {
       const token = this.getToken();
       if (token) {
-        headers = headers.set('Authorization', `Bearer ${token}`);
+        headers = headers.set('authorisation', `Bearer ${token}`);
       } else {
-        console.warn('No token found, proceeding without Authorization header.');
+        console.warn('No token found, proceeding without authorisation header.');
       }
     }
     return headers;
@@ -40,6 +40,44 @@ export class AuthService {
 
   public login(credentials: AuthCredentials): Observable<AuthResponseModel> {
     console.time('Login User');
+
+    const token = this.getToken();
+
+    if (token) {
+      this.clearToken();
+    }
+
+    const isTokenInvalid = !token || this.isTokenExpired(token);
+
+    if (isTokenInvalid) {
+      return this.performLogin(credentials);
+    }
+
+    console.log('Using existing valid token.');
+
+    // Create success response with the valid token
+    const response: AuthResponseModel = {
+      isSuccess: true,
+      authorisation: { token }
+    };
+
+    // Return the response wrapped in an Observable
+    return of(response);
+  }
+
+  //TODO: Handle refresh when user is logged in
+  private handleTokenRefresh(credentials: AuthCredentials): Observable<AuthResponseModel> {
+    console.log('Performing token refresh');
+    this.clearToken();
+    return this.refreshToken().pipe(
+      switchMap(() => this.performLogin(credentials)),
+      finalize(() => console.timeEnd('Login User'))
+    );
+  }
+
+  private performLogin(credentials: AuthCredentials): Observable<AuthResponseModel> {
+    console.log('Performing login...');
+    console.time('Login API call');
     return this.http.post<AuthResponseModel>(`${this.baseEndpoint}/login`, credentials).pipe(
       retry(this.MAX_RETRIES),
       tap(response => this.handleLoginResponse(response)),
@@ -51,7 +89,7 @@ export class AuthService {
     );
   }
 
-  getUser(): Observable<UserModel> {
+  private getUser(): Observable<UserModel> {
     console.log('Fetching authenticated user data');
     return this.http.get<UserModel>(`${this.baseEndpoint}/me`, { headers: this.headers(true) }).pipe(
       retry(this.MAX_RETRIES),
@@ -59,8 +97,6 @@ export class AuthService {
       catchError(this.handleError)
     );
   }
-
-
 
   public logout(): Observable<void> {
     // Clear the token (local session)
@@ -78,10 +114,11 @@ export class AuthService {
   }
 
   private handleLoginResponse(response: AuthResponseModel): void {
+    console.timeEnd('Login API call');
     console.log('Processing login response:', response);
-    if (response?.isSuccess && response.authorization?.token) {
+    if (response?.isSuccess && response.authorisation?.token) {
       console.log('Login successful, saving token...');
-      this.saveToken(response.authorization.token);
+      this.saveToken(response.authorisation.token);
     } else {
       console.warn('Invalid login response:', response);
     }
@@ -151,7 +188,7 @@ export class AuthService {
   public isLoggedIn(): boolean {
     const token = this.getToken();
     if (token) {
-      console.log('Token found in session storage:', token);
+      console.log('Token found in session storage:');
       const expired = this.isTokenExpired(token);
       console.log('Is token expired?', expired);
       return !expired;

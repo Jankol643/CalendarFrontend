@@ -7,14 +7,14 @@ export interface UserModel {
 
 // Represents the credentials used for user authentication
 export interface AuthCredentials {
-    emailAddress: string;     // User's email used for authentication
+    email: string;     // User's email used for authentication
     password: string;         // User's password for authentication
 }
 
 // Represents the response returned from the server upon successful authentication
 export interface AuthResponseModel {
     isSuccess: boolean;       // Indicates success or failure of the authentication process
-    authorization: {          // Object containing authorization details
+    authorisation: {          // Object containing authorization details
         token: string;        // Auth token for the authenticated user
     };
 }
