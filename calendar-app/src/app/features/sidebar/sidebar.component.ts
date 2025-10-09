@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { CalendarService } from '../../services/calendar.service';
 import { EventFormComponent } from '../event-form/event-form.component';
+import { EventService } from '../../event.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -23,19 +24,18 @@ import { EventFormComponent } from '../event-form/event-form.component';
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   opened: boolean = true;
-  @Output() onEventsChanged = new EventEmitter<number[]>();
   calendars: { id: number; title: string; visible: boolean }[] = [];
   showCalendars: boolean = true;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private calendarService: CalendarService, private dialog: MatDialog) { } // Inject MatDialog
+  constructor(private calendarService: CalendarService, private eventService: EventService, private dialog: MatDialog) { } // Inject MatDialog
 
   ngOnInit(): void {
     this.loadCalendars();
   }
 
-  loadCalendars(): void {
-    const calendarSubscription = this.calendarService.getCalendars().subscribe({
+  private loadCalendars(): void {
+    const calendarSubscription = this.calendarService.getCalendarsByUser().subscribe({
       next: (response) => {
         if (response && Array.isArray(response.data)) {
           this.calendars = response.data.map((calendar: any) => ({
@@ -59,19 +59,19 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.showCalendars = !this.showCalendars;
   }
 
-  toggleCalendarVisibility(calendar: { id: number; title: string; visible: boolean }): void {
+  public toggleCalendarVisibility(calendar: { id: number; title: string; visible: boolean }): void {
     calendar.visible = !calendar.visible;
     this.emitVisibleCalendars();
   }
 
-  emitVisibleCalendars(): void {
+  private emitVisibleCalendars(): void {
     const visibleCalendarIds = this.calendars
       .filter((cal) => cal.visible)
       .map((cal) => cal.id);
-    this.onEventsChanged.emit(visibleCalendarIds);
+    this.eventService.notifyEventsChanged(visibleCalendarIds);
   }
 
-  openEventForm(): void {
+  public openEventForm(): void {
     // Open the EventFormComponent as a dialog
     this.dialog.open(EventFormComponent, {
       width: '400px', // Optional: Set dialog width
@@ -79,7 +79,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 

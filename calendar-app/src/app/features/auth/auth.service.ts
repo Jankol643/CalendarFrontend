@@ -80,7 +80,10 @@ export class AuthService {
     console.time('Login API call');
     return this.http.post<AuthResponseModel>(`${this.baseEndpoint}/login`, credentials).pipe(
       retry(this.MAX_RETRIES),
-      tap(response => this.handleLoginResponse(response)),
+      tap((response) => {
+        console.timeEnd('Login API call');
+        this.handleLoginResponse(response);
+      }),
       catchError(error => {
         console.error('Login failed:', error);
         return this.handleError(error);
@@ -102,9 +105,11 @@ export class AuthService {
     // Clear the token (local session)
     this.clearToken();
 
+    console.time('Logout API call');
     return this.http.post<void>(`${this.baseEndpoint}/logout`, null).pipe(
       retry(this.MAX_RETRIES),
       tap(() => {
+        console.timeEnd('Logout API call');
         console.log('User logged out successfully');
         // Redirect on successful logout
         this.router.navigate(['/login']);
@@ -114,7 +119,6 @@ export class AuthService {
   }
 
   private handleLoginResponse(response: AuthResponseModel): void {
-    console.timeEnd('Login API call');
     console.log('Processing login response:', response);
     if (response?.isSuccess && response.authorisation?.token) {
       console.log('Login successful, saving token...');

@@ -1,5 +1,5 @@
-import globals from "globals";
-import js from "@eslint/js";
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
 
 const baseIgnore = [
   "**/.*",                  // Ignore all hidden files and folders
@@ -15,13 +15,28 @@ const baseConfig = {
   languageOptions: {
     globals: globals.browser,
   },
-  plugins: { js },
   rules: {
     // Limit maximum depth of nested blocks to 4
     "max-depth": ["error", 4],
     // Limit the cyclomatic complexity to 20
     "complexity": ["error", { "max": 20 }],
-    "max-lines-per-function": ["error", { "max": 50 }]
+    "max-lines-per-function": ["error", { "max": 50 }],
+    // Require explicit accessibility modifiers on class properties and methods.
+    "@typescript-eslint/explicit-member-accessibility": "error",
+    // Enforce specifying generic type arguments on type annotation or constructor name of a constructor call.
+    "@typescript-eslint/consistent-generic-constructors": [
+      "error",
+      "constructor"
+    ],
+    // Require .toString() and .toLocaleString() to only be called on objects which provide useful information when stringified.
+    "@typescript-eslint/no-base-to-string": "error",
+    // Disallow non-null assertion in locations that may be confusing.
+    "@typescript-eslint/no-confusing-non-null-assertion": "error",
+    // Disallow using code marked as @deprecated.
+    "@typescript-eslint/no-deprecated": "error",
+    // Disallow using the delete operator on computed key expressions.
+    "@typescript-eslint/no-dynamic-delete": "error"
+
   },
 };
 
@@ -32,7 +47,6 @@ const testConfig = {
       jasmine: true, // Add jasmine globals for test files
     },
   },
-  plugins: { js },
   rules: {
     // Example rule for test files
     "no-unused-expressions": "off",
@@ -41,8 +55,9 @@ const testConfig = {
   },
 };
 
-export default [
-  js.configs.recommended, // Recommended config applied to all files
+export default tseslint.config(
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
   {
     ignores: [...baseIgnore]
   },
@@ -54,4 +69,4 @@ export default [
     files: ["**/*.spec.{js,mjs,cjs,ts}"], // Test files pattern
     ...testConfig,
   },
-];
+);

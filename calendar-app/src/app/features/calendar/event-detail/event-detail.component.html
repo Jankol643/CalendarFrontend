@@ -1,0 +1,96 @@
+<div mat-dialog-content>
+    <div class="header">
+        <h2>{{ event.title }}</h2>
+        <button mat-icon-button (click)="toggleEdit()" [matTooltip]="isEditing ? 'Save' : 'Edit'">
+            <mat-icon>{{ isEditing ? 'save' : 'edit' }}</mat-icon>
+        </button>
+        <button mat-icon-button mat-dialog-close aria-label="Close" matTooltip="Close">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <div class="content">
+
+        <!-- Start Date & Time -->
+        <div class="field">
+            <mat-icon>access_time</mat-icon>
+            <strong>Start:</strong>
+            <ng-container *ngIf="!isEditing; else startEdit">
+                {{ event.start | date: 'short' }}
+            </ng-container>
+            <ng-template #startEdit>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Start date</mat-label>
+                    <input matInput [matDatepicker]="startPicker" [(ngModel)]="event.start" />
+                    <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #startPicker></mat-datepicker>
+                </mat-form-field>
+                <!-- Optional: add time picker if needed -->
+            </ng-template>
+        </div>
+
+        <!-- End Date & Time -->
+        <div class="field">
+            <mat-icon>history</mat-icon>
+            <strong>End:</strong>
+            <ng-container *ngIf="!isEditing; else endEdit">
+                {{ event.end | date: 'short' }}
+            </ng-container>
+            <ng-template #endEdit>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>End date</mat-label>
+                    <input matInput [matDatepicker]="endPicker" [(ngModel)]="event.end" />
+                    <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #endPicker></mat-datepicker>
+                </mat-form-field>
+            </ng-template>
+        </div>
+
+        <div class="field">
+            <mat-icon></mat-icon>
+        </div>
+
+        <!-- Optional Description -->
+        <div class="field" *ngIf="event.meta.description !== undefined || isEditing">
+            <mat-icon>info</mat-icon>
+            <strong>Description:</strong>
+            <ng-container *ngIf="!isEditing; else descriptionEdit">
+                {{ event.meta.description || 'No description' }}
+            </ng-container>
+            <ng-template #descriptionEdit>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Description</mat-label>
+                    <input matInput [(ngModel)]="event.meta.description" placeholder="Description" />
+                </mat-form-field>
+            </ng-template>
+        </div>
+
+        <!-- Optional Location -->
+        <div class="field" *ngIf="event.meta.location !== undefined || isEditing">
+            <mat-icon>place</mat-icon>
+            <strong>Location:</strong>
+            <ng-container *ngIf="!isEditing; else locationEdit">
+                {{ event.meta.location || 'No location' }}
+            </ng-container>
+            <ng-template #locationEdit>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Location</mat-label>
+                    <input matInput [(ngModel)]="event.meta.location" placeholder="Location" />
+                </mat-form-field>
+            </ng-template>
+        </div>
+
+    </div>
+</div>
+
+<div mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="saveEvent()">
+        <mat-icon>{{ isEditing ? 'save' : 'edit' }}</mat-icon> {{ isEditing ? 'Save' : 'Edit' }}
+    </button>
+    <button mat-raised-button color="warn" (click)="deleteEvent()">
+        <mat-icon>delete</mat-icon> Delete
+    </button>
+    <button mat-button mat-dialog-close>
+        <mat-icon>cancel</mat-icon> Close
+    </button>
+</div>

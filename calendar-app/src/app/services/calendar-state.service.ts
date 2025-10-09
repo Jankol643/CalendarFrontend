@@ -23,4 +23,20 @@ export class CalendarStateService {
   resetNavigationAction(): void {
     this.navigationActionSubject.next(null);
   }
+
+  adjustViewDate(viewDate: Date, calendarView: 'month' | 'week' | 'day', step: number): Date {
+    const adjustments = {
+      month: () => {
+        const currentDate = viewDate.getDate();
+        viewDate.setDate(1); // Temporarily set to the 1st to avoid overflow
+        viewDate.setMonth(viewDate.getMonth() + step);
+        const daysInMonth = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0).getDate();
+        viewDate.setDate(Math.min(currentDate, daysInMonth)); // Clamp to the last valid day
+      },
+      week: () => viewDate.setDate(viewDate.getDate() + step * 7),
+      day: () => viewDate.setDate(viewDate.getDate() + step),
+    };
+    adjustments[calendarView]?.();
+    return new Date(viewDate); // Ensure the date is updated
+  }
 }

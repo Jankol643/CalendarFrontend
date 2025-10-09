@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CalendarItemEditComponent } from './calendar-item-edit.component';
+import { CalendarItemEditComponent } from './event-edit.component';
 
 describe('CalendarItemEditComponent', () => {
   let component: CalendarItemEditComponent;
@@ -10,7 +10,7 @@ describe('CalendarItemEditComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CalendarItemEditComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(CalendarItemEditComponent);
     component = fixture.componentInstance;

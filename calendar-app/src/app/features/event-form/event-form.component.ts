@@ -17,6 +17,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DateTimeService } from '../../services/date-time.service';
 
 
 @Component({
@@ -30,8 +31,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   styleUrls: ['./event-form.component.scss']
 })
 export class EventFormComponent implements OnInit {
-  @Output() close = new EventEmitter<void>();
-  @Output() eventsChanged = new EventEmitter<number[]>();
 
   showEventForm: boolean = true;
   calendars: any[] = [];
@@ -45,7 +44,8 @@ export class EventFormComponent implements OnInit {
     private eventService: EventService,
     private calendarService: CalendarService,
     private fb: FormBuilder,
-    private timezoneService: TimezoneService
+    private timezoneService: TimezoneService,
+    private dateTimeService: DateTimeService
   ) { }
 
   ngOnInit(): void {
@@ -53,8 +53,10 @@ export class EventFormComponent implements OnInit {
       calendar: ['', Validators.required],
       title: ['', Validators.required],
       description: [''],
-      start: ['', Validators.required],
-      end: ['', Validators.required],
+      startDate: ['', Validators.required],
+      startTime: ['', Validators.required],
+      endDate: ['', Validators.required],
+      endTime: ['', Validators.required],
       timezone: [''],
       allDay: [false],
       location: [''],
@@ -70,7 +72,7 @@ export class EventFormComponent implements OnInit {
   }
 
   private loadCalendars(): void {
-    this.calendarService.getCalendars().subscribe({
+    this.calendarService.getCalendarsByUser().subscribe({
       next: (response) => {
         this.calendars = response.data;
       },
@@ -101,6 +103,10 @@ export class EventFormComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  public randomiseForm(): void {
+    alert('Randomised');
+  }
+
   public addEvent(): void {
     console.log('AddEvent clicked.');
     if (this.eventForm.invalid) {
@@ -109,21 +115,39 @@ export class EventFormComponent implements OnInit {
     }
 
     this.loading = true; // Set loading state
+
+    const startDate = this.eventForm.value.startDate;
+    const startTime = this.eventForm.value.startTime;
+    const endDate = this.eventForm.value.endDate;
+    const endTime = this.eventForm.value.endTime;
+
+    const formattedStartDate = this.dateTimeService.parseDateTime(startDate, startTime);
+    const formattedEndDate = this.dateTimeService.parseDateTime(endDate, endTime);
+
+    console.log('Formatted start: ', formattedStartDate);
+    console.log('Formatted end: ', formattedEndDate);
+
+    const calendarId = this.eventForm.value.calendar;
+
     const event: EventModel = {
+      //TODO: Add id in event service
       title: this.eventForm.value.title,
       description: this.eventForm.value.description,
-      startTime: this.eventForm.value.start,
-      endTime: this.eventForm.value.end,
+      startDate: formattedStartDate,
+      endDate: formattedEndDate,
       timezone: this.eventForm.value.timezone,
       isAllDay: this.eventForm.value.allDay,
       location: this.eventForm.value.location,
-      calendarId: this.eventForm.value.calendar,
+      calendarId: calendarId,
     };
 
     this.eventService.createEvent(event).subscribe({
-      next: () => {
+      next: (createdEvent) => {
+        console.log('Created event from server:', createdEvent);
+        // Assuming createEvent returns the created event with its id
+        event.id = createdEvent.id; // assign the id
         this.onNoClick();
-        this.eventsChanged.emit([this.eventForm.value.calendar]);
+        this.eventService.notifyEventsChanged([calendarId]);
       },
       error: (error) => {
         console.error('Error creating event:', error);

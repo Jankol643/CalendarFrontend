@@ -7,10 +7,10 @@ import { EventService } from '../../../event.service';
 import { EventFactory } from '../../../shared/event-factory';
 
 @Component({
-    selector: 'app-calendar-item-edit',
-    templateUrl: './calendar-item-edit.component.html',
-    styleUrls: ['./calendar-item-edit.component.scss'],
-    imports: [CommonModule, FormsModule] // Import FormsModule here
+  selector: 'app-event-edit',
+  templateUrl: './event-edit.component.html',
+  styleUrls: ['./event-edit.component.scss'],
+  imports: [CommonModule, FormsModule] // Import FormsModule here
 })
 export class CalendarItemEditComponent implements OnInit {
   event: CalendarEvent = EventFactory.empty();

@@ -25,64 +25,72 @@ export class EventFactory {
 
     /**
      * Converts a raw event object to a CalendarEvent.
-     * @param rawEvent The raw event object from the backend.
+     * Handles timezone conversion to display in user's local timezone.
      */
     public static fromRawEvent(rawEvent: any): CalendarEvent {
-        const timezone = rawEvent.timezone || 'UTC'; // Fallback to UTC if timezone is not provided.
+        const eventTimezone = rawEvent.timezone || 'UTC';
+
+        // Convert stored UTC times to local times considering the event's timezone
+        const start = toZonedTime(new Date(rawEvent.start_date), eventTimezone);
+        const end = rawEvent.end_date ? toZonedTime(new Date(rawEvent.end_date), eventTimezone) : undefined;
 
         return {
+            id: rawEvent.id,
             title: rawEvent.title,
-            start: toZonedTime(new Date(rawEvent.start_date), timezone),
-            end: toZonedTime(new Date(rawEvent.end_date), timezone),
+            start: start,
+            end: end,
             allDay: Boolean(rawEvent.all_day),
             draggable: true,
             meta: {
-                id: rawEvent.id,
                 location: rawEvent.location,
                 description: rawEvent.description,
                 calendarId: rawEvent.calendar_id,
-                timezone
+                timezone: eventTimezone
             }
         };
     }
 
     /**
      * Converts a CalendarEvent to a raw event object for the backend.
-     * @param calendarEvent The CalendarEvent to be converted.
+     * Converts event times to UTC based on the event's timezone.
      */
     public static calendarEventToRawEvent(calendarEvent: CalendarEvent): any {
-        const timezone = calendarEvent.meta?.timezone || 'UTC'; // Fallback to UTC if timezone is not provided.
+        const timezone = calendarEvent.meta?.timezone || 'UTC';
+
+        // Convert local times to UTC ISO strings
+        const startUTC = formatInTimeZone(calendarEvent.start, 'UTC', "yyyy-MM-dd'T'HH:mm:ssXXX");
+        const endUTC = calendarEvent.end ? formatInTimeZone(calendarEvent.end, 'UTC', "yyyy-MM-dd'T'HH:mm:ssXXX") : null;
 
         return {
             title: calendarEvent.title,
-            start_time: formatInTimeZone(calendarEvent.start, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"), // Format to ISO string
-            end_time: calendarEvent.end ? formatInTimeZone(calendarEvent.end, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX") : null,
+            description: calendarEvent.meta?.description,
+            start_datetime: startUTC,
+            end_datetime: endUTC,
+            timezone: timezone,
             all_day: calendarEvent.allDay,
             location: calendarEvent.meta?.location,
-            description: calendarEvent.meta?.description,
             calendar_id: calendarEvent.meta?.calendarId,
-            timezone
         };
     }
 
-    /** 
-     * Converts EventModel to a backend-compatible event format.
-     * @param event 
-     * @returns 
+    /**
+     * Converts an EventModel to backend format, ensuring times are stored in UTC.
+     * Uses the event's original timezone for accurate conversion.
      */
     public static eventToBackendEvent(event: EventModel) {
-        // Adjust the start and end time to the selected timezone
-        const timezone = event.timezone || 'UTC'; // Fallback to UTC if timezone is not provided.
+        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const timezone = event.timezone || userTimezone || 'UTC';
 
-        const startTime = formatInTimeZone(event.startTime, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX");
-        const endTime = formatInTimeZone(event.endTime, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX");
+        // Convert the event's start and end to UTC strings based on its timezone
+        const startUTC = formatInTimeZone(event.startDate, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX");
+        const endUTC = formatInTimeZone(event.endDate, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX");
 
         return {
             title: event.title,
             description: event.description,
-            start_date: startTime,
-            end_date: endTime,
-            timezone,
+            start_datetime: startUTC,
+            end_datetime: endUTC,
+            timezone: timezone,
             all_day: event.isAllDay,
             location: event.location,
             calendar_id: event.calendarId,
