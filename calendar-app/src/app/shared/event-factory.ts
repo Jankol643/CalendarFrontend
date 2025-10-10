@@ -54,6 +54,7 @@ export class EventFactory {
      * Converts a CalendarEvent to a raw event object for the backend.
      * Converts event times to UTC based on the event's timezone.
      */
+    //TODO: Timezone changes automatically to UTC when not set, should be read from the browser
     public static calendarEventToRawEvent(calendarEvent: CalendarEvent): any {
         const timezone = calendarEvent.meta?.timezone || 'UTC';
 

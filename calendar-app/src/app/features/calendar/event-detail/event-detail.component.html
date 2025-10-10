@@ -10,7 +10,6 @@
     </div>
 
     <div class="content">
-
         <!-- Start Date & Time -->
         <div class="field">
             <mat-icon>access_time</mat-icon>
@@ -20,12 +19,11 @@
             </ng-container>
             <ng-template #startEdit>
                 <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Start date</mat-label>
-                    <input matInput [matDatepicker]="startPicker" [(ngModel)]="event.start" />
+                    <mat-label>Start date & time</mat-label>
+                    <input matInput [matDatepicker]="startPicker" formControlName="start" />
                     <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
                     <mat-datepicker #startPicker></mat-datepicker>
                 </mat-form-field>
-                <!-- Optional: add time picker if needed -->
             </ng-template>
         </div>
 
@@ -38,53 +36,62 @@
             </ng-container>
             <ng-template #endEdit>
                 <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>End date</mat-label>
-                    <input matInput [matDatepicker]="endPicker" [(ngModel)]="event.end" />
+                    <mat-label>End date & time</mat-label>
+                    <input matInput [matDatepicker]="endPicker" formControlName="end" />
                     <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
                     <mat-datepicker #endPicker></mat-datepicker>
                 </mat-form-field>
             </ng-template>
         </div>
 
-        <div class="field">
-            <mat-icon></mat-icon>
+        <!-- Timezone -->
+        <div class="field" [formGroup]="form">
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Timezone</mat-label>
+                <input type="text" matInput formControlName="timezone" [matAutocomplete]="auto"
+                    placeholder="Search for a timezone" />
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let tz of filteredTimezones | async" [value]="tz.name">
+                        {{ tz.name }} (UTC{{ tz.utcOffset }})
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
         </div>
 
-        <!-- Optional Description -->
-        <div class="field" *ngIf="event.meta.description !== undefined || isEditing">
+        <!-- Description -->
+        <div class="field" *ngIf="event.meta?.description !== undefined || isEditing">
             <mat-icon>info</mat-icon>
             <strong>Description:</strong>
             <ng-container *ngIf="!isEditing; else descriptionEdit">
-                {{ event.meta.description || 'No description' }}
+                {{ event.meta?.description || 'No description' }}
             </ng-container>
             <ng-template #descriptionEdit>
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Description</mat-label>
-                    <input matInput [(ngModel)]="event.meta.description" placeholder="Description" />
+                    <input matInput formControlName="description" placeholder="Description" />
                 </mat-form-field>
             </ng-template>
         </div>
 
-        <!-- Optional Location -->
-        <div class="field" *ngIf="event.meta.location !== undefined || isEditing">
+        <!-- Location -->
+        <div class="field" *ngIf="event.meta?.location !== undefined || isEditing">
             <mat-icon>place</mat-icon>
             <strong>Location:</strong>
             <ng-container *ngIf="!isEditing; else locationEdit">
-                {{ event.meta.location || 'No location' }}
+                {{ event.meta?.location || 'No location' }}
             </ng-container>
             <ng-template #locationEdit>
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Location</mat-label>
-                    <input matInput [(ngModel)]="event.meta.location" placeholder="Location" />
+                    <input matInput formControlName="location" placeholder="Location" />
                 </mat-form-field>
             </ng-template>
         </div>
-
     </div>
 </div>
 
 <div mat-dialog-actions>
-    <button mat-raised-button color="primary" (click)="saveEvent()">
+    <button mat-raised-button color="primary" (click)="toggleEdit()">
         <mat-icon>{{ isEditing ? 'save' : 'edit' }}</mat-icon> {{ isEditing ? 'Save' : 'Edit' }}
     </button>
     <button mat-raised-button color="warn" (click)="deleteEvent()">
