@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FlashMessageComponent } from './flash-message.component';
+import { SettingsComponent } from './settings.component';
 
-describe('FlashMessageComponent', () => {
-  let component: FlashMessageComponent;
-  let fixture: ComponentFixture<FlashMessageComponent>;
+describe('SettingsComponent', () => {
+  let component: SettingsComponent;
+  let fixture: ComponentFixture<SettingsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FlashMessageComponent]
+      imports: [SettingsComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(FlashMessageComponent);
+    fixture = TestBed.createComponent(SettingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

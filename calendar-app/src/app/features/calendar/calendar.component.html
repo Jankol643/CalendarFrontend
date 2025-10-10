@@ -15,13 +15,16 @@
 
         <div *ngIf="day.events.length > 0">
             <div *ngFor="let event of day.events" class="cal-event-item">
-                <strong>{{ event.start | date:'shortTime':locale }}</strong> - {{ event.title }}
+                <span (click)="handleEvent('Clicked', event)"><strong>{{ event.start |
+                        date:'shortTime':locale
+                        }}</strong>
+                    - {{ event.title }}</span>
             </div>
         </div>
     </div>
 </ng-template>
 
-<div [ngSwitch]="calendarView">
+<div [ngSwitch]="calendarView" class="full-height">
     <mwl-calendar-month-view *ngSwitchCase="'month'" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
         [weekStartsOn]="weekStartsOn" (eventClicked)="handleEvent('Clicked', $event.event)"
         [cellTemplate]="customCellTemplate">
@@ -36,5 +39,5 @@
     </mwl-calendar-day-view>
 </div>
 
-<app-calendar-item-detail *ngIf="selectedEvent" [event]="selectedEvent">
-</app-calendar-item-detail>
+<app-event-detail *ngIf="selectedEvent">
+</app-event-detail>

@@ -52,14 +52,11 @@ export class LoginComponent {
   togglePasswordVisibility(event: MouseEvent): void {
     event.preventDefault(); // Prevent the button from triggering form submission
     this.hidePassword = !this.hidePassword;
-    console.log('Password visibility toggled:', this.hidePassword ? 'Hidden' : 'Visible');
   }
 
   onSubmit(): void {
     this.submitted = true;
     this.loading = true;
-
-    console.log('Form submitted:', this.loginForm.value);
 
     // Reset any previous error message
     this.errorMessage = null;
@@ -71,11 +68,9 @@ export class LoginComponent {
     }
 
     const credentials = {
-      emailAddress: this.loginForm.value.email,
+      email: this.loginForm.value.email,
       password: this.loginForm.value.password
     };
-
-    console.log('Attempting login with credentials:', credentials);
 
     this.authService.login(credentials).subscribe({
       next: () => {

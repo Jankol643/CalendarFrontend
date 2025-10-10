@@ -1,11 +1,12 @@
 import { CalendarEvent } from 'angular-calendar';
-import { Event } from './models/event.model';
+import { EventModel } from '../model/models';
+import { toZonedTime, formatInTimeZone } from 'date-fns-tz';
 
 export class EventFactory {
     /**
      * Creates an empty CalendarEvent.
      */
-    static empty(): CalendarEvent {
+    public static empty(): CalendarEvent {
         return {
             title: '',
             start: new Date(),
@@ -16,58 +17,84 @@ export class EventFactory {
                 id: 0,
                 location: '',
                 description: '',
-                calendar: 0
+                calendarId: 0,
+                timezone: 'UTC' // Default timezone
             }
         };
     }
 
     /**
      * Converts a raw event object to a CalendarEvent.
-     * @param rawEvent The raw event object from the backend.
+     * Handles timezone conversion to display in user's local timezone.
      */
-    static fromRawEvent(rawEvent: any): CalendarEvent {
+    public static fromRawEvent(rawEvent: any): CalendarEvent {
+        const eventTimezone = rawEvent.timezone || 'UTC';
+
+        // Convert stored UTC times to local times considering the event's timezone
+        const start = toZonedTime(new Date(rawEvent.start_date), eventTimezone);
+        const end = rawEvent.end_date ? toZonedTime(new Date(rawEvent.end_date), eventTimezone) : undefined;
+
         return {
+            id: rawEvent.id,
             title: rawEvent.title,
-            start: new Date(rawEvent.start_date),
-            end: new Date(rawEvent.end_date),
+            start: start,
+            end: end,
             allDay: Boolean(rawEvent.all_day),
             draggable: true,
             meta: {
-                id: rawEvent.id,
                 location: rawEvent.location,
                 description: rawEvent.description,
-                calendar: rawEvent.calendar_id
+                calendarId: rawEvent.calendar_id,
+                timezone: eventTimezone
             }
         };
     }
 
     /**
      * Converts a CalendarEvent to a raw event object for the backend.
-     * @param calendarEvent The CalendarEvent to be converted.
+     * Converts event times to UTC based on the event's timezone.
      */
-    static calendarEventToRawEvent(calendarEvent: CalendarEvent): any {
+    //TODO: Timezone changes automatically to UTC when not set, should be read from the browser
+    public static calendarEventToRawEvent(calendarEvent: CalendarEvent): any {
+        const timezone = calendarEvent.meta?.timezone || 'UTC';
+
+        // Convert local times to UTC ISO strings
+        const startUTC = formatInTimeZone(calendarEvent.start, 'UTC', "yyyy-MM-dd'T'HH:mm:ssXXX");
+        const endUTC = calendarEvent.end ? formatInTimeZone(calendarEvent.end, 'UTC', "yyyy-MM-dd'T'HH:mm:ssXXX") : null;
+
         return {
-            id: calendarEvent.meta?.id,
             title: calendarEvent.title,
-            start_date: new Date(calendarEvent.start).toISOString(),
-            end_date: calendarEvent.end ? new Date(calendarEvent.end).toISOString() : null,
-            timezone: calendarEvent.meta?.timezone,
+            description: calendarEvent.meta?.description,
+            start_datetime: startUTC,
+            end_datetime: endUTC,
+            timezone: timezone,
             all_day: calendarEvent.allDay,
             location: calendarEvent.meta?.location,
-            description: calendarEvent.meta?.description,
-            calendar_id: calendarEvent.meta?.calendar
+            calendar_id: calendarEvent.meta?.calendarId,
         };
     }
 
-    static eventToRawEvent(calendarEvent: Event): any {
+    /**
+     * Converts an EventModel to backend format, ensuring times are stored in UTC.
+     * Uses the event's original timezone for accurate conversion.
+     */
+    public static eventToBackendEvent(event: EventModel) {
+        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const timezone = event.timezone || userTimezone || 'UTC';
+
+        // Convert the event's start and end to UTC strings based on its timezone
+        const startUTC = formatInTimeZone(event.startDate, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX");
+        const endUTC = formatInTimeZone(event.endDate, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX");
+
         return {
-            title: calendarEvent.title,
-            start_date: new Date(calendarEvent.start).toISOString(),
-            end_date: calendarEvent.end ? new Date(calendarEvent.end).toISOString() : null,
-            all_day: calendarEvent.allDay,
-            location: calendarEvent.location,
-            description: calendarEvent.description,
-            calendar_id: calendarEvent.calendar
+            title: event.title,
+            description: event.description,
+            start_datetime: startUTC,
+            end_datetime: endUTC,
+            timezone: timezone,
+            all_day: event.isAllDay,
+            location: event.location,
+            calendar_id: event.calendarId,
         };
     }
 }

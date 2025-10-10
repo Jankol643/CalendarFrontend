@@ -7,14 +7,14 @@ export interface UserModel {
 
 // Represents the credentials used for user authentication
 export interface AuthCredentials {
-    emailAddress: string;     // User's email used for authentication
+    email: string;     // User's email used for authentication
     password: string;         // User's password for authentication
 }
 
 // Represents the response returned from the server upon successful authentication
 export interface AuthResponseModel {
     isSuccess: boolean;       // Indicates success or failure of the authentication process
-    authorization: {          // Object containing authorization details
+    authorisation: {          // Object containing authorization details
         token: string;        // Auth token for the authenticated user
     };
 }
@@ -27,12 +27,22 @@ export interface TimezoneModel {
 
 // Represents an event in the calendar
 export interface EventModel {
+    id?: number; // optional, will be set after creation
     title: string;           // Title of the event
     description: string;     // Description of the event
-    startTime: Date;        // Start date and time of the event
-    endTime: Date;          // End date and time of the event
+    startDate: Date;        // Start date and time of the event
+    endDate: Date;          // End date and time of the event
     timezone: string;        // Timezone of event
     isAllDay: boolean;      // Indicates if the event lasts all day
     location: string;       // Location where the event takes place
     calendarId: number;     // ID of the calendar to which the event belongs
+}
+
+export interface TaskModel {
+    id: number,
+    description: string;
+    dueDate: Date;
+    duration: number;
+    priority: number;
+    calendarId: number;
 }

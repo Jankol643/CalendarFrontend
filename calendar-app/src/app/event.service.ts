@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable, Subject } from 'rxjs';
+import { map, Observable, Subject, tap } from 'rxjs';
 import { CalendarEvent } from 'angular-calendar';
 import { EventFactory } from './shared/event-factory';
 import { environment } from '../environments/environment';
@@ -10,9 +10,10 @@ import { EventModel } from './model/models';
   providedIn: 'root'
 })
 export class EventService {
-  private baseEndpoint = `${environment.apiUrl}/calendars`;
+  private readonly baseEndpoint = `${environment.apiUrl}/calendars`;
   private deletedEvent: { event: CalendarEvent; calendarId: number } | null = null;
   private eventDeletedSubject = new Subject<number>();
+  public eventsChangedEvent = new EventEmitter<number[]>();
 
   constructor(private http: HttpClient) { }
 
@@ -28,26 +29,23 @@ export class EventService {
     );
   }
 
+  public notifyEventsChanged(calendarIds: Array<number>) {
+    this.eventsChangedEvent.emit(calendarIds);
+  }
+
   public createEvent(event: EventModel): Observable<any> {
-    const rawEvent = EventFactory.eventToRawEvent(event);
-    const calendarId = rawEvent.calendar_id;
-    console.log(rawEvent);
-    console.log('CalendarId from service: ' + calendarId);
-    return this.http.post(`${this.baseEndpoint}/${calendarId}/events`, rawEvent);
+    console.log('CalendarId from service: ' + event.calendarId);
+    return this.http.post(`${this.baseEndpoint}/${event.calendarId}/events`, EventFactory.eventToBackendEvent(event));
   }
 
   public updateEvent(event: CalendarEvent): Observable<any> {
-    const calendarId = event.meta?.calendar;
-    const id = event.meta?.id;
+    const calendarId = event.meta?.calendarId;
+    const id = event.id;
     return this.http.put(`${this.baseEndpoint}/${calendarId}/events/${id}`, EventFactory.calendarEventToRawEvent(event));
   }
 
-  public deleteEvent(calendarId: number, id: number): Observable<any> {
-    return this.http.delete(`${this.baseEndpoint}/${calendarId}/events/${id}`).pipe(
-      map(() => {
-        this.eventDeletedSubject.next(calendarId);
-      })
-    );
+  public deleteEvent(calendarId: number, eventId: number): Observable<any> {
+    return this.http.delete(`${this.baseEndpoint}/${calendarId}/events/${eventId}`);
   }
 
   public storeDeletedEvent(event: CalendarEvent, calendarId: number): void {
@@ -57,9 +55,15 @@ export class EventService {
   public undoDelete(): Observable<any> | null {
     if (this.deletedEvent) {
       const { event, calendarId } = this.deletedEvent;
+      console.log('Restoring event:', event);
       this.deletedEvent = null;
       const rawEvent = EventFactory.calendarEventToRawEvent(event);
-      return this.http.post(`${this.baseEndpoint}/${calendarId}/events`, rawEvent);
+      console.log('Sending raw event for restore:', rawEvent);
+      return this.http.post(`${this.baseEndpoint}/${calendarId}/events`, rawEvent).pipe(
+        tap(response => {
+          console.log('Restore response:', response);
+        })
+      );
     }
     return null;
   }

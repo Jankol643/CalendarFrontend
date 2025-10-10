@@ -7,13 +7,13 @@ import { ModalService } from '../../core/services/modal.service';
 import { CalendarStateService } from '../../services/calendar-state.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CalendarItemDetailComponent } from './item-detail/calendar-item-detail.component';
+import { EventDetailComponent } from './event-detail/event-detail.component';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
-  imports: [CommonModule, FormsModule, CalendarModule, CalendarItemDetailComponent],
+  imports: [CommonModule, FormsModule, CalendarModule, EventDetailComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [collapseAnimation],
 })
@@ -56,16 +56,22 @@ export class CalendarComponent implements OnInit, OnDestroy {
         this.loadEvents([calendarId]);
       })
     );
+
+    this.subscriptions.add(
+      this.eventService.eventsChangedEvent.subscribe((calendarIds) => {
+        this.loadEvents(calendarIds);
+      })
+    );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  loadEvents(calendarIds: number[]): void {
+  private loadEvents(calendarIds: number[]): void {
+    console.log('Loading events for calendars ', calendarIds.toString())
     if (!calendarIds.length) {
       this.events = [];
-      this.refresh.next();
       return;
     }
 
@@ -78,45 +84,32 @@ export class CalendarComponent implements OnInit, OnDestroy {
     });
   }
 
-  handleEvent(action: string, event: CalendarEvent): void {
+  public handleEvent(action: string, event: CalendarEvent): void {
     if (action === 'Clicked') {
-      this.selectedEvent = event;
-      this.modalService.open(event);
+      console.log('Event clicked');
+      this.modalService.showItemDetail(event);
     }
   }
 
-  onEditEvent(event: CalendarEvent): void {
+  public onEditEvent(event: CalendarEvent): void {
     this.router.navigate(['/event/edit'], { state: { event } });
   }
 
   private handleNavigation(action: string): void {
+    console.time('Handle navigation');
     switch (action) {
       case 'previous':
-        this.adjustViewDate(-1);
+        this.viewDate = this.calendarStateService.adjustViewDate(this.viewDate, this.calendarView, -1);
         break;
       case 'today':
         this.viewDate = new Date();
         break;
       case 'next':
-        this.adjustViewDate(1);
+        this.viewDate = this.calendarStateService.adjustViewDate(this.viewDate, this.calendarView, 1);
         break;
     }
     this.refresh.next();
+    console.timeEnd('Handle navigation');
   }
 
-  private adjustViewDate(step: number): void {
-    const adjustments = {
-      month: () => {
-        const currentDate = this.viewDate.getDate();
-        this.viewDate.setDate(1); // Temporarily set to the 1st to avoid overflow
-        this.viewDate.setMonth(this.viewDate.getMonth() + step);
-        const daysInMonth = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() + 1, 0).getDate();
-        this.viewDate.setDate(Math.min(currentDate, daysInMonth)); // Clamp to the last valid day
-      },
-      week: () => this.viewDate.setDate(this.viewDate.getDate() + step * 7),
-      day: () => this.viewDate.setDate(this.viewDate.getDate() + step),
-    };
-    adjustments[this.calendarView]?.();
-    this.viewDate = new Date(this.viewDate); // Ensure the date is updated
-  }
 }

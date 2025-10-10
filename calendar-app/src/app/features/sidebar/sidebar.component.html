@@ -8,7 +8,7 @@
         <span>{{ showCalendars ? '▲' : '▼' }}</span>
     </h2>
     <div *ngIf="showCalendars">
-        <div *ngFor="let calendar of calendars" class="calendar-item">
+        <div *ngFor="let calendar of calendars" class="event">
             <mat-checkbox [checked]="calendar.visible" (change)="toggleCalendarVisibility(calendar)">
                 {{ calendar.title }}
             </mat-checkbox>

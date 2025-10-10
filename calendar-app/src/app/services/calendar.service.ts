@@ -13,35 +13,35 @@ export class CalendarService {
   constructor(private http: HttpClient) { }
 
   // Get all calendars
-  getCalendars(): Observable<any> {
+  public getCalendarsByUser(): Observable<any> {
     return this.http.get(this.baseEndpoint).pipe(
       catchError(this.handleError)
     );
   }
 
   // Create a new calendar
-  createCalendar(calendar: any): Observable<any> {
+  public createCalendar(calendar: any): Observable<any> {
     return this.http.post(this.baseEndpoint, calendar).pipe(
       catchError(this.handleError)
     );
   }
 
   // Get a calendar by ID
-  getCalendarById(id: number): Observable<any> {
+  public getCalendarById(id: number): Observable<any> {
     return this.http.get(`${this.baseEndpoint}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
 
   // Update a calendar
-  updateCalendar(id: number, calendar: any): Observable<any> {
+  public updateCalendar(id: number, calendar: any): Observable<any> {
     return this.http.put(`${this.baseEndpoint}/${id}`, calendar).pipe(
       catchError(this.handleError)
     );
   }
 
   // Delete a calendar
-  deleteCalendar(id: number): Observable<any> {
+  public deleteCalendar(id: number): Observable<any> {
     return this.http.delete(`${this.baseEndpoint}/${id}`).pipe(
       catchError(this.handleError)
     );
