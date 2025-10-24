@@ -1,0 +1,41 @@
+<div class="parent">
+    <!-- Event Upload Section -->
+    <div class="section section-event-upload">
+        <h1>Event upload</h1>
+        <mat-tab-group animationDuration="0ms">
+            <mat-tab label="First">
+                <app-csvinput [uploadType]="'event'"></app-csvinput>
+            </mat-tab>
+
+            <mat-tab label="Second">
+                <div class="scroll-container">
+                    <app-line-numbered-textarea></app-line-numbered-textarea>
+                </div>
+                <button (click)="triggerUploadText()">Upload Event Text</button>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+
+    <!-- Task Upload Section -->
+    <div class="section section-task-upload">
+        <h1>Task upload</h1>
+        <mat-tab-group animationDuration="0ms">
+            <mat-tab label="First">
+                <app-csvinput [uploadType]="'task'"></app-csvinput>
+            </mat-tab>
+            <mat-tab label="Second">
+                <div class="scroll-container">
+                    <app-line-numbered-textarea></app-line-numbered-textarea>
+                </div>
+                <button (click)="triggerUploadText()">Upload Task Text</button>
+
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+
+    <!-- Result Section -->
+    <div class="section section-result">
+        <h1>Result</h1>
+        <button id="startSchedulingBtn" (click)="startScheduling()">Start Scheduling</button>
+    </div>
+</div>

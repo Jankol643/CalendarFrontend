@@ -1,0 +1,27 @@
+/* Optional: make upload container flex for better alignment */
+.upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.file-upload {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-bar {
+    flex: 1;
+}
+
+.cancel-upload {
+    cursor: pointer;
+    color: red;
+}

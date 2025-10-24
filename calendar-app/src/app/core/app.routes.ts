@@ -5,6 +5,7 @@ import { CalendarItemEditComponent } from '../features/calendar/item-edit/calend
 import { DashboardComponent } from '../features/dashboard/dashboard.component';
 import { LoginComponent } from '../features/login/login.component';
 import { RegisterComponent } from '../features/register/register.component';
+import { UploadComponent } from '../features/upload/upload.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -12,5 +13,6 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-    { path: 'event/:id/edit', component: CalendarItemEditComponent }
+    { path: 'event/:id/edit', component: CalendarItemEditComponent },
+    { path: 'upload', component: UploadComponent, canActivate: [AuthGuard] }
 ];

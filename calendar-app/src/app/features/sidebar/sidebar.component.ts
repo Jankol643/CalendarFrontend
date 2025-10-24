@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 import { CalendarService } from '../../services/calendar.service';
 import { EventFormComponent } from '../event-form/event-form.component';
 import { EventService } from '../../event.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -28,7 +29,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   showCalendars: boolean = true;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private calendarService: CalendarService, private eventService: EventService, private dialog: MatDialog) { } // Inject MatDialog
+  constructor(private calendarService: CalendarService, private eventService: EventService, private dialog: MatDialog, private router: Router) { } // Inject MatDialog
 
   ngOnInit(): void {
     this.loadCalendars();
@@ -77,6 +78,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
       width: '400px', // Optional: Set dialog width
       data: {} // Optional: Pass data to the dialog if needed
     });
+  }
+
+  public importFromCSV() {
+    this.router.navigate(['/upload']);
   }
 
   public ngOnDestroy(): void {

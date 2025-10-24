@@ -1,0 +1,16 @@
+<div class="upload-container">
+    <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+    <input type="file" #fileInput class="file-input" [accept]="requiredFileType" (change)="onFileSelected($event)" />
+
+    <div class="file-upload">
+        <span>{{ fileName || "No file uploaded yet." }}</span>
+        <button mat-mini-fab color="primary" (click)="fileInput.click()">
+            <mat-icon>attach_file</mat-icon>
+        </button>
+    </div>
+
+    <div class="progress-section" *ngIf="uploadProgress !== null">
+        <mat-progress-bar mode="determinate" [value]="uploadProgress" class="progress-bar"></mat-progress-bar>
+        <mat-icon class="cancel-upload" (click)="cancelUpload()">delete_forever</mat-icon>
+    </div>
+</div>
