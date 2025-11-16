@@ -1,6 +1,7 @@
 <div class="upload-container">
     <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
-    <input type="file" #fileInput class="file-input" [accept]="requiredFileType" (change)="onFileSelected($event)" />
+    <input type="file" #fileInput class="file-input hidden" [accept]="requiredFileType"
+        (change)="onFileSelected($event, uploadType)" />
 
     <div class="file-upload">
         <span>{{ fileName || "No file uploaded yet." }}</span>
@@ -11,6 +12,6 @@
 
     <div class="progress-section" *ngIf="uploadProgress !== null">
         <mat-progress-bar mode="determinate" [value]="uploadProgress" class="progress-bar"></mat-progress-bar>
-        <mat-icon class="cancel-upload" (click)="cancelUpload()">delete_forever</mat-icon>
+        <mat-icon *ngIf="currentUploadId !== null" (click)="cancelUpload(currentUploadId)">delete_forever</mat-icon>
     </div>
 </div>

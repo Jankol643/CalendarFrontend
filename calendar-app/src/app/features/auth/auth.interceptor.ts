@@ -1,8 +1,8 @@
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { AuthService } from './auth.service';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, filter, switchMap, take } from 'rxjs/operators';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -57,6 +57,7 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   private cloneRequest(req: HttpRequest<any>, token: string): HttpRequest<any> {
-    return req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
+    const headers = req.headers.set('Authorization', `Bearer ${token}`);
+    return req.clone({ headers });
   }
 }

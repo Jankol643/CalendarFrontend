@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +12,11 @@ export class ScheduleService {
 
   constructor(private http: HttpClient) { }
 
-  public startScheduling() {
-    return this.http.get(`${this.baseEndpoint}`).pipe(
+  public startScheduling(): Observable<any> {
+    const uploadId = localStorage.getItem('upload_id');
+    const headers = { 'X-Upload-ID': uploadId || '' };
+
+    return this.http.get(`${this.baseEndpoint}`, { headers }).pipe(
       catchError(this.handleError)
     );
   }

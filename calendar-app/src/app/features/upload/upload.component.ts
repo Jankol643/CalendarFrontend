@@ -19,8 +19,8 @@ export class UploadComponent {
 
   constructor(private scheduleService: ScheduleService) { }
 
-  triggerUploadText() {
-    this.csvInputComponent.uploadText()
+  triggerUploadText(type: 'event' | 'task') {
+    this.csvInputComponent.uploadText(type);
   }
 
   startScheduling() {

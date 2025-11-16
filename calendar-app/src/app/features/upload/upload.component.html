@@ -1,41 +1,39 @@
 <div class="parent">
     <!-- Event Upload Section -->
-    <div class="section section-event-upload">
-        <h1>Event upload</h1>
+    <section class="section section-event-upload" aria-labelledby="event-upload-heading">
+        <h1 id="event-upload-heading">Event Upload (Required)</h1>
         <mat-tab-group animationDuration="0ms">
-            <mat-tab label="First">
+            <mat-tab label="Upload CSV">
                 <app-csvinput [uploadType]="'event'"></app-csvinput>
             </mat-tab>
-
-            <mat-tab label="Second">
+            <mat-tab label="Enter Text">
                 <div class="scroll-container">
                     <app-line-numbered-textarea></app-line-numbered-textarea>
                 </div>
-                <button (click)="triggerUploadText()">Upload Event Text</button>
+                <button (click)="triggerUploadText('event')">Upload Event Text</button>
             </mat-tab>
         </mat-tab-group>
-    </div>
+    </section>
 
     <!-- Task Upload Section -->
-    <div class="section section-task-upload">
-        <h1>Task upload</h1>
+    <section class="section section-task-upload" aria-labelledby="task-upload-heading">
+        <h1 id="task-upload-heading">Task Upload (Required)</h1>
         <mat-tab-group animationDuration="0ms">
-            <mat-tab label="First">
+            <mat-tab label="Upload CSV">
                 <app-csvinput [uploadType]="'task'"></app-csvinput>
             </mat-tab>
-            <mat-tab label="Second">
+            <mat-tab label="Enter Text">
                 <div class="scroll-container">
                     <app-line-numbered-textarea></app-line-numbered-textarea>
                 </div>
-                <button (click)="triggerUploadText()">Upload Task Text</button>
-
+                <button (click)="triggerUploadText('task')">Upload Task Text</button>
             </mat-tab>
         </mat-tab-group>
-    </div>
+    </section>
 
     <!-- Result Section -->
-    <div class="section section-result">
-        <h1>Result</h1>
+    <section class="section section-result" aria-labelledby="result-heading">
+        <h1 id="result-heading">Result</h1>
         <button id="startSchedulingBtn" (click)="startScheduling()">Start Scheduling</button>
-    </div>
+    </section>
 </div>

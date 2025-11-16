@@ -1,100 +1,104 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpEventType } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Component, Input } from '@angular/core';
-import { finalize, Subscription } from 'rxjs';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
-import { environment } from '../../../environments/environment';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs';
+import { environment } from '../../../environments/environment';
+import { UploadService } from '../../core/services/upload.service';
 
 @Component({
   selector: 'app-csvinput',
+  standalone: true,
   imports: [CommonModule, MatProgressBarModule, MatIconModule, MatTabsModule],
   templateUrl: './csvinput.component.html',
-  styleUrl: './csvinput.component.scss'
+  styleUrls: ['./csvinput.component.scss']
 })
 export class CSVInputComponent {
-  @Input()
-  requiredFileType: string | undefined;
-  @Input() uploadType: 'event' | 'task' = 'event'; // default to 'event'
-  @Input() onUploadText: () => void = () => { };
+  @Input() uploadType: 'event' | 'task' = 'event';
 
-  private baseEndpoint = `${environment.apiUrl}/CSVInput`;
+  // Map to track progress per upload id
+  uploadProgressMap: Map<string, number> = new Map();
+  public requiredFileType = ['txt', 'csv'];
 
-  fileName = '';
-  uploadProgress!: number | null;
-  uploadSub!: Subscription | null;
+  // Additional properties to manage UI state
+  fileName: string | null = null;
+  // Store current upload id
+  currentUploadId: string | null = null;
 
-  constructor(private http: HttpClient) {
+  constructor(private uploadService: UploadService, private http: HttpClient) { }
 
+  // Getter to derive current upload progress
+  get uploadProgress(): number | null {
+    if (this.currentUploadId && this.uploadProgressMap.has(this.currentUploadId)) {
+      return this.uploadProgressMap.get(this.currentUploadId) || 0;
+    }
+    return null;
   }
 
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-
+  onFileSelected(event: any, uploadType: 'event' | 'task'): void {
+    const file: File | undefined = event.target?.files?.[0];
     if (file) {
       this.fileName = file.name;
       const formData = new FormData();
-      formData.append(`${this.uploadType}_input`, file);
+      formData.append(`${uploadType}_input`, file);
 
-      const upload$ = this.http.post(this.baseEndpoint, formData, {
-        reportProgress: true,
-        observe: 'events'
-      }).pipe(
-        finalize(() => this.reset())
-      );
+      const uploadItem = this.uploadService.startUpload(formData, `${environment.apiUrl}/CSVInput`, uploadType);
 
-      this.uploadSub = upload$.subscribe(event => {
-        if (event.type === HttpEventType.UploadProgress && event.total !== undefined) {
-          this.uploadProgress = Math.round(100 * (event.loaded / event.total));
-        }
-      }, error => {
-        // Handle upload error
-        console.error('Upload failed', error);
-        this.reset();
-      });
+      // Set currentUploadId to track progress
+      this.currentUploadId = uploadItem.id;
+
+      // Subscribe to progress updates
+      this.uploadItemProgressSubscription(uploadItem, uploadItem.id);
     }
   }
 
-  cancelUpload() {
-    if (this.uploadSub != null) {
-      this.uploadSub.unsubscribe();
-    }
-    this.reset();
-  }
-
-  reset() {
-    this.uploadProgress = null;
-    this.uploadSub = null;
-  }
-
-  uploadText() {
-    console.log('Upload button clicked');
-    const el = document.getElementById('textarea');
-    console.log('Element', el);
-
-    const text1 = (document.getElementById('textarea') as HTMLTextAreaElement)?.value;
-    console.log(text1);
-
-    if (text1 == null) {
+  uploadText(uploadType: 'event' | 'task'): void {
+    const textarea = document.getElementById('textarea') as HTMLTextAreaElement | null;
+    const textContent = textarea?.value;
+    if (textContent == null || textContent.trim() === '') {
       return;
     }
 
+    this.fileName = 'Text Input';
+
     const formData = new FormData();
-    formData.append('event_input', new Blob([text1], { type: 'text/plain' }), 'text_input.txt');
-    console.log('FormData: ', formData);
+    formData.append(`${uploadType}_input`, new Blob([textContent], { type: 'text/plain' }), 'text_input.txt');
 
-    const upload$ = this.http.post(this.baseEndpoint, formData, {
-      reportProgress: true,
-      observe: 'events'
-    }).pipe(
-      finalize(() => this.reset())
-    );
+    const uploadItem = this.uploadService.startUpload(formData, `${environment.apiUrl}/CSVInput`, uploadType);
 
-    this.uploadSub = upload$.subscribe(event => {
-      if (event.type == HttpEventType.UploadProgress && event.total !== undefined) {
-        this.uploadProgress = Math.round(100 * (event.loaded / event.total));
+    // Set currentUploadId for progress tracking
+    this.currentUploadId = uploadItem.id;
+
+    this.uploadItemProgressSubscription(uploadItem, uploadItem.id);
+  }
+
+  cancelUpload(id: string): void {
+    this.uploadService.cancelUpload(id);
+    this.uploadProgressMap.delete(id);
+    if (this.currentUploadId === id) {
+      this.currentUploadId = null;
+    }
+    localStorage.removeItem('upload_id');
+  }
+
+  private uploadItemProgressSubscription(uploadItem: any, id: string): void {
+    uploadItem.progress$.subscribe((progress: number) => {
+      this.uploadProgressMap.set(id, progress);
+      if (progress >= 100) {
+        // Upload finished
+        this.uploadProgressMap.delete(id);
+        if (this.currentUploadId === id) {
+          this.currentUploadId = null;
+        }
       }
     });
+  }
+
+  reset(): void {
+    this.fileName = null;
+    this.uploadProgressMap.clear();
+    this.currentUploadId = null;
+    localStorage.removeItem('upload_id');
   }
 }
