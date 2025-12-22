@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, tap, throwError, retry, finalize, switchMap, of } from 'rxjs';
-import { Buffer } from 'buffer';
-import { environment } from '../../../environments/environment';
-import { UserModel, AuthCredentials, AuthResponseModel } from '../../model/models';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Buffer } from 'buffer';
+import { BehaviorSubject, catchError, finalize, Observable, of, retry, switchMap, tap, throwError } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { AuthCredentials, AuthResponseModel, UserModel } from '../../model/models';
+import { ErrorHandlerService } from '../../services/error-handler.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,17 +13,33 @@ import { Router } from '@angular/router';
 export class AuthService {
   private baseEndpoint = `${environment.apiUrl}/auth`;
   private readonly MAX_RETRIES = 3;
+  // TODO: Implement input validation on the client-side to prevent unnecessary API calls.
+  // TODO: Consider using a more secure storage mechanism for the token (e.g., HttpOnly cookie)
+  // TODO: Add support for social login (e.g., Google, Facebook).
+  // TODO: Implement two-factor authentication (2FA).
+  // TODO: Implement password reset functionality.
+  // TODO: Add a feature to change the password.
+  // TODO: Implement a mechanism to prevent token theft.
+  // TODO: Add support for different user roles and permissions.
+  // TODO: Implement a feature to manage user sessions.
+  // TODO: Implement a feature to revoke tokens.
+  // TODO: Add support for internationalization (i18n).
+  // TODO: Implement a feature to handle different authentication providers.
 
-  constructor(private http: HttpClient, private router: Router) { }
+  // Use a BehaviorSubject to track the authentication status
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
+  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+
+  constructor(private http: HttpClient, private router: Router, private errorHandlerService: ErrorHandlerService) { }
 
   private headers(withAuth: boolean = false): HttpHeaders {
     let headers = new HttpHeaders();
     if (withAuth) {
       const token = this.getToken();
       if (token) {
-        headers = headers.set('authorisation', `Bearer ${token}`);
+        headers = headers.set('Authorization', `Bearer ${token}`); // Corrected header name
       } else {
-        console.warn('No token found, proceeding without authorisation header.');
+        console.warn('No token found, proceeding without authorization header.');
       }
     }
     return headers;
@@ -32,10 +49,19 @@ export class AuthService {
     console.time('Register User');
     return this.http.post<AuthResponseModel>(`${this.baseEndpoint}/register`, user).pipe(
       retry(this.MAX_RETRIES),
-      tap(() => console.log('Registration successful')),
-      catchError(this.handleError),
+      tap(() => {
+        console.log('Registration successful');
+      }),
+      catchError(error => {
+        this.errorHandlerService.handleError(error);
+        return throwError(() => error);
+      }),
       finalize(() => console.timeEnd('Register User'))
     );
+  }
+
+  sendVerificationEmail(): Observable<any> {
+    return this.http.post(`${this.baseEndpoint}/auth/verification-notification`, {});
   }
 
   public login(credentials: AuthCredentials): Observable<AuthResponseModel> {
@@ -85,8 +111,7 @@ export class AuthService {
         this.handleLoginResponse(response);
       }),
       catchError(error => {
-        console.error('Login failed:', error);
-        return this.handleError(error);
+        return this.errorHandlerService.handleError(error);
       }),
       finalize(() => console.timeEnd('Login User'))
     );
@@ -97,8 +122,11 @@ export class AuthService {
     return this.http.get<UserModel>(`${this.baseEndpoint}/me`, { headers: this.headers(true) }).pipe(
       retry(this.MAX_RETRIES),
       tap(() => console.log('User data fetched successfully')),
-      catchError(this.handleError)
-    );
+      catchError(error => {
+        return this.errorHandlerService.handleError(error);
+      }
+      )
+    )
   }
 
   public logout(): Observable<void> {
@@ -114,8 +142,11 @@ export class AuthService {
         // Redirect on successful logout
         this.router.navigate(['/login']);
       }),
-      catchError(this.handleError)
-    );
+      catchError(error => {
+        return this.errorHandlerService.handleError(error);
+      }
+      )
+    )
   }
 
   private handleLoginResponse(response: AuthResponseModel): void {
@@ -126,24 +157,6 @@ export class AuthService {
     } else {
       console.warn('Invalid login response:', response);
     }
-  }
-
-  private handleError(error: any): Observable<never> {
-    console.error('An error occurred:', error);
-    let errorMessage = 'An error occurred during the request.';
-
-    if (error.name === 'TimeoutError') {
-      errorMessage = 'The request timed out. Please try again later.';
-    } else if (error.status === 0) {
-      errorMessage = 'Network error. Please check your internet connection.';
-    } else if (error.status >= 500) {
-      errorMessage = 'Server error. Please try again later.';
-    } else if (error.status >= 400) {
-      errorMessage = 'Client error. Please check your input and try again.';
-    }
-
-    alert(errorMessage);
-    return throwError(() => new Error(errorMessage));
   }
 
   public saveToken(token: string): void {

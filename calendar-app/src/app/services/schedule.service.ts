@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { ErrorHandlerService } from './error-handler.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,14 @@ import { environment } from '../../environments/environment';
 export class ScheduleService {
   private baseEndpoint = `${environment.apiUrl}/schedule`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private errorHandlerService: ErrorHandlerService) { }
 
   public startScheduling(): Observable<any> {
     const uploadId = localStorage.getItem('upload_id');
     const headers = { 'X-Upload-ID': uploadId || '' };
 
     return this.http.get(`${this.baseEndpoint}`, { headers }).pipe(
-      catchError(this.handleError)
+      catchError(this.errorHandlerService.handleError)
     );
   }
 

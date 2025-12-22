@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { ErrorHandlerService } from './error-handler.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +11,11 @@ import { environment } from '../../environments/environment';
 export class TimezoneService {
   private baseEndpoint = `${environment.apiUrl}/timezones`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private errorHandlerService: ErrorHandlerService) { }
 
   getTimezones(): Observable<any> {
     return this.http.get<string[]>(this.baseEndpoint).pipe(
-      catchError(this.handleError)
+      catchError(this.errorHandlerService.handleError)
     );
   }
 

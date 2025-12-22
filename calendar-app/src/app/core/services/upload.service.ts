@@ -44,7 +44,7 @@ export class UploadService {
     const cancel$ = new Subject<void>();
 
     // Create headers with the id
-    const headers = new HttpHeaders().set('X-Upload-ID', id);
+    let headers = new HttpHeaders().set('X-Upload-ID', id);
 
     // Include headers in the HttpRequest
     const req = new HttpRequest('POST', uploadUrl, formData, {

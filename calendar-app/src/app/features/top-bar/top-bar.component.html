@@ -4,6 +4,10 @@
         <mat-icon>menu</mat-icon>
     </button>
 
+    <button mat-icon-button aria-label="Generate mock data" (click)="generateMockData()">
+        <mat-icon>shuffle</mat-icon>
+    </button>
+
     <!-- Navigation Buttons -->
     <div class="navigation-buttons">
         <button mat-raised-button color="primary" (click)="onNavigationChange('previous')">Previous</button>
@@ -21,7 +25,8 @@
                 <mat-option [value]="CalendarView.Day">Day</mat-option>
             </mat-select>
         </mat-form-field>
-        
+
+        <button mat-raised-button color="primary" (click)="export()">Export Data</button>
         <button mat-raised-button color="warn" (click)="logout()">Logout</button>
     </div>
 </div>

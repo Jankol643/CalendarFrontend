@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { ErrorHandlerService } from './error-handler.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,40 +11,40 @@ import { environment } from '../../environments/environment';
 export class CalendarService {
   private baseEndpoint = `${environment.apiUrl}/calendars`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private errorHandlerService: ErrorHandlerService) { }
 
   // Get all calendars
   public getCalendarsByUser(): Observable<any> {
     return this.http.get(this.baseEndpoint).pipe(
-      catchError(this.handleError)
+      catchError(this.errorHandlerService.handleError)
     );
   }
 
   // Create a new calendar
   public createCalendar(calendar: any): Observable<any> {
     return this.http.post(this.baseEndpoint, calendar).pipe(
-      catchError(this.handleError)
+      catchError(this.errorHandlerService.handleError)
     );
   }
 
   // Get a calendar by ID
   public getCalendarById(id: number): Observable<any> {
     return this.http.get(`${this.baseEndpoint}/${id}`).pipe(
-      catchError(this.handleError)
+      catchError(this.errorHandlerService.handleError)
     );
   }
 
   // Update a calendar
   public updateCalendar(id: number, calendar: any): Observable<any> {
     return this.http.put(`${this.baseEndpoint}/${id}`, calendar).pipe(
-      catchError(this.handleError)
+      catchError(this.errorHandlerService.handleError)
     );
   }
 
   // Delete a calendar
   public deleteCalendar(id: number): Observable<any> {
     return this.http.delete(`${this.baseEndpoint}/${id}`).pipe(
-      catchError(this.handleError)
+      catchError(this.errorHandlerService.handleError)
     );
   }
 

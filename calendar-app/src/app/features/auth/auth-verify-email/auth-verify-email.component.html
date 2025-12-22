@@ -1,0 +1,11 @@
+<div class='verify-email-container'>
+    <h2>Email Verification</h2>
+    <p>Please check your email for a verification link. If you haven't received an email, you can resend it by clicking
+        the button below.</p>
+
+    <button (click)='resendVerificationEmail()' [disabled]='loading'>
+        {{ loading ? 'Sending...' : 'Resend Verification Email' }}
+    </button>
+
+    <p *ngIf='message'>{{ message }}</p>
+</div>
