@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AuthVerifyEmailComponent } from './auth-verify-email.component';
 
 describe('AuthVerifyEmailComponent', () => {
@@ -19,5 +18,14 @@ describe('AuthVerifyEmailComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should call resendVerificationEmail', () => {
+    // Act
+    const result = component.resendVerificationEmail();
+    
+    // Assert
+    expect(result).toBeDefined();
+    // Add specific assertions here based on what resendVerificationEmail should do
   });
 });

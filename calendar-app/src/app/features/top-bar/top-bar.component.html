@@ -1,10 +1,11 @@
-<div class="topbar mat-elevation-z4">
+<mat-toolbar class="topbar">
     <!-- Sidebar Toggle Button -->
-    <button mat-icon-button aria-label="Toggle Sidebar" (click)="onToggleSidebar()">
+    <button mat-icon-button aria-label="Toggle Sidebar" (click)="onToggleSidebar()" class="icon-only">
         <mat-icon>menu</mat-icon>
     </button>
 
-    <button mat-icon-button aria-label="Generate mock data" (click)="generateMockData()">
+    <!-- Generate Mock Data Button -->
+    <button mat-icon-button aria-label="Generate mock data" (click)="generateMockData()" class="icon-only">
         <mat-icon>shuffle</mat-icon>
     </button>
 
@@ -16,8 +17,8 @@
     </div>
 
     <!-- View Selector and Logout -->
-    <div class="view-selector">
-        <mat-form-field appearance="outline">
+    <div class="view-logout">
+        <mat-form-field appearance="outline" class="view-selector">
             <mat-label>View</mat-label>
             <mat-select [(value)]="view" (selectionChange)="onViewChange($event.value)">
                 <mat-option [value]="CalendarView.Month">Month</mat-option>
@@ -29,4 +30,4 @@
         <button mat-raised-button color="primary" (click)="export()">Export Data</button>
         <button mat-raised-button color="warn" (click)="logout()">Logout</button>
     </div>
-</div>
+</mat-toolbar>

@@ -14,7 +14,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-    { path: 'event/:id/edit', component: CalendarItemEditComponent },
+    { path: 'event/:id/edit', component: CalendarItemEditComponent, canActivate: [AuthGuard] },
     { path: 'upload', component: UploadComponent, canActivate: [AuthGuard] },
     { path: 'verify-email', component: AuthVerifyEmailComponent },
 ];

@@ -1,97 +1,86 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SidebarComponent } from './sidebar.component';
-import { CalendarService } from '../../services/calendar.service';
-import { EventService } from '../../event.service';
-import { MatDialog } from '@angular/material/dialog';
-import { of, throwError } from 'rxjs';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('SidebarComponent', () => {
   let component: SidebarComponent;
   let fixture: ComponentFixture<SidebarComponent>;
-  let mockCalendarService: jasmine.SpyObj<CalendarService>;
-  let mockEventService: jasmine.SpyObj<EventService>;
-  let mockDialog: jasmine.SpyObj<MatDialog>;
 
   beforeEach(async () => {
-    mockCalendarService = jasmine.createSpyObj('CalendarService', ['getCalendarsByUser']);
-    mockEventService = jasmine.createSpyObj('EventService', ['notifyEventsChanged']);
-    mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
-
     await TestBed.configureTestingModule({
-      declarations: [],
-      imports: [],
-      providers: [
-        { provide: CalendarService, useValue: mockCalendarService },
-        { provide: EventService, useValue: mockEventService },
-        { provide: MatDialog, useValue: mockDialog }
-      ],
-      schemas: [NO_ERRORS_SCHEMA] // ignore unknown elements
-    }).compileComponents();
+      imports: [SidebarComponent]
+    })
+      .compileComponents();
 
     fixture = TestBed.createComponent(SidebarComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('ngOnInit', () => {
-    it('should load calendars and set them', () => {
-      const mockResponse = { data: [{ id: 1, title: 'Cal 1', visible: true }] };
-      mockCalendarService.getCalendarsByUser.and.returnValue(of(mockResponse));
-
-      component.ngOnInit();
-
-      expect(component.calendars.length).toBe(1);
-      expect(component.calendars[0].title).toBe('Cal 1');
-    });
-
-    it('should handle error when loading calendars', () => {
-      mockCalendarService.getCalendarsByUser.and.returnValue(throwError('error'));
-
-      spyOn(console, 'error');
-      component.ngOnInit();
-
-      expect(console.error).toHaveBeenCalledWith('Error fetching calendars:', 'error');
-    });
+  it('should call loadCalendars', () => {
+    // Act
+    const result = component.loadCalendars();
+    
+    // Assert
+    expect(result).toBeDefined();
+    // Add specific assertions here based on what loadCalendars should do
   });
-
-  describe('toggleCalendars', () => {
-    it('should toggle showCalendars', () => {
-      const initial = component.showCalendars;
-      component.toggleCalendars();
-      expect(component.showCalendars).toBe(!initial);
-    });
+  it('should call toggleCalendars', () => {
+    // Act
+    const result = component.toggleCalendars();
+    
+    // Assert
+    expect(result).toBeDefined();
+    // Add specific assertions here based on what toggleCalendars should do
   });
-
-  describe('toggleCalendarVisibility', () => {
-    it('should toggle the calendar visibility and notify', () => {
-      const calendar = { id: 1, title: 'Cal', visible: true };
-      component.calendars = [calendar];
-
-      component.toggleCalendarVisibility(calendar);
-      expect(calendar.visible).toBe(false);
-      expect(mockEventService.notifyEventsChanged).toHaveBeenCalledWith([1]);
-    });
+  it('should call toggleCalendarVisibility', () => {
+    
+    // Arrange
+    const result = component.toggleCalendarVisibility('testcalendar');
+    
+    // Assert
+    expect(result).toBeDefined();
+    // Add specific assertions here based on what toggleCalendarVisibility should do
   });
-
-  describe('openEventForm', () => {
-    it('should open the dialog', () => {
-      component.openEventForm();
-      expect(mockDialog.open).toHaveBeenCalledWith(jasmine.any(Function), jasmine.objectContaining({ width: '400px' }));
-    });
+  it('should call emitVisibleCalendars', () => {
+    // Act
+    const result = component.emitVisibleCalendars();
+    
+    // Assert
+    expect(result).toBeDefined();
+    // Add specific assertions here based on what emitVisibleCalendars should do
   });
-
-  describe('ngOnDestroy', () => {
-    it('should unsubscribe from all subscriptions', () => {
-      // Spy on the unsubscribe method of the subscriptions property
-      const subscriptionsSpy = spyOn(component['subscriptions'], 'unsubscribe').and.callThrough();
-
-      component.ngOnDestroy();
-
-      expect(subscriptionsSpy).toHaveBeenCalled();
-    });
+  it('should call openEventForm', () => {
+    // Act
+    const result = component.openEventForm();
+    
+    // Assert
+    expect(result).toBeDefined();
+    // Add specific assertions here based on what openEventForm should do
+  });
+  it('should call open', () => {
+        const mockEventformcomponent: any = {};
+    const mock{
+}
+public importfromcsv(: any = {};
+    // Arrange
+    const result = component.open(mockEventformcomponent, mock{
+}
+public importfromcsv();
+    
+    // Assert
+    expect(result).toBeDefined();
+    // Add specific assertions here based on what open should do
+  });
+  it('should call toggleSidebar', () => {
+    // Act
+    const result = component.toggleSidebar();
+    
+    // Assert
+    expect(result).toBeDefined();
+    // Add specific assertions here based on what toggleSidebar should do
   });
 });

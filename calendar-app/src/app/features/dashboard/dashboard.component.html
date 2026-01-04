@@ -1,9 +1,10 @@
 <mat-sidenav-container class="main-container dashboard">
-    <mat-sidenav #sidenav mode="side" [opened]="isSidebarOpen">
+    <mat-sidenav #sidenav [mode]="sidenavMode" [opened]="isSidebarOpen" (openedChange)="onSidenavChange($event)">
         <app-sidebar></app-sidebar>
     </mat-sidenav>
+
     <mat-sidenav-content>
-        <app-top-bar (toggleSidebar)="sidenav.toggle()"></app-top-bar>
+        <app-top-bar (toggleSidebar)="toggleSidebar()"></app-top-bar>
         <app-calendar></app-calendar>
     </mat-sidenav-content>
 </mat-sidenav-container>

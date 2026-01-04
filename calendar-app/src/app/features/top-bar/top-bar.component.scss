@@ -1,19 +1,62 @@
 .topbar {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-wrap: wrap;
     padding: 0.5rem 1rem;
     background-color: var(--mat-primary-contrast);
     color: var(--mat-primary);
-}
-
-.navigation-buttons {
-    display: flex;
     gap: 0.5rem;
+    align-items: center;
+    /* Vertically center items */
 }
 
-.view-selector {
+/* Keep icon-only buttons consistent */
+.icon-only {
     display: flex;
     align-items: center;
-    gap: 1rem;
+}
+
+/* Layout for navigation and view/logout sections */
+.navigation-buttons,
+.view-logout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* Make buttons take minimal space */
+button {
+    min-width: auto;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 768px) {
+
+    /* Stack elements vertically */
+    .topbar {
+        flex-direction: column;
+        align-items: stretch;
+        /* stretch to fill width */
+        padding: 0.5rem;
+    }
+
+    /* Stack navigation and view/logout vertically */
+    .navigation-buttons,
+    .view-logout {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    /* Optionally, minimize icon-only buttons or hide labels if desired */
+    /* For example, hide labels and keep only icons for space */
+    /* Or just keep icons visible and labels hidden */
+    /* Example: */
+    /* Uncomment to hide labels for icon-only buttons on small screens */
+    /*
+    .icon-only {
+        padding: 0;
+        justify-content: center;
+    }
+    */
 }

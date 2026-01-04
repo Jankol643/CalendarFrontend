@@ -1,14 +1,14 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'; // Import MatDialog
-import { CommonModule } from '@angular/common';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { EventService } from '../../event.service';
 import { CalendarService } from '../../services/calendar.service';
 import { EventFormComponent } from '../event-form/event-form.component';
-import { EventService } from '../../event.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
