@@ -4,7 +4,8 @@
         <h1 id="event-upload-heading">Event Upload (Required)</h1>
         <mat-tab-group animationDuration="0ms">
             <mat-tab label="Upload CSV">
-                <app-csvinput [uploadType]="'event'"></app-csvinput>
+                <app-csvinput [uploadType]="'event'" [adjustToCurrentDate]="adjustToCurrentDate">
+                </app-csvinput>
             </mat-tab>
             <mat-tab label="Enter Text">
                 <div class="scroll-container">
@@ -20,7 +21,8 @@
         <h1 id="task-upload-heading">Task Upload (Required)</h1>
         <mat-tab-group animationDuration="0ms">
             <mat-tab label="Upload CSV">
-                <app-csvinput [uploadType]="'task'"></app-csvinput>
+                <app-csvinput [uploadType]="'task'" [adjustToCurrentDate]="adjustToCurrentDate">
+                </app-csvinput>
             </mat-tab>
             <mat-tab label="Enter Text">
                 <div class="scroll-container">
@@ -30,6 +32,12 @@
             </mat-tab>
         </mat-tab-group>
     </section>
+
+    <p>
+        <mat-slide-toggle [formControl]="adjustToCurrentDateControl">
+            Adjust dates to current date
+        </mat-slide-toggle>
+    </p>
 
     <!-- Result Section -->
     <section class="section section-result" aria-labelledby="result-heading">

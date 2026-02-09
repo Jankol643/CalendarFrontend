@@ -27,4 +27,4 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
 
 ## Notes
-I wrote the calendar by myself instead of relying on finished frameworks because it is more difficult and adapting the framework to the specific use case was too time consuming.
+I used the angular-calendar framework to display the calendar.

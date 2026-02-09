@@ -1,44 +1,138 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Navbar</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        Dropdown
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                </li>
-            </ul>
-            <div class="d-flex">
-                <a class="btn btn-outline-primary me-2" href="/login" role="button">
-                    <i class="bi bi-person-fill"></i> Login
-                </a>
-                <a class="btn btn-primary" href="/register" role="button">
-                    <i class="bi bi-person-fill-add"></i> Register
-                </a>
+<app-navbar></app-navbar>
+<div class="home-container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">Schedule Smarter, Not Harder</h1>
+                <p class="hero-subtitle">
+                    Intelligent calendar that automatically schedules tasks around your existing events.
+                    Reclaim your time and boost productivity.
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn-primary" (click)="startFreeTrial()">
+                        Start 14-Day Free Trial
+                    </button>
+                    <button class="btn-secondary" (click)="scrollToFeatures()">
+                        Learn More
+                    </button>
+                </div>
+                <p class="trial-note">No credit card required • Cancel anytime</p>
+            </div>
+            <div class="hero-image">
+                <div class="calendar-preview">
+                    <div class="calendar-header">
+                        <span>Today's Schedule</span>
+                        <div class="calendar-actions">
+                            <span class="calendar-dot" style="background: #4CAF50;"></span>
+                            <span class="calendar-dot" style="background: #2196F3;"></span>
+                            <span class="calendar-dot" style="background: #FF9800;"></span>
+                        </div>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="time-slot meeting">Team Meeting<br><small>9:00 - 10:00 AM</small></div>
+                        <div class="time-slot task">Deep Work<br><small>10:00 - 12:00 PM</small></div>
+                        <div class="time-slot meeting">Client Call<br><small>1:00 - 2:00 PM</small></div>
+                        <div class="time-slot task">Project Review<br><small>2:30 - 4:00 PM</small></div>
+                        <div class="time-slot task">Email Processing<br><small>4:00 - 4:30 PM</small></div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </section>
+
+    <!-- Business Benefits Section -->
+    <section class="benefits-section">
+        <div class="section-header">
+            <h2>Transform Your Business Productivity</h2>
+            <p>Professional scheduling solutions designed to save time and reduce complexity</p>
+        </div>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">⏱️</div>
+                <h3>Save 8+ Hours Weekly</h3>
+                <p>Eliminate manual scheduling and reduce administrative overhead by automating task placement.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">📈</div>
+                <h3>Increase Team Output</h3>
+                <p>Optimize team schedules to maximize productive hours and minimize context switching.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">💰</div>
+                <h3>Boost ROI</h3>
+                <p>Every hour saved on scheduling translates to more billable hours and higher revenue.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🔄</div>
+                <h3>Scale Efficiently</h3>
+                <p>As your business grows, our intelligent scheduling scales with you, maintaining efficiency.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="section-header">
+            <h2>Powerful Features for Professionals</h2>
+            <p>Everything you need to master your schedule</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card" *ngFor="let feature of features">
+                <div class="feature-icon">
+                    <span class="material-icons">{{feature.icon}}</span>
+                </div>
+                <h3>{{feature.title}}</h3>
+                <p>{{feature.description}}</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="section-header">
+            <h2>Trusted by Professionals</h2>
+            <p>See what our clients say about their productivity transformation</p>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card" *ngFor="let testimonial of testimonials">
+                <div class="testimonial-content">
+                    <p>"{{testimonial.content}}"</p>
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">{{testimonial.avatar}}</div>
+                    <div class="author-info">
+                        <h4>{{testimonial.name}}</h4>
+                        <p>{{testimonial.role}} • {{testimonial.company}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Ready to Transform Your Scheduling?</h2>
+            <p>Join thousands of professionals who have optimized their time management</p>
+            <div class="cta-features">
+                <div class="cta-feature">
+                    <span class="material-icons">check_circle</span>
+                    <span>14-day free trial</span>
+                </div>
+                <div class="cta-feature">
+                    <span class="material-icons">check_circle</span>
+                    <span>No credit card required</span>
+                </div>
+                <div class="cta-feature">
+                    <span class="material-icons">check_circle</span>
+                    <span>Cancel anytime</span>
+                </div>
+            </div>
+            <button class="btn-primary btn-large" (click)="startFreeTrial()">
+                Start Your Free Trial Now
+            </button>
+            <p class="cta-note">After trial: $29/month or $299/year • No free plan available</p>
+        </div>
+    </section>
+</div>
