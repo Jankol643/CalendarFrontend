@@ -1,63 +1,64 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, filter, switchMap, take } from 'rxjs/operators';
+import { HttpEvent, HttpHandlerFn, HttpRequest, HttpErrorResponse } from '@angular/common/http'; // Import HttpErrorResponse
+import { inject } from '@angular/core'; // Import inject
+import { Observable, throwError, of } from 'rxjs'; // Import of
+import { catchError, switchMap, take } from 'rxjs/operators'; // Import take
 import { AuthService } from './auth.service';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-  private isRefreshing = false; // Tracks if a token refresh is in progress
-  private refreshTokenSubject = new BehaviorSubject<string | null>(null); // Simplified initialization
+// Function-based interceptor
+export function authInterceptor(
+  req: HttpRequest<any>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<any>> {
+  const authService = inject(AuthService);
 
-  constructor(private authService: AuthService) { }
+  console.log('Interceptor processing:', req.url, req.method);
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = this.authService.getToken();
-
-    // If token is valid, clone the request with token
-    if (token && !this.authService.isTokenExpired(token)) {
-      return next.handle(this.cloneRequest(req, token));
-    }
-
-    // Handle expired token
-    if (token) {
-      return this.handleExpiredToken(req, next);
-    }
-
-    // Proceed without adding Authorization header if no token is available
-    return next.handle(req);
+  // Skip authentication for login/register endpoints
+  if (req.url.includes('/auth/login') || req.url.includes('/auth/register')) {
+    console.log('Skipping auth for login/register endpoint');
+    return next(req);
   }
 
-  private handleExpiredToken(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (!this.isRefreshing) {
-      this.isRefreshing = true;
-      this.refreshTokenSubject.next(null); // Reset the subject
-      return this.authService.refreshToken().pipe(
-        switchMap((response) => {
-          const newToken = response.authorisation.token;
-          this.authService.saveToken(newToken);
-          this.refreshTokenSubject.next(newToken); // Notify all waiting requests
-          this.isRefreshing = false;
-          return next.handle(this.cloneRequest(req, newToken));
-        }),
-        catchError((error) => {
-          this.isRefreshing = false; // Reset the refreshing state
-          this.authService.logout(); // Log out the user if refresh fails
-          return throwError(() => new Error('Session expired. Please log in again.'));
-        })
-      );
-    } else {
-      // Wait for the token to be refreshed
-      return this.refreshTokenSubject.pipe(
-        filter(token => token !== null), // Wait until the new token is available
-        take(1), // Take only the first emitted value
-        switchMap(token => next.handle(this.cloneRequest(req, token!)))
-      );
-    }
+  const token = authService.getToken();
+
+  if (!token) {
+    console.log('No token found, proceeding without auth');
+    return next(req);
   }
 
-  private cloneRequest(req: HttpRequest<any>, token: string): HttpRequest<any> {
-    const headers = req.headers.set('Authorization', `Bearer ${token}`);
-    return req.clone({ headers });
+  // If token exists and is not expired, add it to the request
+  if (token && !authService.isTokenExpired()) {
+    console.log('Token valid, adding to request');
+    const authorizedReq = cloneRequest(req, token);
+    return next(authorizedReq);
   }
+
+  // If token exists but is expired, attempt to refresh it
+  if (token) {
+    console.log('Token expired, attempting refresh');
+    return authService.refreshToken().pipe(
+      switchMap((authResponse) => {
+        console.log('Token refresh response:', authResponse);
+        if (authResponse?.authorisation?.token) {
+          const authorizedReq = cloneRequest(req, authResponse.authorisation.token);
+          return next(authorizedReq);
+        }
+        authService.clearAuthData();
+        return throwError(() => new Error('Token refresh failed'));
+      }),
+      catchError((refreshError: any) => {
+        console.error('Token refresh error:', refreshError);
+        authService.clearAuthData();
+        return next(req); // Try without token
+      })
+    );
+  }
+
+  return next(req);
+}
+
+// Helper function to clone request
+function cloneRequest(req: HttpRequest<any>, token: string): HttpRequest<any> {
+  const headers = req.headers.set('Authorization', `Bearer ${token}`);
+  return req.clone({ headers });
 }

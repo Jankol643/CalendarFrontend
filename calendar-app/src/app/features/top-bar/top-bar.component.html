@@ -28,6 +28,41 @@
         </mat-form-field>
 
         <button mat-raised-button color="primary" (click)="export()">Export Data</button>
-        <button mat-raised-button color="warn" (click)="logout()">Logout</button>
+    </div>
+
+    <!-- Spacer to push profile section to the right -->
+    <div class="spacer"></div>
+
+    <!-- Profile Section -->
+    <div class="profile-section">
+        <div class="profile-container" [matMenuTriggerFor]="profileMenu">
+            <div class="profile-info">
+                <span class="profile-name">{{user?.username || 'Default username'}}</span>
+                <span class="profile-email">{{user?.email}}</span>
+            </div>
+            <div class="profile-avatar">
+                <img *ngIf="user?.profileImage" [src]="user?.profileImage" alt="Profile Picture" class="avatar-image">
+                <mat-icon *ngIf="!user?.profileImage" class="avatar-image">user</mat-icon>
+                <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+            </div>
+        </div>
+
+        <mat-menu #profileMenu="matMenu" class="profile-menu">
+            <button mat-menu-item (click)="goToProfile()">
+                <mat-icon>person</mat-icon>
+                <span>My Profile</span>
+            </button>
+            <button mat-menu-item (click)="goToSettings()">
+                <mat-icon>settings</mat-icon>
+                <span>Settings</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="logout()">
+                <button mat-menu-item (click)="logout()">
+                    <mat-icon>logout</mat-icon>
+                    <span>Logout</span>
+                </button>
+            </button>
+        </mat-menu>
     </div>
 </mat-toolbar>

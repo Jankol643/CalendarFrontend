@@ -1,42 +1,111 @@
-<mat-card class="login-card">
-    <mat-card-header>
-        <mat-card-title class="login-title">Login</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        <div *ngIf="errorMessage" class="error-message">
-            {{ errorMessage }}
+<mat-card class="login-card fade-in">
+    <mat-card-header class="card-header">
+        <div class="header-content">
+            <div class="icon-container">
+                <mat-icon class="login-icon" aria-hidden="true">lock_person</mat-icon>
+            </div>
+            <mat-card-title class="login-title">Welcome Back</mat-card-title>
+            <mat-card-subtitle class="login-subtitle">Sign in to your account</mat-card-subtitle>
         </div>
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    </mat-card-header>
+
+    <mat-card-content class="card-body">
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="error-message" role="alert" aria-live="assertive">
+            <mat-icon class="error-icon" aria-hidden="true">error_outline</mat-icon>
+            <span>{{ errorMessage }}</span>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" aria-label="Login form">
             <!-- Email Field -->
-            <mat-form-field appearance="fill" class="form-field">
-                <mat-label>Email</mat-label>
-                <input matInput type="email" formControlName="email" [class.is-invalid]="submitted && f['email'].errors"
-                    autocomplete="email" />
-                <mat-error *ngIf="f['email'].hasError('required')">Email is required</mat-error>
-                <mat-error *ngIf="f['email'].hasError('email')">Invalid email address</mat-error>
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Email Address</mat-label>
+                <mat-icon matPrefix class="field-icon" aria-hidden="true">email</mat-icon>
+                <input matInput type="email" formControlName="email"
+                    [attr.aria-invalid]="submitted && f['email'].errors"
+                    [attr.aria-describedby]="submitted && f['email'].errors ? 'email-errors' : null"
+                    autocomplete="email" placeholder="you@example.com" aria-required="true" required />
+                <mat-error *ngIf="f['email'].errors?.['required'] && (f['email'].touched || submitted)">
+                    Email is required
+                </mat-error>
+                <mat-error *ngIf="f['email'].errors?.['email'] && (f['email'].touched || submitted)">
+                    Please enter a valid email address
+                </mat-error>
             </mat-form-field>
 
-            <!-- Password Field with Hide/Show Toggle -->
-            <mat-form-field appearance="fill" class="form-field">
+            <!-- Password Field -->
+            <mat-form-field appearance="outline" class="form-field">
                 <mat-label>Password</mat-label>
+                <mat-icon matPrefix class="field-icon" aria-hidden="true">lock</mat-icon>
                 <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password"
-                    [class.is-invalid]="submitted && f['password'].errors" autocomplete="current-password" />
+                    [attr.aria-invalid]="submitted && f['password'].errors"
+                    [attr.aria-describedby]="submitted && f['password'].errors ? 'password-errors' : null"
+                    autocomplete="current-password" placeholder="Enter your password" aria-required="true" required />
                 <button mat-icon-button matSuffix (click)="togglePasswordVisibility($event)"
-                    [attr.aria-label]="'Hide or show password'" [attr.aria-pressed]="!hidePassword" type="button">
-                    <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'"
+                    [attr.aria-pressed]="!hidePassword" type="button" class="password-toggle">
+                    <mat-icon aria-hidden="true">{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
                 </button>
-                <mat-error *ngIf="f['password'].hasError('required')">Password is required</mat-error>
+                <mat-error *ngIf="f['password'].errors?.['required'] && (f['password'].touched || submitted)">
+                    Password is required
+                </mat-error>
+                <mat-error *ngIf="f['password'].errors?.['minlength'] && (f['password'].touched || submitted)">
+                    Password must be at least 6 characters
+                </mat-error>
             </mat-form-field>
 
-            <!-- Buttons -->
-            <div class="button-group">
-                <button mat-raised-button color="primary" type="submit" [disabled]="loading">
-                    <mat-progress-spinner *ngIf="loading" diameter="20" mode="indeterminate"
-                        class="spinner"></mat-progress-spinner>
-                    Login
-                </button>
-                <button mat-button routerLink="../register" type="button">Cancel</button>
+            <!-- Remember Me & Forgot Password -->
+            <div class="form-options">
+                <mat-checkbox formControlName="rememberMe" class="remember-me">
+                    Remember me
+                </mat-checkbox>
+                <a routerLink="/forgot-password" class="forgot-password">
+                    Forgot password?
+                </a>
+            </div>
+
+            <!-- Submit Button -->
+            <button mat-raised-button color="primary" type="submit" [disabled]="loading || loginForm.invalid"
+                class="login-button" aria-label="Sign in">
+                <span class="button-content">
+                    <mat-progress-spinner *ngIf="loading" diameter="20" mode="indeterminate" class="spinner"
+                        aria-hidden="true">
+                    </mat-progress-spinner>
+                    <span class="button-text" [class.visually-hidden]="loading">
+                        {{ loading ? 'Signing In...' : 'Sign In' }}
+                    </span>
+                    <span *ngIf="loading" class="visually-hidden">Signing in, please wait...</span>
+                </span>
+            </button>
+
+            <!-- Divider -->
+            <div class="divider">
+                <span class="divider-text">or</span>
+            </div>
+
+            <!-- Google Sign-In Button Container -->
+            <div class="google-signin-container">
+                <div id="google-signin-button"></div>
+                <div *ngIf="googleLoading" class="google-loading">
+                    <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
+                    <span>Signing in with Google...</span>
+                </div>
+            </div>
+
+            <!-- GitHub Button (Optional) -->
+            <button mat-stroked-button type="button" class="social-button github-button" disabled>
+                <mat-icon class="social-icon" aria-hidden="true">code</mat-icon>
+                Continue with GitHub
+            </button>
+
+            <!-- Sign Up Link -->
+            <div class="signup-link">
+                <span>Don't have an account?</span>
+                <a mat-button routerLink="/register" class="signup-button">
+                    Sign up now
+                </a>
             </div>
         </form>
     </mat-card-content>
 </mat-card>
+<script src="https://accounts.google.com/gsi/client" async></script>

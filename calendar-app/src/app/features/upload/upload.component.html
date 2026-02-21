@@ -1,3 +1,5 @@
+<app-navbar></app-navbar>
+
 <div class="parent">
     <!-- Event Upload Section -->
     <section class="section section-event-upload" aria-labelledby="event-upload-heading">
@@ -34,9 +36,12 @@
     </section>
 
     <p>
-        <mat-slide-toggle [formControl]="adjustToCurrentDateControl">
+        <mat-slide-toggle [formControl]="adjustToCurrentDateControl" [disabled]="hasUploadId">
             Adjust dates to current date
         </mat-slide-toggle>
+        <span *ngIf="hasUploadId" class="disabled-hint">
+            (Disabled during active upload)
+        </span>
     </p>
 
     <!-- Result Section -->

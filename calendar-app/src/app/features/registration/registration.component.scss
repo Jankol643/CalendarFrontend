@@ -1,0 +1,151 @@
+@use '../../../styles.scss' as *;
+
+.registration-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $light-bg;
+    padding: $spacing-md;
+
+    .registration-card {
+        @extend .card;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+
+        .card-header {
+            border-bottom: 1px solid rgba($light-gray, 0.2);
+            font-size: $font-size-3xl;
+            font-weight: 700;
+            color: $dark-gray;
+            text-align: center;
+            padding: $spacing-2xl;
+        }
+
+        .card-body {
+            padding: $spacing-2xl;
+
+            form {
+                .form-group {
+                    &:last-of-type {
+                        margin-bottom: $spacing-xl;
+                    }
+
+                    .input-group {
+                        .form-control {
+                            &:first-child:not(:only-child) {
+                                border-radius: 0 $border-radius-sm $border-radius-sm 0;
+                                border-left: none;
+                            }
+
+                            &:last-child:not(:only-child) {
+                                border-radius: $border-radius-sm 0 0 $border-radius-sm;
+                            }
+                        }
+
+                        &-append {
+                            .input-group-text {
+                                cursor: pointer;
+                                transition: color 0.3s ease;
+
+                                &:hover {
+                                    color: $primary-color;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .btn-primary {
+                    background: $primary-gradient;
+                    color: $white;
+                    border: none;
+                    padding: $spacing-lg;
+                    font-size: $font-size-base;
+                    font-weight: 600;
+
+                    &:hover {
+                        background: linear-gradient(135deg, $primary-dark 0%, darken($secondary-color, 10%) 100%);
+                        box-shadow: 0 10px 20px rgba($primary-color, 0.3);
+                    }
+
+                    &:disabled {
+                        opacity: 0.6;
+                        cursor: not-allowed;
+                        transform: none !important;
+                    }
+                }
+            }
+        }
+    }
+
+    .form-footer {
+        margin-top: $spacing-xl;
+        text-align: center;
+        color: $light-gray;
+        font-size: $font-size-sm;
+
+        a {
+            color: $primary-color;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+
+            &:hover {
+                color: $primary-dark;
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .alert {
+        padding: $spacing-md $spacing-lg;
+        border-radius: $border-radius-sm;
+        margin-bottom: $spacing-lg;
+        font-size: $font-size-sm;
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+
+        &-success {
+            background: rgba(#48bb78, 0.1);
+            color: #2f855a;
+            border: 1px solid rgba(#48bb78, 0.2);
+        }
+
+        &-error {
+            background: rgba(#f56565, 0.1);
+            color: #c53030;
+            border: 1px solid rgba(#f56565, 0.2);
+        }
+
+        &-warning {
+            background: rgba(#ed8936, 0.1);
+            color: #9c4221;
+            border: 1px solid rgba(#ed8936, 0.2);
+        }
+
+        .material-icons {
+            font-size: $font-size-lg;
+        }
+    }
+}
+
+// Responsive adjustments
+@media (max-width: $breakpoint-md) {
+    .registration-container {
+        padding: $spacing-md;
+
+        .registration-card {
+            .card-header {
+                font-size: $font-size-2xl;
+                padding: $spacing-xl;
+            }
+
+            .card-body {
+                padding: $spacing-xl;
+            }
+        }
+    }
+}

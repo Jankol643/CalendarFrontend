@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { ErrorHandlerService } from './error-handler.service';
 
@@ -18,6 +18,10 @@ export class ScheduleService {
     const headers = { 'X-Upload-ID': uploadId || '' };
 
     return this.http.get(`${this.baseEndpoint}`, { headers }).pipe(
+      tap(() => {
+        // Clear upload_id from localStorage after successful scheduling
+        localStorage.removeItem('upload_id');
+      }),
       catchError(this.errorHandlerService.handleError)
     );
   }

@@ -23,7 +23,7 @@ export class CSVInputComponent {
   fileName: string | null = null;
   currentUploadId: string | null = null;
 
-  constructor(private uploadService: UploadService, private http: HttpClient) { }
+  constructor(private uploadService: UploadService) { }
 
   get uploadProgress(): number | null {
     if (this.currentUploadId && this.uploadProgressMap.has(this.currentUploadId)) {

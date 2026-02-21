@@ -1,4 +1,5 @@
 <app-navbar></app-navbar>
+
 <div class="home-container">
     <!-- Hero Section -->
     <section class="hero-section">
@@ -10,31 +11,42 @@
                     Reclaim your time and boost productivity.
                 </p>
                 <div class="hero-buttons">
-                    <button class="btn-primary" (click)="startFreeTrial()">
+                    <button class="btn btn-primary" (click)="startFreeTrial()" aria-label="Start 14-Day Free Trial">
                         Start 14-Day Free Trial
                     </button>
-                    <button class="btn-secondary" (click)="scrollToFeatures()">
+                    <button class="btn btn-secondary" (click)="scrollToFeatures()"
+                        aria-label="Learn More About Features">
                         Learn More
                     </button>
                 </div>
                 <p class="trial-note">No credit card required • Cancel anytime</p>
             </div>
             <div class="hero-image">
-                <div class="calendar-preview">
+                <div class="calendar-preview" role="img" aria-label="Calendar preview showing today's schedule">
                     <div class="calendar-header">
                         <span>Today's Schedule</span>
                         <div class="calendar-actions">
-                            <span class="calendar-dot" style="background: #4CAF50;"></span>
-                            <span class="calendar-dot" style="background: #2196F3;"></span>
-                            <span class="calendar-dot" style="background: #FF9800;"></span>
+                            <span class="calendar-dot" style="background: #4CAF50;" aria-hidden="true"></span>
+                            <span class="calendar-dot" style="background: #2196F3;" aria-hidden="true"></span>
+                            <span class="calendar-dot" style="background: #FF9800;" aria-hidden="true"></span>
                         </div>
                     </div>
                     <div class="calendar-grid">
-                        <div class="time-slot meeting">Team Meeting<br><small>9:00 - 10:00 AM</small></div>
-                        <div class="time-slot task">Deep Work<br><small>10:00 - 12:00 PM</small></div>
-                        <div class="time-slot meeting">Client Call<br><small>1:00 - 2:00 PM</small></div>
-                        <div class="time-slot task">Project Review<br><small>2:30 - 4:00 PM</small></div>
-                        <div class="time-slot task">Email Processing<br><small>4:00 - 4:30 PM</small></div>
+                        <div class="time-slot meeting" role="listitem">
+                            Team Meeting<br><small>9:00 - 10:00 AM</small>
+                        </div>
+                        <div class="time-slot task" role="listitem">
+                            Deep Work<br><small>10:00 - 12:00 PM</small>
+                        </div>
+                        <div class="time-slot meeting" role="listitem">
+                            Client Call<br><small>1:00 - 2:00 PM</small>
+                        </div>
+                        <div class="time-slot task" role="listitem">
+                            Project Review<br><small>2:30 - 4:00 PM</small>
+                        </div>
+                        <div class="time-slot task" role="listitem">
+                            Email Processing<br><small>4:00 - 4:30 PM</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -42,45 +54,30 @@
     </section>
 
     <!-- Business Benefits Section -->
-    <section class="benefits-section">
+    <section class="benefits-section" aria-labelledby="benefits-heading">
         <div class="section-header">
-            <h2>Transform Your Business Productivity</h2>
+            <h2 id="benefits-heading">Transform Your Business Productivity</h2>
             <p>Professional scheduling solutions designed to save time and reduce complexity</p>
         </div>
         <div class="benefits-grid">
-            <div class="benefit-card">
-                <div class="benefit-icon">⏱️</div>
-                <h3>Save 8+ Hours Weekly</h3>
-                <p>Eliminate manual scheduling and reduce administrative overhead by automating task placement.</p>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">📈</div>
-                <h3>Increase Team Output</h3>
-                <p>Optimize team schedules to maximize productive hours and minimize context switching.</p>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">💰</div>
-                <h3>Boost ROI</h3>
-                <p>Every hour saved on scheduling translates to more billable hours and higher revenue.</p>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">🔄</div>
-                <h3>Scale Efficiently</h3>
-                <p>As your business grows, our intelligent scheduling scales with you, maintaining efficiency.</p>
+            <div class="benefit-card" *ngFor="let benefit of benefits">
+                <div class="benefit-icon" aria-hidden="true">{{benefit.icon}}</div>
+                <h3>{{benefit.title}}</h3>
+                <p>{{benefit.description}}</p>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="features-section">
+    <section id="features" class="features-section" aria-labelledby="features-heading">
         <div class="section-header">
-            <h2>Powerful Features for Professionals</h2>
+            <h2 id="features-heading">Powerful Features for Professionals</h2>
             <p>Everything you need to master your schedule</p>
         </div>
         <div class="features-grid">
             <div class="feature-card" *ngFor="let feature of features">
                 <div class="feature-icon">
-                    <span class="material-icons">{{feature.icon}}</span>
+                    <span class="material-icons" aria-hidden="true">{{feature.icon}}</span>
                 </div>
                 <h3>{{feature.title}}</h3>
                 <p>{{feature.description}}</p>
@@ -89,9 +86,9 @@
     </section>
 
     <!-- Testimonials Section -->
-    <section class="testimonials-section">
+    <section class="testimonials-section" aria-labelledby="testimonials-heading">
         <div class="section-header">
-            <h2>Trusted by Professionals</h2>
+            <h2 id="testimonials-heading">Trusted by Professionals</h2>
             <p>See what our clients say about their productivity transformation</p>
         </div>
         <div class="testimonials-grid">
@@ -100,7 +97,7 @@
                     <p>"{{testimonial.content}}"</p>
                 </div>
                 <div class="testimonial-author">
-                    <div class="author-avatar">{{testimonial.avatar}}</div>
+                    <div class="author-avatar" aria-hidden="true">{{testimonial.avatar}}</div>
                     <div class="author-info">
                         <h4>{{testimonial.name}}</h4>
                         <p>{{testimonial.role}} • {{testimonial.company}}</p>
@@ -111,25 +108,25 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="cta-section">
+    <section class="cta-section" aria-labelledby="cta-heading">
         <div class="cta-content">
-            <h2>Ready to Transform Your Scheduling?</h2>
+            <h2 id="cta-heading">Ready to Transform Your Scheduling?</h2>
             <p>Join thousands of professionals who have optimized their time management</p>
             <div class="cta-features">
                 <div class="cta-feature">
-                    <span class="material-icons">check_circle</span>
+                    <span class="material-icons" aria-hidden="true">check_circle</span>
                     <span>14-day free trial</span>
                 </div>
                 <div class="cta-feature">
-                    <span class="material-icons">check_circle</span>
+                    <span class="material-icons" aria-hidden="true">check_circle</span>
                     <span>No credit card required</span>
                 </div>
                 <div class="cta-feature">
-                    <span class="material-icons">check_circle</span>
+                    <span class="material-icons" aria-hidden="true">check_circle</span>
                     <span>Cancel anytime</span>
                 </div>
             </div>
-            <button class="btn-primary btn-large" (click)="startFreeTrial()">
+            <button class="btn btn-primary btn-large" (click)="startFreeTrial()" aria-label="Start Your Free Trial Now">
                 Start Your Free Trial Now
             </button>
             <p class="cta-note">After trial: $29/month or $299/year • No free plan available</p>

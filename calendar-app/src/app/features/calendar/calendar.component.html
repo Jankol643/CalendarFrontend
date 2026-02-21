@@ -1,3 +1,28 @@
+<!-- Add this at the top of your template -->
+<div *ngIf="allEvents.length === 0" style="color: red; padding: 10px; border: 1px solid red; margin: 10px;">
+    DEBUG: No events loaded<br>
+    Events array: {{ events.length }}<br>
+    Scheduled tasks: {{ scheduledTasks.length }}<br>
+    View Date: {{ viewDate | date:'yyyy-MM-dd' }}<br>
+    Calendar View: {{ calendarView }}
+</div>
+
+<div *ngIf="allEvents.length > 0" style="color: green; padding: 10px; border: 1px solid green; margin: 10px;">
+    DEBUG: {{ allEvents.length }} events loaded ({{ events.length }} regular, {{ scheduledTasks.length }} tasks)<br>
+    <div *ngFor="let event of allEvents.slice(0, 5)">
+        {{ event.title }} - {{ event.start | date:'yyyy-MM-dd HH:mm' }}
+    </div>
+    <div *ngIf="allEvents.length > 5">... and {{ allEvents.length - 5 }} more</div>
+</div>
+
+<!-- Debug panel for events -->
+<div style="background: #f0f0f0; padding: 10px; margin: 10px; border: 1px solid #ccc;">
+    <h4>Event Debug Info:</h4>
+    <button (click)="logAllEvents()" class="btn btn-sm btn-secondary">Log All Events to Console</button>
+    <button (click)="forceRefresh()" class="btn btn-sm btn-primary">Force Refresh</button>
+    <div>Current View Date: {{ viewDate | date:'fullDate' }}</div>
+</div>
+
 <div class="row text-center">
     <div class="col-md-4">
         <h3>
@@ -25,16 +50,16 @@
 </ng-template>
 
 <div [ngSwitch]="calendarView" class="full-height">
-    <mwl-calendar-month-view *ngSwitchCase="'month'" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
+    <mwl-calendar-month-view *ngSwitchCase="'month'" [viewDate]="viewDate" [events]="allEvents" [refresh]="refresh"
         [weekStartsOn]="weekStartsOn" (eventClicked)="handleEvent('Clicked', $event.event)"
         [cellTemplate]="customCellTemplate">
     </mwl-calendar-month-view>
 
-    <mwl-calendar-week-view *ngSwitchCase="'week'" [weekStartsOn]="weekStartsOn" [viewDate]="viewDate" [events]="events"
-        [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)">
+    <mwl-calendar-week-view *ngSwitchCase="'week'" [weekStartsOn]="weekStartsOn" [viewDate]="viewDate"
+        [events]="allEvents" [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)">
     </mwl-calendar-week-view>
 
-    <mwl-calendar-day-view *ngSwitchCase="'day'" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
+    <mwl-calendar-day-view *ngSwitchCase="'day'" [viewDate]="viewDate" [events]="allEvents" [refresh]="refresh"
         (eventClicked)="handleEvent('Clicked', $event.event)">
     </mwl-calendar-day-view>
 </div>

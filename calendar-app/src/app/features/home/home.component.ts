@@ -1,78 +1,130 @@
-import { Component } from '@angular/core';
-import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
+// home.component.ts
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
+
+interface Feature {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+interface Testimonial {
+  content: string;
+  name: string;
+  role: string;
+  company: string;
+  avatar: string;
+}
+
+interface Benefit {
+  icon: string;
+  title: string;
+  description: string;
+}
 
 @Component({
   selector: 'app-home',
-  imports: [NavbarComponent, CommonModule],
+  standalone: true,
+  imports: [CommonModule, RouterModule, NavbarComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent {
-  features = [
+export class HomeComponent implements OnInit {
+  features: Feature[] = [
     {
-      icon: 'sync',
+      icon: 'auto_schedule',
       title: 'Smart Scheduling',
-      description: 'Automatically schedules tasks around your existing calendar events using intelligent algorithms.'
+      description: 'AI-powered scheduling that finds optimal times for your tasks'
     },
     {
-      icon: 'insights',
-      title: 'Time Optimization',
-      description: 'Maximize productivity by finding the perfect time slots for your most important tasks.'
+      icon: 'integration_instructions',
+      title: 'Calendar Integration',
+      description: 'Sync with Google Calendar, Outlook, and other platforms'
     },
     {
-      icon: 'integration',
-      title: 'Seamless Integration',
-      description: 'Works with Google Calendar, Outlook, and other popular calendar platforms.'
+      icon: 'team_dashboard',
+      title: 'Team Collaboration',
+      description: 'Coordinate schedules across your entire team seamlessly'
     },
     {
       icon: 'analytics',
-      title: 'Analytics Dashboard',
-      description: 'Track your productivity trends and identify your most productive time blocks.'
+      title: 'Productivity Analytics',
+      description: 'Track and optimize your time usage with detailed insights'
     },
     {
-      icon: 'collaboration',
-      title: 'Team Collaboration',
-      description: 'Coordinate schedules across teams and avoid scheduling conflicts.'
+      icon: 'notifications_active',
+      title: 'Smart Reminders',
+      description: 'Get timely notifications and follow-up suggestions'
     },
     {
-      icon: 'mobile',
-      title: 'Mobile Ready',
-      description: 'Access and manage your schedule from any device, anywhere.'
+      icon: 'security',
+      title: 'Enterprise Security',
+      description: 'Bank-level security with end-to-end encryption'
     }
   ];
 
-  testimonials = [
+  testimonials: Testimonial[] = [
     {
-      name: 'Sarah Johnson',
-      role: 'Product Manager',
-      company: 'TechCorp Inc.',
-      content: 'This app saved me 10+ hours per week on scheduling. The automatic task placement around meetings is genius!',
-      avatar: 'SJ'
+      content: 'This tool saved our team over 10 hours per week on scheduling alone. The ROI was immediate.',
+      name: 'Sarah Chen',
+      role: 'Operations Manager',
+      company: 'TechCorp',
+      avatar: 'SC'
     },
     {
-      name: 'Michael Chen',
-      role: 'Freelance Consultant',
-      company: 'Independent',
-      content: 'As someone juggling multiple clients, this tool has been a game-changer for managing my time effectively.',
-      avatar: 'MC'
+      content: 'As a consultant, time is my most valuable asset. This platform has optimized my schedule perfectly.',
+      name: 'Michael Rodriguez',
+      role: 'Senior Consultant',
+      company: 'StrategyPlus',
+      avatar: 'MR'
     },
     {
+      content: 'The automatic scheduling feature is a game-changer for our remote team coordination.',
       name: 'Jessica Williams',
-      role: 'Marketing Director',
-      company: 'Growth Labs',
-      content: 'The team scheduling features eliminated all our meeting conflicts. Highly recommended for any growing business.',
+      role: 'Project Lead',
+      company: 'RemoteFirst',
       avatar: 'JW'
     }
   ];
 
-  startFreeTrial() {
-    // Implement trial signup logic
-    console.log('Starting 14-day free trial');
-    // Redirect to signup page or open modal
+  benefits: Benefit[] = [
+    {
+      icon: '⏱️',
+      title: 'Save 8+ Hours Weekly',
+      description: 'Eliminate manual scheduling and reduce administrative overhead by automating task placement.'
+    },
+    {
+      icon: '📈',
+      title: 'Increase Team Output',
+      description: 'Optimize team schedules to maximize productive hours and minimize context switching.'
+    },
+    {
+      icon: '💰',
+      title: 'Boost ROI',
+      description: 'Every hour saved on scheduling translates to more billable hours and higher revenue.'
+    },
+    {
+      icon: '🔄',
+      title: 'Scale Efficiently',
+      description: 'As your business grows, our intelligent scheduling scales with you, maintaining efficiency.'
+    }
+  ];
+
+  constructor() { }
+
+  ngOnInit(): void { }
+
+  startFreeTrial(): void {
+    // Implement trial start logic
+    console.log('Starting free trial...');
   }
 
-  scrollToFeatures() {
-    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+  scrollToFeatures(): void {
+    const featuresSection = document.getElementById('features');
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 }

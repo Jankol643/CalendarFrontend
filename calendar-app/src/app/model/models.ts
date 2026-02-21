@@ -1,14 +1,16 @@
 // Represents a user within the application
 export interface UserModel {
     id: number;               // Unique identifier for the user
-    fullName: string;        // User's full name
-    emailAddress: string;     // User's email address
+    username: string;        // User's full name
+    email: string;     // User's email address
+    profileImage?: string
 }
 
 // Represents the credentials used for user authentication
 export interface AuthCredentials {
     email: string;     // User's email used for authentication
     password: string;         // User's password for authentication
+    rememberMe?: boolean;
 }
 
 // Represents the response returned from the server upon successful authentication
@@ -45,4 +47,19 @@ export interface TaskModel {
     duration: number;
     priority: number;
     calendarId: number;
+}
+
+export interface ScheduledTaskModel {
+    id: string;
+    parent_task_id?: string;
+    upload_id: string;
+    start_datetime: string;  // ISO string in UTC
+    end_datetime: string;    // ISO string in UTC
+    status: string;          // e.g., 'scheduled', 'completed', 'in_progress'
+    created_at: string;
+    updated_at: string;
+    // Add task-specific fields if available from backend
+    title?: string;          // Task title/description
+    description?: string;    // More detailed description
+    priority?: number;       // Task priority
 }
